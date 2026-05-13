@@ -1,0 +1,44 @@
+# --- [ C# / .NET ] ---
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.swp
+*.suo
+*.user
+*.sln.docstates
+.vs/
+.idea/
+.vscode/
+appsettings.Development.json
+
+# --- [ FLUTTER / DART ] ---
+# Arquivos de ferramentas e pacotes
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Configurações específicas do Android
+android/**/local.properties
+android/**/*.keystore
+android/**/*.jks
+android/key.properties
+
+# Configurações específicas do iOS / macOS
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Podfile.lock
+Pods/
+
+# Configurações específicas do Windows (Já que você usa Windows)
+build/windows/
+managed/
+
+# --- [ SISTEMA / OUTROS ] ---
+.DS_Store
+Thumbs.db
+*.log
