@@ -13,5 +13,5 @@ public partial class Medicamento
 
     public byte[]? Foto { get; set; }
 
-    public virtual ICollection<Planejamento> Planejamentos { get; set; } = new List<Planejamento>();
+    public virtual ICollection<Planejamento> Planejamentos { get; set; } = [];
 }

@@ -59,9 +59,9 @@ public partial class Paciente
 
     public byte[]? Foto { get; set; }
 
-    public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
+    public virtual ICollection<Alergium> Alergia { get; set; } = [];
 
-    public virtual ICollection<Deficiencium> Deficiencia { get; set; } = new List<Deficiencium>();
+    public virtual ICollection<Deficiencium> Deficiencia { get; set; } = [];
 
-    public virtual ICollection<Planejamento> Planejamentos { get; set; } = new List<Planejamento>();
+    public virtual ICollection<Planejamento> Planejamentos { get; set; } = [];
 }
