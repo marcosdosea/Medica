@@ -192,13 +192,27 @@
 }
 
 @media (max-width: 768px) {
-    .btn-floating-toggle {
-        display: flex;
-        top: 20px;
+    .sidebar {
+        z-index: 1100;
+        box-shadow: 10px 0 15px rgba(0,0,0,0.1);
     }
+
+        .sidebar:not(.collapsed) {
+            width: var(--side-w);
+        }
 
     .main-wrapper, .main-wrapper.expanded {
         margin-left: 80px;
         width: calc(100% - 80px);
+        transition: none;
+    }
+
+    .content-container {
+        padding: 15px;
+    }
+
+    .btn-floating-toggle {
+        display: flex;
+        z-index: 1200;
     }
 }
