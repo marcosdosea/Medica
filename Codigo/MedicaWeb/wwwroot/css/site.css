@@ -1,3 +1,23 @@
+:root {
+    --side-w: 280px;
+    --top-h: 64px;
+    --bg-body: #EAE7E7;
+    --bg-card: #ffffff;
+    --primary: #000000;
+    --text-main: #5C5E64;
+    --text-muted: #7A7C81;
+    --border: #D9D9D9;
+}
+
+[data-theme="dark"] {
+    --bg-body: #121212;
+    --bg-card: #1c1c1c;
+    --primary: #ffffff;
+    --text-main: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --border: #333333;
+}
+
 html {
   font-size: 14px;
 }
