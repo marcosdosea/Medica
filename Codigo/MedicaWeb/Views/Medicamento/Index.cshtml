@@ -1,0 +1,49 @@
+@model IEnumerable<MedicaWeb.Models.MedicamentoViewModel>
+
+<div class="calendario-container">
+    <div class="table-header">
+        <h2 class="titulo-sessao">Medicamentos</h2>
+        <a asp-action="Create" class="btn-novo">Novo</a>
+    </div>
+
+    <table id="tabelaMedicamentos" class="custom-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Forma Farmacêutica</th>
+                <th>Apelido</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="font-bold">@item.Nome</td>
+                    <td>@item.FormaFarmaceutica</td>
+                    <td>@item.Apelido</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tabelaMedicamentos').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                "pageLength": 10,
+                "searching": false,
+                "info": false,
+                "dom": 'rt<"bottom"lp><"clear">',
+                "columnDefs": [
+                    { "width": "45%", "targets": 0 },
+                    { "width": "25%", "targets": 1 },
+                    { "width": "30%", "targets": 2 }
+                ]
+            });
+        });
+    </script>
+}

@@ -1,0 +1,100 @@
+﻿.calendario-container {
+    padding: 20px;
+    background-color: var(--bg-card);
+    border-radius: 12px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.titulo-sessao {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.custom-table {
+    width: 100% !important;
+    border-collapse: collapse;
+    font-size: 19px;
+}
+
+    .custom-table thead th {
+        background-color: #f8f9fa;
+        padding: 18px 15px;
+        color: var(--text-muted);
+        text-align: left;
+        border-bottom: 2px solid var(--border);
+        font-weight: 600;
+    }
+
+    .custom-table tbody td {
+        padding: 22px 15px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    .custom-table tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+.font-bold {
+    font-weight: 600;
+}
+
+.btn-novo {
+    background-color: #4A90E2;
+    color: white !important;
+    padding: 8px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+    .btn-novo:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+table.dataTable.no-footer {
+    border-bottom: 1px solid var(--border);
+}
+
+.dataTables_wrapper .bottom {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dataTables_length {
+    font-size: 16px;
+    color: var(--text-muted);
+}
+
+.dataTables_paginate {
+    display: flex !important;
+    align-items: center;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 8px 16px !important;
+    margin-left: 5px !important;
+    border: 1px solid var(--border) !important;
+    background: transparent !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 15px !important;
+}
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        border-color: var(--primary) !important;
+    }

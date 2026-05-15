@@ -5,19 +5,19 @@ namespace Core;
 
 public partial class Planejamento
 {
-    public uint IdPaciente { get; set; }
-
-    public uint IdMedicamento { get; set; }
+    public uint Id { get; set; }
 
     public DateTime DataInicio { get; set; }
 
     public DateTime? DataFim { get; set; }
 
-    public TimeSpan HoraInicio { get; set; }
-
     public TimeSpan Frequencia { get; set; }
 
     public string Dosagem { get; set; } = null!;
+
+    public TimeSpan HoraInicio { get; set; }
+
+    public TimeSpan? HoraAtual { get; set; }
 
     public DateTime? DataConfirmacao { get; set; }
 
@@ -29,7 +29,9 @@ public partial class Planejamento
 
     public byte[]? Foto { get; set; }
 
-    public virtual Medicamento IdMedicamentoNavigation { get; set; } = null!;
+    public uint IdPaciente { get; set; }
 
-    public virtual Paciente IdPacienteNavigation { get; set; } = null!;
+    public uint IdMedicamento { get; set; }
+
+    public virtual Prescricao Prescricao { get; set; } = null!;
 }
