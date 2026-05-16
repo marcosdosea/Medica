@@ -7,11 +7,13 @@ public partial class Medicamento
 {
     public uint Id { get; set; }
 
-    public string FormaFarmaceutica { get; set; } = null!;
+    public string Nome { get; set; } = null!;
 
     public string? Apelido { get; set; }
 
+    public string FormaFarmaceutica { get; set; } = null!;
+
     public byte[]? Foto { get; set; }
 
-    public virtual ICollection<Planejamento> Planejamentos { get; set; } = new List<Planejamento>();
+    public virtual ICollection<Prescricao> Prescricaos { get; set; } = new List<Prescricao>();
 }

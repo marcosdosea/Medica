@@ -68,15 +68,15 @@
     .calendario-container .fc-daygrid-event-dot {
         display: none;
     }
-    
+
     .calendario-container .fc .fc-day-today {
         background-color: #e0f2ff !important;
     }
 
-    .calendario-container .fc .fc-day-today .fc-daygrid-day-number {
-        color: #007bff;
-        font-weight: bold;
-    }
+        .calendario-container .fc .fc-day-today .fc-daygrid-day-number {
+            color: #007bff;
+            font-weight: bold;
+        }
 
 .caption-container {
     display: flex;
