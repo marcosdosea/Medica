@@ -1,0 +1,120 @@
+﻿.calendario-container {
+    background-color: var(--bg-card);
+    width: 100%;
+    margin: 20px 0;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: block;
+}
+
+    .calendario-container #calendar {
+        width: 100%;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        background-color: transparent;
+    }
+
+    .calendario-container .fc .fc-toolbar-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--text-main);
+        text-transform: capitalize;
+    }
+
+    .calendario-container .fc-scroller {
+        overflow: hidden;
+    }
+
+    .calendario-container .fc-theme-standard td,
+    .calendario-container .fc-theme-standard th,
+    .calendario-container .fc-scrollgrid {
+        border: 1px solid var(--border);
+        background-color: transparent;
+    }
+
+    .calendario-container .fc-col-header-cell-cushion {
+        font-size: 1.1rem;
+        padding: 15px 0;
+        text-transform: capitalize;
+        color: var(--text-main);
+        text-decoration: none;
+    }
+
+    .calendario-container .fc-daygrid-day-number {
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding: 10px;
+        color: var(--text-main);
+        text-decoration: none;
+    }
+
+    .calendario-container .fc .fc-daygrid-day-frame {
+        min-height: 150px;
+        background-color: transparent;
+    }
+
+    .calendario-container .fc-event {
+        background: transparent;
+        border: none;
+        padding: 4px 8px;
+    }
+
+    .calendario-container .fc-event-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .calendario-container .fc-daygrid-event-dot {
+        display: none;
+    }
+
+    .calendario-container .fc .fc-day-today {
+        background-color: #e0f2ff !important;
+    }
+
+        .calendario-container .fc .fc-day-today .fc-daygrid-day-number {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+.caption-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.caption-item {
+    display: flex;
+    align-items: center;
+}
+
+.caption {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+    .caption.confirmado {
+        background-color: #4ADE80;
+    }
+
+    .caption.sem-confirmacao {
+        background-color: #FB7185;
+    }
+
+    .caption.atraso {
+        background-color: #FBBF24;
+    }
+
+    .caption.hoje {
+        background-color: #007bff;
+        ;
+    }
