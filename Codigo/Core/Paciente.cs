@@ -39,13 +39,13 @@ public partial class Paciente
 
     public string Bairro { get; set; } = null!;
 
-    public string Identificador { get; set; } = null!;
+    public string? Identificador { get; set; }
 
     public string Cidade { get; set; } = null!;
 
     public string Estado { get; set; } = null!;
 
-    public string Complemento { get; set; } = null!;
+    public string? Complemento { get; set; }
 
     public string Ddd { get; set; } = null!;
 
@@ -63,5 +63,5 @@ public partial class Paciente
 
     public virtual ICollection<Deficiencium> Deficiencia { get; set; } = [];
 
-    public virtual ICollection<Planejamento> Planejamentos { get; set; } = [];
+    public virtual ICollection<Prescricao> Prescricaos { get; set; } = new List<Prescricao>();
 }

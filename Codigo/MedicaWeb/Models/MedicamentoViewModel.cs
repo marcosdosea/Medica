@@ -2,40 +2,26 @@
 
 namespace MedicaWeb.Models
 {
-    public enum FormaFarmaceuticaEnum
-    {
-        [Display(Name = "Inalante")]
-        Inalante,
-
-        [Display(Name = "Injetável")]
-        Injetavel,
-
-        [Display(Name = "Creme")]
-        Creme,
-
-        [Display(Name = "Líquido")]
-        Liquido,
-
-        [Display(Name = "Supositório")]
-        Supositorio,
-
-        [Display(Name = "Ingerir")]
-        Ingerir
-    }
-
     public class MedicamentoViewModel
     {
+        [Display(Name = "Código")]
         public uint Id { get; set; }
 
-        [Display(Name = "Forma Farmacêutica")]
-        [Required(ErrorMessage = "A forma farmacêutica é obrigatória.")]
-        public FormaFarmaceuticaEnum? FormaFarmaceutica { get; set; }
+        [Display(Name = "Nome")]
+        [Required(ErrorMessage = "O nome do medicamento é obrigatório")]
+        [StringLength(60, ErrorMessage = "O nome deve ter no máximo 60 caracteres")]
+        public string Nome { get; set; } = null!;
 
         [Display(Name = "Apelido")]
-        [StringLength(100, ErrorMessage = "O apelido deve ter no máximo 100 caracteres.")]
-        public string? Apelido { get; set; }
+        [Required(ErrorMessage = "O apelido do medicamento é obrigatório")]
+        [StringLength(60, ErrorMessage = "O apelido deve ter no máximo 60 caracteres")]
+        public string Apelido { get; set; } = null!;
 
-        [Display(Name = "Foto")]
+        [Display(Name = "Forma Farmacêutica")]
+        [Required(ErrorMessage = "A forma farmacêutica é obrigatória")]
+        public string FormaFarmaceutica { get; set; } = null!;
+
+        [Display(Name = "Foto do Medicamento")]
         public byte[]? Foto { get; set; }
     }
 }

@@ -1,3 +1,8 @@
+using Core;
+using Core.Service;
+using Microsoft.EntityFrameworkCore;
+using Service;
+
 namespace MedicaWeb
 {
     public class Program
@@ -8,6 +13,13 @@ namespace MedicaWeb
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<MedicaContext>(
+                options => options.UseMySQL(builder.Configuration.GetConnectionString("MedicaConnection")!));
+
+            builder.Services.AddTransient<IMedicamentoService, MedicamentoService>();
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             var app = builder.Build();
 

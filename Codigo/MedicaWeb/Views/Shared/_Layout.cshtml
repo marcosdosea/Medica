@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home/home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home/calendar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/table/table.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 </head>
 <body>
     <header class="topbar">
@@ -21,18 +23,26 @@
             <i class="bi bi-chevron-left" id="toggleIcon"></i>
         </button>
         <nav class="nav-menu">
-            <a class="nav-item active" asp-controller="Home" asp-action="Index">
+            @{
+                var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+            }
+
+            <a class="nav-item @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-house"></i> <span>Início</span>
             </a>
-            <a class="nav-item" href="#">
+
+            <a class="nav-item @(controller == "Paciente" ? "active" : "")" href="#">
                 <i class="bi bi-person"></i> <span>Paciente</span>
             </a>
-            <a class="nav-item" href="#">
+
+            <a class="nav-item @(controller == "Medicamento" ? "active" : "")" asp-controller="Medicamento" asp-action="Index">
                 <i class="bi bi-clipboard-pulse"></i> <span>Medicamento</span>
             </a>
-            <a class="nav-item" href="#">
+
+            <a class="nav-item @(controller == "Planejamento" ? "active" : "")" href="#">
                 <i class="bi bi-calendar3"></i> <span>Planejamento</span>
             </a>
+
             <span class="nav-label"></span>
             <a class="nav-item" href="#"><i class="bi bi-bell"></i> <span>Notificações</span></a>
             <a class="nav-item" href="#"><i class="bi bi-gear"></i> <span>Configuração</span></a>
@@ -55,6 +65,7 @@
     </main>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/home/home.js" asp-append-version="true"></script>
     <script src="~/js/home/calendar.js" asp-append-version="true"></script>
