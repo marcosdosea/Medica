@@ -18,6 +18,8 @@ namespace MedicaWeb
                 options => options.UseMySQL(builder.Configuration.GetConnectionString("MedicaConnection")!));
 
             builder.Services.AddTransient<IMedicamentoService, MedicamentoService>();
+            builder.Services.AddTransient<IPacienteService, PacienteService>();
+
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
