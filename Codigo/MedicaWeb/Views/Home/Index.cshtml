@@ -1,10 +1,43 @@
-﻿<div class="calendario-container">
-    <div id='calendar'></div>
+﻿@model IEnumerable<Core.Dto.PacienteDto>
 
-    <div class="caption-container">
-        <span class="legenda-item"><span class="caption confirmado"></span> Confirmado</span>
-        <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
-        <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
-        <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>
+<div class="home-wrapper">
+    <section class="pacientes-topo">
+        <div class="header-com-botao">
+            <h2 class="titulo-sessao">Pacientes</h2>
+        </div>
+
+        <div class="cards-grid">
+            @foreach (var paciente in Model)
+            {
+                <div class="paciente-card">
+                    <div class="foto-wrapper">
+                        @if (paciente.Foto != null && paciente.Foto.Length > 0)
+                        {
+                            var base64 = Convert.ToBase64String(paciente.Foto);
+                            <img src="data:image/png;base64,@base64" alt="@paciente.Nome" />
+                        }
+                        else
+                        {
+                            <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
+                        }
+                    </div>
+                    <div class="paciente-info">
+                        <h3 class="paciente-nome">@paciente.Nome</h3>
+                        <p class="paciente-apelido">@paciente.Apelido</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <div class="calendario-container">
+        <div id='calendar'></div>
+
+        <div class="caption-container">
+            <span class="legenda-item"><span class="caption confirmado"></span> Confirmado</span>
+            <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
+            <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
+            <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>
+        </div>
     </div>
 </div>

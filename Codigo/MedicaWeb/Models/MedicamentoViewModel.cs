@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Core.Dto;
+using System.ComponentModel.DataAnnotations;
 
 namespace MedicaWeb.Models
 {
@@ -13,9 +14,7 @@ namespace MedicaWeb.Models
         public string Nome { get; set; } = null!;
 
         [Display(Name = "Apelido")]
-        [Required(ErrorMessage = "O apelido do medicamento é obrigatório")]
-        [StringLength(60, ErrorMessage = "O apelido deve ter no máximo 60 caracteres")]
-        public string Apelido { get; set; } = null!;
+        public string? Apelido { get; set; }
 
         [Display(Name = "Forma Farmacêutica")]
         [Required(ErrorMessage = "A forma farmacêutica é obrigatória")]
@@ -23,5 +22,12 @@ namespace MedicaWeb.Models
 
         [Display(Name = "Foto do Medicamento")]
         public byte[]? Foto { get; set; }
+
+
+        [Required(ErrorMessage = "Selecione pelo menos um paciente")]
+        [MinLength(1, ErrorMessage = "Você deve selecionar pelo menos um paciente")]
+        public uint[]? PacientesSelecionados { get; set; }
+
+        public IEnumerable<PacienteDto>? Pacientes { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace Service
         /// <param name="id">id do medicamento</param>
         public void Delete(uint id)
         {
-            context.Remove(id);
+            context.Remove(new Medicamento { Id = id });
             context.SaveChanges();
         }
 
@@ -53,7 +53,7 @@ namespace Service
         /// <returns>Dados do medicamento</returns>
         public Medicamento? Get(uint id)
         {
-            return context.Medicamentos.FirstOrDefault(m => m.Id == id);
+            return context.Medicamentos.AsNoTracking().FirstOrDefault(m => m.Id == id);
         }
 
         /// <summary>

@@ -1,21 +1,28 @@
-using System.Diagnostics;
-using MedicaWeb.Models;
+using AutoMapper;
+using Core.Dto;
+using Core.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaWeb.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IPacienteService pacienteService;
+        private readonly IMapper mapper;
+        private readonly ILogger<HomeController> logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IPacienteService pacienteService, IMapper mapper, ILogger<HomeController> logger)
         {
-            _logger = logger;
+            this.pacienteService = pacienteService;
+            this.mapper = mapper;
+            this.logger = logger;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var pacientes = pacienteService.GetAll();
+            var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
+            return View(pacienteDtos);
         }
 
         public IActionResult Privacy()
@@ -26,7 +33,7 @@ namespace MedicaWeb.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }
