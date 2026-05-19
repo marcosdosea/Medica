@@ -8,7 +8,7 @@ namespace MedicaWeb.Mapper
     {
         public MedicamentoProfile()
         {
-            CreateMap<MedicamentoViewModel, Medicamento>();
+            CreateMap<Medicamento, MedicamentoViewModel>().ReverseMap();
         }
     }
 }

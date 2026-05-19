@@ -15,8 +15,6 @@ public partial class MedicaContext : DbContext
     {
     }
 
-    public virtual DbSet<Alergium> Alergia { get; set; }
-
     public virtual DbSet<Cuidador> Cuidadors { get; set; }
 
     public virtual DbSet<Deficiencium> Deficiencia { get; set; }
@@ -29,38 +27,13 @@ public partial class MedicaContext : DbContext
 
     public virtual DbSet<Prescricao> Prescricaos { get; set; }
 
+    public virtual DbSet<Vinculo> Vinculos { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseMySQL("server=localhost;port=3306;user=root;password=root;database=Medica");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Alergium>(entity =>
-        {
-            entity.HasKey(e => new { e.IdPaciente, e.IdCuidador }).HasName("PRIMARY");
-
-            entity.ToTable("alergia");
-
-            entity.HasIndex(e => e.IdCuidador, "fk_Paciente_has_Cuidador_Cuidador1_idx");
-
-            entity.HasIndex(e => e.IdPaciente, "fk_Paciente_has_Cuidador_Paciente_idx");
-
-            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
-            entity.Property(e => e.IdCuidador).HasColumnName("idCuidador");
-            entity.Property(e => e.Parentesco)
-                .HasMaxLength(30)
-                .HasColumnName("parentesco");
-
-            entity.HasOne(d => d.IdCuidadorNavigation).WithMany(p => p.Alergia)
-                .HasForeignKey(d => d.IdCuidador)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("fk_Paciente_has_Cuidador_Cuidador1");
-
-            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Alergia)
-                .HasForeignKey(d => d.IdPaciente)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("fk_Paciente_has_Cuidador_Paciente");
-        });
-
         modelBuilder.Entity<Cuidador>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -275,6 +248,33 @@ public partial class MedicaContext : DbContext
                 .HasForeignKey(d => d.IdPaciente)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_Paciente_has_Medicamento_Paciente1");
+        });
+
+        modelBuilder.Entity<Vinculo>(entity =>
+        {
+            entity.HasKey(e => new { e.IdPaciente, e.IdCuidador }).HasName("PRIMARY");
+
+            entity.ToTable("vinculo");
+
+            entity.HasIndex(e => e.IdCuidador, "fk_Paciente_has_Cuidador_Cuidador1_idx");
+
+            entity.HasIndex(e => e.IdPaciente, "fk_Paciente_has_Cuidador_Paciente_idx");
+
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.IdCuidador).HasColumnName("idCuidador");
+            entity.Property(e => e.Parentesco)
+                .HasMaxLength(30)
+                .HasColumnName("parentesco");
+
+            entity.HasOne(d => d.IdCuidadorNavigation).WithMany(p => p.Vinculos)
+                .HasForeignKey(d => d.IdCuidador)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_Paciente_has_Cuidador_Cuidador1");
+
+            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Vinculos)
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_Paciente_has_Cuidador_Paciente");
         });
 
         OnModelCreatingPartial(modelBuilder);

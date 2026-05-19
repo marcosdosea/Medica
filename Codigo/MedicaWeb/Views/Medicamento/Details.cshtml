@@ -1,38 +1,90 @@
 @model MedicaWeb.Models.MedicamentoViewModel
 
-@{
-    ViewData["Title"] = "Details";
-}
 
-<h1>Details</h1>
-
-<div>
-    <h4>MedicamentoVieWModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FormaFarmaceutica)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FormaFarmaceutica)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Foto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Foto)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="content-container">
+    <div class="header-inline mb-4">
+        <a asp-action="Index" class="btn-voltar">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Detalhes do medicamento</h2>
+    </div>
+    <div class="row align-items-start">
+        <div class="col-lg-7">
+            <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-pills" style="color: var(--text-muted);"></i>
+                <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Medicamento</span>
+            </div>
+            <div class="row">
+                <div class="col-md-12 form-group-custom">
+                    <label class="label-custom">Nome</label>
+                    <div class="form-control-static">@Model.Nome</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group-custom">
+                    <label class="label-custom">Apelido</label>
+                    <div class="form-control-static">@Model.Apelido</div>
+                </div>
+                <div class="col-md-6 form-group-custom">
+                    <label class="label-custom">Forma farmacêutica</label>
+                    <div class="form-control-static">@Model.FormaFarmaceutica</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <label class="label-custom">Foto</label>
+            <div class="foto-medicamento-container">
+                <div class="foto-wrapper">
+                    @if (Model.Foto != null && Model.Foto.Length > 0)
+                    {
+                        var base64 = Convert.ToBase64String(Model.Foto);
+                        <img src="data:image/png;base64,@base64" alt="Medicamento" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-pills fa-3x" style="color: var(--border);"></i>
+                    }
+                </div>
+                <div class="foto-medicamento-label">
+                    Medicamento
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="secao-header mt-2" style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+        <i class="fas fa-user" style="color: var(--text-muted);"></i>
+        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Pacientes</span>
+    </div>
+    <div class="d-flex gap-4 flex-wrap">
+        @if (Model.Pacientes != null)
+        {
+            @foreach (var p in Model.Pacientes)
+            {
+                <div class="paciente-card" style="width: 220px; padding: 20px; cursor: default;">
+                    <div class="foto-wrapper" style="height: 180px; margin-bottom: 15px;">
+                        @if (p.Foto != null && p.Foto.Length > 0)
+                        {
+                            var base64 = Convert.ToBase64String(p.Foto);
+                            <img src="data:image/png;base64,@base64" alt="Paciente" />
+                        }
+                        else
+                        {
+                            <i class="fas fa-user fa-3x" style="color: var(--border);"></i>
+                        }
+                    </div>
+                    <h3 class="paciente-nome" style="font-size: 1.2rem; margin: 0;">@p.Nome</h3>
+                    <p class="paciente-apelido" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">@p.Apelido</p>
+                </div>
+            }
+        }
+    </div>
+    <div class="actions-container">
+        <div class="actions-container">
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: inline;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-med btn-med-danger">Excluir</button>
+            </form>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
+        </div>
+    </div>
 </div>

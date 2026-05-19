@@ -1,42 +1,104 @@
 @model MedicaWeb.Models.MedicamentoViewModel
 
-@{
-    ViewData["Title"] = "Create";
-}
+<div class="content-container">
+    <form asp-action="Create" enctype="multipart/form-data" method="post">
+        <div class="header-inline mb-4">
+            <a asp-action="Index" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Cadastro de medicamento</h2>
+        </div>
 
-<h1>Create</h1>
+        <div class="row align-items-start">
+            <div class="col-lg-7">
+                <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-pills" style="color: var(--text-muted);"></i>
+                    <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Medicamento</span>
+                </div>
 
-<h4>MedicamentoViewModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-12 form-group-custom">
+                        <label class="label-custom">Nome</label>
+                        <input asp-for="Nome" class="form-control-custom" placeholder="Digite o nome..." />
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="FormaFarmaceutica" class="control-label"></label>
-                <input asp-for="FormaFarmaceutica" class="form-control" />
-                <span asp-validation-for="FormaFarmaceutica" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-6 form-group-custom">
+                        <label class="label-custom">Apelido</label>
+                        <input asp-for="Apelido" class="form-control-custom" placeholder="Digite o apelido..." />
+                    </div>
+                    <div class="col-md-6 form-group-custom">
+                        <label class="label-custom">Forma farmacêutica</label>
+                        <select asp-for="FormaFarmaceutica" class="form-control-custom select-custom">
+                            <option value="Creme">Creme</option>
+                            <option value="Inalante">Inalante</option>
+                            <option value="Ingerir">Ingerir</option>
+                            <option value="Injetável">Injetável</option>
+                            <option value="Líquido">Líquido</option>
+                            <option value="Supositório">Supositório</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
+            <div class="col-lg-5">
+                <label class="label-custom">Foto</label>
+                <div class="foto-medicamento-container">
+                    <div class="foto-wrapper" id="preview-box">
+                        <i class="fas fa-pills fa-3x" id="placeholder-icon" style="color: var(--border);"></i>
+                        <img id="img-preview" style="display:none; width:100%; height:100%; object-fit:cover;" />
+                    </div>
+                    <label for="f-upload" class="foto-medicamento-label" style="cursor: pointer; background-color: #4285F4; color: white; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 0 0 12px 12px;">
+                        <span id="file-name" style="font-size: 14px; font-weight: bold;">Upload.png</span>
+                        <div style="background: white; color: #4285F4; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-arrow-up" style="font-size: 12px;"></i>
+                        </div>
+                        <input type="file" id="f-upload" name="fotoMedicamento" accept=".png,image/png" style="display:none;" onchange="previewImage(this)" />
+                    </label>
+                </div>
             </div>
+        </div>
+        <div class="secao-header mt-2" style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+            <i class="fas fa-user" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Pacientes</span>
+        </div>
+        <div class="d-flex flex-wrap" style="gap: 25px; justify-content: flex-start;">
+            @if (Model.Pacientes != null)
+            {
+                @foreach (var p in Model.Pacientes)
+                {
+                    <div class="paciente-item-container" style="width: 220px; display: flex; flex-direction: column;">
 
-            <div class="form-group">
-                <label asp-for="Foto" class="control-label"></label>
-                <input asp-for="Foto" class="form-control" />
-                <span asp-validation-for="Foto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+                        <div class="paciente-card" style="width: 100%; margin-bottom: 12px; padding: 20px; cursor: default; flex-grow: 1;">
+                            <div class="foto-wrapper" style="height: 180px; margin-bottom: 15px;">
+                                @if (p.Foto != null && p.Foto.Length > 0)
+                                {
+                                    var base64 = Convert.ToBase64String(p.Foto);
+                                    <img src="data:image/png;base64,@base64" alt="Paciente" />
+                                }
+                                else
+                                {
+                                    <i class="fas fa-user fa-3x" style="color: var(--border);"></i>
+                                }
+                            </div>
+                            <h3 class="paciente-nome" style="font-size: 1.1rem; margin: 0; min-height: 2.4em; display: flex; align-items: center; justify-content: center;">
+                                @p.Nome
+                            </h3>
+                            <p class="paciente-apelido" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">@p.Apelido</p>
+                        </div>
+                        <div class="form-check p-0 m-0">
+                            <input type="checkbox" name="PacientesSelecionados" value="@p.Id" id="p-@p.Id" class="btn-check" onchange="toggleText(this)" />
+                            <label class="btn btn-secondary w-100 btn-selecionar-custom" for="p-@p.Id" style="font-weight: bold; border-radius: 8px; padding: 10px;">
+                                Selecionar
+                            </label>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="actions-container">
+            <a asp-action="Index" class="btn-med btn-med-danger" style="text-decoration: none;">Cancelar</a>
+            <button type="submit" class="btn-med btn-med-primary">Salvar</button>
+        </div>
+    </form>
 </div>

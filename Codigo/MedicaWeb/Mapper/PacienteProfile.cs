@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core;
+using Core.Dto;
 using MedicaWeb.Models;
 
 namespace MedicaWeb.Mapper
@@ -9,6 +10,7 @@ namespace MedicaWeb.Mapper
         public PacienteProfile()
         {
             CreateMap<PacienteViewModel, Paciente>();
+            CreateMap<Paciente, PacienteDto>().ReverseMap();
         }
     }
 }

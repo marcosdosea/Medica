@@ -13,5 +13,5 @@ public partial class Cuidador
 
     public byte[]? Foto { get; set; }
 
-    public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
+    public virtual ICollection<Vinculo> Vinculos { get; set; } = new List<Vinculo>();
 }
