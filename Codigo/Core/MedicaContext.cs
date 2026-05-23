@@ -15,9 +15,13 @@ public partial class MedicaContext : DbContext
     {
     }
 
+    public virtual DbSet<Alergium> Alergia { get; set; }
+
     public virtual DbSet<Cuidador> Cuidadors { get; set; }
 
     public virtual DbSet<Deficiencium> Deficiencia { get; set; }
+
+    public virtual DbSet<Execucao> Execucaos { get; set; }
 
     public virtual DbSet<Medicamento> Medicamentos { get; set; }
 
@@ -25,15 +29,42 @@ public partial class MedicaContext : DbContext
 
     public virtual DbSet<Planejamento> Planejamentos { get; set; }
 
-    public virtual DbSet<Prescricao> Prescricaos { get; set; }
-
     public virtual DbSet<Vinculo> Vinculos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySQL("server=localhost;port=3306;user=root;password=root;database=Medica");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySQL("server=127.0.0.1;port=3306;user=root;password=123456;database=Medica");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Alergium>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("alergia");
+
+            entity.HasIndex(e => e.IdMedicamento, "fk_Alergia_Medicamento1_idx");
+
+            entity.HasIndex(e => e.IdPaciente, "fk_Alergia_Paciente1_idx");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Descricao)
+                .HasMaxLength(200)
+                .HasColumnName("descricao");
+            entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+
+            entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.Alergia)
+                .HasForeignKey(d => d.IdMedicamento)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_Alergia_Medicamento1");
+
+            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Alergia)
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_Alergia_Paciente1");
+        });
+
         modelBuilder.Entity<Cuidador>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -74,11 +105,44 @@ public partial class MedicaContext : DbContext
                 .HasConstraintName("fk_Deficiencia_Paciente1");
         });
 
+        modelBuilder.Entity<Execucao>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("execucao");
+
+            entity.HasIndex(e => e.IdPlanejamento, "fk_Execucao_Planejamento1_idx");
+
+            entity.Property(e => e.Id)
+                .HasComment("Esta tabela guarda informações da execucao do planejamento das medicações.")
+                .HasColumnName("id");
+            entity.Property(e => e.DataConfirmacao)
+                .HasColumnType("date")
+                .HasColumnName("dataConfirmacao");
+            entity.Property(e => e.HoraConfirmacao)
+                .HasColumnType("time")
+                .HasColumnName("horaConfirmacao");
+            entity.Property(e => e.IdPlanejamento).HasColumnName("idPlanejamento");
+            entity.Property(e => e.Latitude)
+                .HasPrecision(10, 8)
+                .HasColumnName("latitude");
+            entity.Property(e => e.Longitude)
+                .HasPrecision(11, 8)
+                .HasColumnName("longitude");
+
+            entity.HasOne(d => d.IdPlanejamentoNavigation).WithMany(p => p.Execucaos)
+                .HasForeignKey(d => d.IdPlanejamento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_Execucao_Planejamento1");
+        });
+
         modelBuilder.Entity<Medicamento>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("medicamento");
+
+            entity.HasIndex(e => e.IdCuidador, "fk_Medicamento_Cuidador1_idx");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Apelido)
@@ -90,9 +154,16 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.Foto)
                 .HasColumnType("blob")
                 .HasColumnName("foto");
+            entity.Property(e => e.IdCuidador).HasColumnName("idCuidador");
             entity.Property(e => e.Nome)
                 .HasMaxLength(60)
                 .HasColumnName("nome");
+            entity.Property(e => e.Quantidade).HasColumnName("quantidade");
+
+            entity.HasOne(d => d.IdCuidadorNavigation).WithMany(p => p.Medicamentos)
+                .HasForeignKey(d => d.IdCuidador)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_Medicamento_Cuidador1");
         });
 
         modelBuilder.Entity<Paciente>(entity =>
@@ -181,70 +252,37 @@ public partial class MedicaContext : DbContext
 
             entity.ToTable("planejamento");
 
-            entity.HasIndex(e => new { e.IdPaciente, e.IdMedicamento }, "fk_Planejamento_Planejamento1_idx");
+            entity.HasIndex(e => e.IdMedicamento, "fk_Paciente_has_Medicamento_Medicamento1_idx");
+
+            entity.HasIndex(e => e.IdPaciente, "fk_Paciente_has_Medicamento_Paciente1_idx");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.DataConfirmacao)
-                .HasColumnType("date")
-                .HasColumnName("dataConfirmacao");
             entity.Property(e => e.DataFim)
                 .HasColumnType("date")
                 .HasColumnName("dataFim");
             entity.Property(e => e.DataInicio)
                 .HasColumnType("date")
                 .HasColumnName("dataInicio");
-            entity.Property(e => e.Dosagem)
-                .HasMaxLength(30)
-                .HasColumnName("dosagem");
-            entity.Property(e => e.Foto)
-                .HasColumnType("blob")
-                .HasColumnName("foto");
-            entity.Property(e => e.Frequencia)
+            entity.Property(e => e.DiaSemana)
+                .HasMaxLength(7)
+                .HasComment("DOM,SEG,TER,QUA,QUI,SEX,SAB")
+                .HasColumnName("diaSemana");
+            entity.Property(e => e.Dosagem).HasColumnName("dosagem");
+            entity.Property(e => e.Hora)
                 .HasColumnType("time")
-                .HasColumnName("frequencia");
-            entity.Property(e => e.HoraAtual)
-                .HasColumnType("time")
-                .HasColumnName("horaAtual");
-            entity.Property(e => e.HoraConfirmacao)
-                .HasColumnType("time")
-                .HasColumnName("horaConfirmacao");
-            entity.Property(e => e.HoraInicio)
-                .HasColumnType("time")
-                .HasColumnName("horaInicio");
+                .HasColumnName("hora");
             entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
             entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
-            entity.Property(e => e.Latitude)
-                .HasPrecision(10, 8)
-                .HasColumnName("latitude");
-            entity.Property(e => e.Longitude)
-                .HasPrecision(11, 8)
-                .HasColumnName("longitude");
+            entity.Property(e => e.UnidadeDosagem)
+                .HasColumnType("enum('ML','CAPSULA','COMPRIMIDO','MG','G','GOTAS','UI')")
+                .HasColumnName("unidadeDosagem");
 
-            entity.HasOne(d => d.Prescricao).WithMany(p => p.Planejamentos)
-                .HasForeignKey(d => new { d.IdPaciente, d.IdMedicamento })
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_Planejamento_Planejamento1");
-        });
-
-        modelBuilder.Entity<Prescricao>(entity =>
-        {
-            entity.HasKey(e => new { e.IdPaciente, e.IdMedicamento }).HasName("PRIMARY");
-
-            entity.ToTable("prescricao");
-
-            entity.HasIndex(e => e.IdMedicamento, "fk_Paciente_has_Medicamento_Medicamento1_idx");
-
-            entity.HasIndex(e => e.IdPaciente, "fk_Paciente_has_Medicamento_Paciente1_idx");
-
-            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
-            entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
-
-            entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.Prescricaos)
+            entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.Planejamentos)
                 .HasForeignKey(d => d.IdMedicamento)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_Paciente_has_Medicamento_Medicamento1");
 
-            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Prescricaos)
+            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Planejamentos)
                 .HasForeignKey(d => d.IdPaciente)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_Paciente_has_Medicamento_Paciente1");
