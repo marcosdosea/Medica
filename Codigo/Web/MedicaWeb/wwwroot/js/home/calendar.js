@@ -20,8 +20,6 @@
         events: [
             { title: '3 medicamentos', start: '2026-05-01', display: 'block', extendedProps: { status: 'confirmado' } },
             { title: '2 medicamentos', start: '2026-05-06', display: 'block', extendedProps: { status: 'atraso' } },
-            { title: '3 medicamentos', start: '2026-05-25', display: 'block', extendedProps: { status: 'sem-confirmacao' } },
-            { title: '1 medicamentos', start: '2026-05-18', display: 'block', extendedProps: { status: 'confirmado' } }
         ],
         eventDidMount: function (info) {
             const cell = info.el.closest('.fc-daygrid-day');
