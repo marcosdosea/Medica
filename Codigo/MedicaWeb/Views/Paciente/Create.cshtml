@@ -1,0 +1,498 @@
+﻿@model Core.Dto.PacienteDetailsDto
+
+@{
+    ViewData["Title"] = "Cadastrar Paciente";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    body {
+        background-color: #cccccc; /* Fundo cinza sólido e mais escuro (sem degradê) */
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* Container interno sutilmente diferenciado, se necessário, ou igual ao body */
+    .cadastro-page-container {
+        background-color: #cccccc;
+        min-height: 100vh;
+        padding: 20px 30px;
+    }
+
+    /* Cabeçalho da página */
+    .cadastro-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 25px;
+        color: #333333;
+    }
+
+        .cadastro-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .cadastro-header a {
+            color: #333333;
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+    /* Seções do Formulário */
+    .form-section {
+        margin-bottom: 35px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #5c677d;
+        margin-bottom: 20px;
+    }
+
+    /* Grid do Layout */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-custom {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .form-group-custom label {
+            font-size: 12px;
+            color: #7a8294;
+            font-weight: 500;
+        }
+
+    /* Inputs limpos, sem bordas externas indesejadas e sem sombras/degradês */
+    .form-input-custom {
+        width: 100%;
+        padding: 10px 12px;
+        background-color: #ffffff;
+        border: 1px solid #b0b8c9; /* Borda fina padrão do input */
+        border-radius: 6px;
+        font-size: 14px;
+        color: #333333;
+        box-shadow: none !important; /* Remove qualquer sombra/degradê interno */
+        outline: none !important;
+    }
+
+        .form-input-custom:focus {
+            outline: none !important;
+            border-color: #4285F4;
+            box-shadow: none !important;
+        }
+
+    /* Onde remover as bordas externas extras (ex: contêineres globais do layout) */
+    /* Caso a borda esteja ao redor de todo o formulário ou da página, desative box-shadow e borders aqui: */
+    form, .card, .main-content {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Toggles / Switches (Sim/Não) */
+    .switch-container {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .switch-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 40px;
+    }
+
+    .form-switch .form-check-input {
+        width: 45px;
+        height: 22px;
+        cursor: pointer;
+        box-shadow: none !important;
+    }
+
+    /* Botão de Upload de Foto */
+    .btn-upload-foto {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        width: fit-content;
+        text-decoration: none;
+        box-shadow: none !important;
+    }
+
+    /* Bloco Dinâmico */
+    .dynamic-block {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #007bff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 15px;
+        width: fit-content;
+    }
+
+    /* Rodapé de botões */
+    .footer-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 40px;
+        padding-bottom: 30px;
+    }
+
+    .btn-cancelar {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-salvar-azul {
+        background-color: #4285F4;
+        color: white;
+        border: none;
+        padding: 12px 35px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        box-shadow: none !important;
+    }
+
+    /* Classes auxiliares de tamanho de Grid */
+    .c-1 {
+        grid-column: span 1;
+    }
+
+    .c-2 {
+        grid-column: span 2;
+    }
+
+    .c-3 {
+        grid-column: span 3;
+    }
+
+    .c-4 {
+        grid-column: span 4;
+    }
+
+    .c-5 {
+        grid-column: span 5;
+    }
+
+    .c-6 {
+        grid-column: span 6;
+    }
+
+    .c-7 {
+        grid-column: span 7;
+    }
+
+    .c-8 {
+        grid-column: span 8;
+    }
+
+    .c-9 {
+        grid-column: span 9;
+    }
+
+    .c-10 {
+        grid-column: span 10;
+    }
+
+    .c-12 {
+        grid-column: span 12;
+    }
+</style>
+
+<div class="cadastro-page-container">
+
+    <div class="cadastro-header">
+        <a asp-action="Index"><i class="bi bi-arrow-left"></i></a>
+        <h2>Cadastro de paciente</h2>
+    </div>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+        <div class="form-section">
+            <div class="section-title">
+                <i class="bi bi-person-fill"></i> Sobre
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-custom c-9">
+                    <label asp-for="Nome">Nome</label>
+                    <input asp-for="Nome" class="form-input-custom" required />
+                </div>
+                <div class="form-group-custom c-3">
+                    <label>Data de nascimento</label>
+                    <div style="position: relative;">
+                        @* <input asp-for="DataNascimento" type="date" class="form-input-custom" required /> *@
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-custom c-4">
+                    <label asp-for="Cpf">CPF</label>
+                    <input asp-for="Cpf" class="form-input-custom" placeholder="000.000.000-00" required />
+                </div>
+                <div class="form-group-custom c-8">
+                    <label asp-for="CartaoSus">Cartão SUS</label>
+                    <input asp-for="CartaoSus" class="form-input-custom" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="switch-container c-3">
+                    <label>Alergia a medicamentos?</label>
+                    <div class="switch-wrapper">
+                        <div class="form-check form-switch p-0 m-0">
+                            <input class="form-check-input" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()">
+                        </div>
+                        <span class="switch-label-text" id="txtAlergia">Não</span>
+                    </div>
+                </div>
+
+                <div class="form-group-custom c-2">
+                    <label asp-for="TipoSanguineo">Tipo sanguíneo</label>
+                    <input asp-for="TipoSanguineo" class="form-input-custom" />
+                </div>
+
+                <div class="form-group-custom c-2">
+                    <label>Peso</label>
+                    <input type="text" class="form-input-custom" placeholder="--" />
+                </div>
+
+                <div class="form-group-custom c-2">
+                    <label>Altura</label>
+                    <input type="text" class="form-input-custom" placeholder="--" />
+                </div>
+
+                <div class="form-group-custom c-3">
+                    <label asp-for="Sexo">Sexo</label>
+                    <select asp-for="Sexo" class="form-input-custom" required>
+                        <option value=""></option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="switch-container c-3">
+                    <label>Possui alguma deficiência?</label>
+                    <div class="switch-wrapper">
+                        <div class="form-check form-switch p-0 m-0">
+                            <input class="form-check-input" type="checkbox" id="switchDeficiencia" checked onchange="toggleDeficienciaBlock()">
+                        </div>
+                        <span class="switch-label-text" id="txtDeficiencia">Sim</span>
+                    </div>
+                </div>
+
+                <div class="form-group-custom c-2">
+                    <label>Parentesco</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+
+                <div class="form-group-custom c-4">
+                    <label asp-for="Apelido">Apelido</label>
+                    <input asp-for="Apelido" class="form-input-custom" />
+                </div>
+
+                <div class="form-group-custom c-3">
+                    <label>Escolaridade</label>
+                    <select class="form-input-custom">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-top: 15px;">
+                <div class="form-group-custom c-12">
+                    <label>Foto</label>
+                    <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
+                        <span id="nomeArquivoFoto">Imagem.png</span>
+                        <i class="bi bi-arrow-up-circle-fill"></i>
+                    </button>
+                    <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="atualizarNomeFoto(this)" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" id="sectionAlergiaInput" style="display: none;">
+            <div class="dynamic-block">
+                <span>Alergias a medicamentos</span> <i class="bi bi-plus-circle-fill"></i>
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-3">
+                    <label>Medicamento</label>
+                    <select class="form-input-custom">
+                        <option value="Losartana">Losartana</option>
+                    </select>
+                </div>
+                <div class="form-group-custom c-5">
+                    <label>Descrição</label>
+                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" id="sectionDeficienciaInput">
+            <div class="dynamic-block">
+                <span>Deficiências</span> <i class="bi bi-plus-circle-fill"></i>
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-5">
+                    <label>Descrição</label>
+                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-section">
+            <div class="section-title">
+                <i class="bi bi-geo-alt-fill"></i> Endereço
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-2">
+                    <label>Cep</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-5">
+                    <label>Rua</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-5">
+                    <label>Bairro</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-1">
+                    <label>Identificador</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-4">
+                    <label>Cidade</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-2">
+                    <label>Estado</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-5">
+                    <label>Complemento</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-section">
+            <div class="section-title">
+                <i class="bi bi-phone-fill"></i> Contato
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-1">
+                    <label>DDD</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-3">
+                    <label>Telefone</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+            </div>
+
+            <div style="color: #5c677d; font-size: 13px; font-weight: 600; margin: 15px 0 10px 0;">
+                <i class="bi bi-chevron-down"></i> Contato do responsável
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-custom c-1">
+                    <label>DDD</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-3">
+                    <label>Telefone</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+                <div class="form-group-custom c-6">
+                    <label>Responsável</label>
+                    <input type="text" class="form-input-custom" />
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer-buttons">
+            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
+            <button type="submit" class="btn-salvar-azul">Salvar</button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    function toggleAlergiaBlock() {
+        var chk = document.getElementById('switchAlergia');
+        var txt = document.getElementById('txtAlergia');
+        var block = document.getElementById('sectionAlergiaInput');
+
+        if(chk.checked) {
+            txt.innerText = "Sim";
+            block.style.display = "block";
+        } else {
+            txt.innerText = "Não";
+            block.style.display = "none";
+        }
+    }
+
+    function toggleDeficienciaBlock() {
+        var chk = document.getElementById('switchDeficiencia');
+        var txt = document.getElementById('txtDeficiencia');
+        var block = document.getElementById('sectionDeficienciaInput');
+
+        if(chk.checked) {
+            txt.innerText = "Sim";
+            block.style.display = "block";
+        } else {
+            txt.innerText = "Não";
+            block.style.display = "none";
+        }
+    }
+
+    function actualizarNomeFoto(input) {
+        if (input.files && input.files[0]) {
+            document.getElementById('nomeArquivoFoto').innerText = input.files[0].name;
+        }
+    }
+</script>
