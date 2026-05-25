@@ -47,7 +47,7 @@ namespace MedicaWeb.Controllers
         // GET: MedicamentoController/Create
         public ActionResult Create()
         {
-            var pacientes = pacienteService.GetAll();
+            var pacientes = pacienteService.GetAsync();
             var pacientesDto = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             var medicamentoModel = new MedicamentoViewModel
             {
@@ -94,7 +94,7 @@ namespace MedicaWeb.Controllers
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
             var prescricoes = prescricaoService.GetAll((uint)id);
             medicamentoModel.PacientesSelecionados = prescricoes.Select(p => p.IdPaciente).ToArray();
-            var pacientes = pacienteService.GetAll();
+            var pacientes = pacienteService.GetAsync();
             medicamentoModel.Pacientes = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             return View(medicamentoModel);
         }

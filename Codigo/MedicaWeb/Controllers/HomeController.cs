@@ -2,6 +2,7 @@ using AutoMapper;
 using Core.Dto;
 using Core.Service;
 using Microsoft.AspNetCore.Mvc;
+using Service;
 
 namespace MedicaWeb.Controllers
 {
@@ -18,10 +19,10 @@ namespace MedicaWeb.Controllers
             this.logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string searchTerm = "")
         {
-            var pacientes = pacienteService.GetAll();
-            var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
+            var pacientes = await pacienteService.GetAsync(searchTerm);
+            var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes); 
             return View(pacienteDtos);
         }
 
