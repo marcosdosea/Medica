@@ -1,54 +1,87 @@
 ﻿@model IEnumerable<Core.Dto.PacienteDto>
 
-<div class="content-container" style="padding: 20px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Pacientes</h2>
+@{
+    ViewData["Title"] = "Pacientes";
+}
 
-        <form asp-action="Index" method="get" class="d-flex gap-2">
-            <div style="position: relative;">
-                <input type="text" name="searchTerm" value="@ViewData["SearchTerm"]" class="form-control" placeholder="Pesquisar..." style="padding-left: 35px; width: 280px; border-radius: 8px;" />
-                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
-            </div>
-        </form>
-    </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <div class="tabela-container" style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-        <table class="table table-hover" style="margin: 0; vertical-align: middle;">
-            <thead style="background-color: #f8f9fa;">
-                <tr>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Sexo</th>
-                    <th class="text-end">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    @foreach (var paciente in Model)
+<div class="content-container" style="padding: 40px; background-color: #f4f5f7; min-height: 100vh;">
+
+     <div class="tabela-container" style="background: white; border-radius: 8px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #eef0f2; position: relative; min-height: 500px;"> 
+
+        <div class="d-flex justify-content-between align-items-center mb-4" style="margin-bottom: 25px !important;">
+            <h2 style="margin: 0; font-weight: 700; font-size: 20px; color: #1e293b; font-family: system-ui, sans-serif;">Pacientes</h2>
+
+            <form asp-action="Index" method="get" class="d-flex gap-2">
+                <div style="position: relative;">
+                    <input type="text" name="searchTerm" value="@ViewData["SearchTerm"]" class="form-control" placeholder="Pesquisar" style="padding-left: 38px; width: 260px; border-radius: 6px; border: 1px solid #e2e8f0; height: 40px; font-size: 14px; background-color: #fff;" />
+                    <i class="bi bi-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table" style="margin: 0; vertical-align: middle; font-size: 14px; border-collapse: collapse; --bs-table-bg: transparent; --bs-table-border-color: transparent;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <th style="font-weight: 600; color: #64748b; padding: 16px 12px; border: none; text-align: left;">
+                            Nome <i class="bi bi-arrow-down-up ms-1" style="font-size: 11px; color: #cbd5e1; vertical-align: middle;"></i>
+                        </th>
+                        <th style="font-weight: 600; color: #64748b; padding: 16px 12px; border: none; text-align: left;">
+                            CPF <i class="bi bi-arrow-down-up ms-1" style="font-size: 11px; color: #cbd5e1; vertical-align: middle;"></i>
+                        </th>
+                        <th style="font-weight: 600; color: #64748b; padding: 16px 12px; border: none; text-align: left;">
+                            Sexo <i class="bi bi-arrow-down-up ms-1" style="font-size: 11px; color: #cbd5e1; vertical-align: middle;"></i>
+                        </th>
+                        <th style="font-weight: 600; color: #64748b; padding: 16px 12px; border: none; text-align: left;">
+                            Idade <i class="bi bi-arrow-down-up ms-1" style="font-size: 11px; color: #cbd5e1; vertical-align: middle;"></i>
+                        </th>
+                        <th style="font-weight: 600; color: #64748b; padding: 16px 12px; border: none; text-align: left;">
+                            Ativo <i class="bi bi-arrow-down-up ms-1" style="font-size: 11px; color: #cbd5e1; vertical-align: middle;"></i>
+                        </th>
+                        <th style="border: none; width: 60px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var paciente in Model)
+                        {
+                            <tr onclick="window.location='@Url.Action("Details", new { id = paciente.Id })'"
+                                style="cursor: pointer; border-bottom: 1px solid #f8fafc; transition: background-color 0.2s ease;"
+                                onmouseover="this.style.backgroundColor='#f8fafc'"
+                                onmouseout="this.style.backgroundColor='transparent'">
+
+                                <td style="padding: 18px 12px; color: #334155; font-weight: 500; border: none;">@paciente.Nome</td>
+                                <td style="padding: 18px 12px; color: #64748b; border: none;">@paciente.Cpf</td>
+                                <td style="padding: 18px 12px; color: #64748b; border: none;">@paciente.Sexo</td>
+                                <td style="padding: 18px 12px; color: #64748b; border: none;">@paciente.Idade</td>
+                                <td style="padding: 18px 12px; color: #64748b; border: none;">Sim</td>
+                                <td style="padding: 18px 12px; text-align: right; border: none;">
+                                    <a asp-action="Edit" asp-route-id="@paciente.Id" onclick="event.stopPropagation();" style="color: #94a3b8; text-decoration: none; font-size: 16px;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#94a3b8'"><i class="bi bi-pencil"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td style="font-weight: 500;">@paciente.Nome</td>
-                            <td>@paciente.Apelido</td>
-
-                            <td class="text-end">
-                                <a asp-action="Edit" asp-route-id="@paciente.Id" class="btn btn-sm btn-outline-primary" style="border-radius: 6px;"><i class="fas fa-edit"></i></a>
-                                <a asp-action="Details" asp-route-id="@paciente.Id" class="btn btn-sm btn-outline-info" style="border-radius: 6px;"><i class="fas fa-eye"></i></a>
-                            </td>
+                            <td colspan="6" class="text-center text-muted" style="padding: 50px; background-color: #fafafa; border: none; border-radius: 6px;">Nenhum paciente encontrado.</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="4" class="text-center text-muted" style="padding: 30px;">Nenhum paciente encontrado.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end" style="margin-top: 30px;">
+            <div style="width: 36px; height: 36px; border: 1px solid #3b82f6; color: #3b82f6; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 600; font-size: 14px; cursor: pointer; background-color: #fff;">
+                1
+            </div>
+        </div>
     </div>
 
-    <div style="position: fixed; bottom: 30px; right: 30px; z-index: 999;">
-        <a asp-controller"Paciente" asp-action="Create" class="btn btn-primary" style="padding: 12px 30px; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3); text-decoration: none;">Novo</a>
+    <div style="position: fixed; bottom: 40px; right: 40px; z-index: 999;">
+        <a asp-controller="Paciente" asp-action="Create" class="btn btn-primary" style="padding: 10px 32px; font-weight: 600; border-radius: 6px; background-color: #3b82f6; border: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); text-decoration: none; font-size: 14px; display: inline-block;">Novo</a>
     </div>
 </div>

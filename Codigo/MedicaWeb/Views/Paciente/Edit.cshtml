@@ -2,7 +2,7 @@
 @model Core.Dto.PacienteDetailsDto
 
 @{
-    ViewData["Title"] = "Cadastrar Paciente";
+    ViewData["Title"] = "Editar Paciente";
 }
 
 @section Styles {
@@ -15,13 +15,12 @@
 
     <div class="cadastro-header">
         <a asp-action="Index"><i class="bi bi-arrow-left"></i></a>
-        <h2>Cadastro de paciente</h2>
+        <h2>Editar Paciente</h2>
     </div>
 
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
-        <input type="hidden" asp-for="AlergiaMedicamento" id="AlergiaMedicamentoHidden" value="0" />
-        <input type="hidden" asp-for="PossuiDeficiencia" id="PossuiDeficienciaHidden" value="1" />
+        <input type="hidden" asp-for="Id" />
 
         <div class="form-section">
             <div class="section-title">
@@ -32,14 +31,12 @@
                 <div class="form-group-custom c-9">
                     <label asp-for="Nome">Nome</label>
                     <input asp-for="Nome" class="form-input-custom" required />
-                    <span asp-validation-for="Nome" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
                 <div class="form-group-custom c-3">
                     <label asp-for="DataNascimento">Data de nascimento</label>
                     <div style="position: relative;">
                         <input asp-for="DataNascimento" type="date" class="form-input-custom" required />
                     </div>
-                    <span asp-validation-for="DataNascimento" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
             </div>
 
@@ -47,12 +44,10 @@
                 <div class="form-group-custom c-4">
                     <label asp-for="Cpf">CPF</label>
                     <input asp-for="Cpf" class="form-input-custom" placeholder="000.000.000-00" required />
-                    <span asp-validation-for="Cpf" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
                 <div class="form-group-custom c-8">
                     <label asp-for="CartaoSus">Cartão SUS</label>
                     <input asp-for="CartaoSus" class="form-input-custom" />
-                    <span asp-validation-for="CartaoSus" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
             </div>
 
@@ -61,14 +56,15 @@
                     <label>Alergia a medicamentos?</label>
                     <div class="switch-wrapper">
                         <div class="form-check form-switch p-0 m-0">
-                            <input class="form-check-input" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()">
+                            <input class="form-check-input" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()" checked="@(Model.AlergiaMedicamento == 1)">
                         </div>
-                        <span class="switch-label-text" id="txtAlergia">Não</span>
+                        <span class="switch-label-text" id="txtAlergia">@(Model.AlergiaMedicamento == 1 ? "Sim" : "Não")</span>
                     </div>
                 </div>
 
                 <div class="form-group-custom c-2">
                     <label asp-for="TipoSanguineo">Tipo sanguíneo</label>
+                    @* Se o TipoSanguineo no DTO for string, mude a linha abaixo para preencher via strings textuais se necessário *@
                     <select asp-for="TipoSanguineo" class="form-input-custom"
                             asp-items="Html.GetEnumSelectList<TipoSanguineo>()" required>
                         <option value="">Selecionar</option>
@@ -78,22 +74,24 @@
 
                 <div class="form-group-custom c-2">
                     <label asp-for="Peso">Peso</label>
-                    <input asp-for="Peso" type="text" class="form-input-custom" placeholder="--" />
-                    <span asp-validation-for="Peso" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Peso" class="form-input-custom" placeholder="--" />
                 </div>
 
                 <div class="form-group-custom c-2">
                     <label asp-for="Altura">Altura</label>
-                    <input asp-for="Altura" type="text" class="form-input-custom" placeholder="--" />
-                    <span asp-validation-for="Altura" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Altura" class="form-input-custom" placeholder="--" />
                 </div>
 
                 <div class="form-group-custom c-3">
                     <label asp-for="Sexo">Sexo</label>
-                    <select asp-for="Sexo" class="form-input-custom" asp-items="Html.GetEnumSelectList<Sexo>()" required>
-                        <option value="">Selecionar</option>
+                    <select asp-for="Sexo" class="form-input-custom" required>
+                        <option value=""></option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                        @* Caso seu DTO retorne o número do Enum em vez de 'M'/'F', descomente abaixo: *@
+                        @* <option value="0">Masculino</option> *@
+                        @* <option value="1">Feminino</option> *@
                     </select>
-                    <span asp-validation-for="Sexo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
             </div>
 
@@ -102,9 +100,9 @@
                     <label>Possui alguma deficiência?</label>
                     <div class="switch-wrapper">
                         <div class="form-check form-switch p-0 m-0">
-                            <input class="form-check-input" type="checkbox" id="switchDeficiencia" checked onchange="toggleDeficienciaBlock()">
+                            <input class="form-check-input" type="checkbox" id="switchDeficiencia" onchange="toggleDeficienciaBlock()" checked="@(Model.PossuiDeficiencia == 1)">
                         </div>
-                        <span class="switch-label-text" id="txtDeficiencia">Sim</span>
+                        <span class="switch-label-text" id="txtDeficiencia">@(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")</span>
                     </div>
                 </div>
 
@@ -116,12 +114,10 @@
                 <div class="form-group-custom c-4">
                     <label asp-for="Apelido">Apelido</label>
                     <input asp-for="Apelido" class="form-input-custom" />
-                    <span asp-validation-for="Apelido" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
 
                 <div class="form-group-custom c-3">
                     <label asp-for="Escolaridade">Escolaridade</label>
-                    @* CORRIGIDO: Adicionado asp-for="Escolaridade" *@
                     <select asp-for="Escolaridade" class="form-input-custom" asp-items="Html.GetEnumSelectList<Escolaridade>()" required>
                         <option value="">Selecionar</option>
                     </select>
@@ -133,40 +129,10 @@
                 <div class="form-group-custom c-12">
                     <label>Foto</label>
                     <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
-                        <span id="nomeArquivoFoto">Imagem.png</span>
+                        <span id="nomeArquivoFoto">@(Model.Foto != null ? "Foto_Atual.png" : "Alterar Imagem.png")</span>
                         <i class="bi bi-arrow-up-circle-fill"></i>
                     </button>
-                    <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="actualizarNomeFoto(this)" />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section" id="sectionAlergiaInput" style="display: none;">
-            <div class="dynamic-block">
-                <span>Alergias a medicamentos</span> <i class="bi bi-plus-circle-fill"></i>
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-3">
-                    <label>Medicamento</label>
-                    <select class="form-input-custom">
-                        <option value="Losartana">Losartana</option>
-                    </select>
-                </div>
-                <div class="form-group-custom c-5">
-                    <label>Descrição</label>
-                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section" id="sectionDeficienciaInput">
-            <div class="dynamic-block">
-                <span>Deficiências</span> <i class="bi bi-plus-circle-fill"></i>
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-5">
-                    <label>Descrição</label>
-                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
+                    <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="atualizarNomeFoto(this)" />
                 </div>
             </div>
         </div>
@@ -177,38 +143,28 @@
             </div>
             <div class="form-row">
                 <div class="form-group-custom c-2">
-                    <label asp-for="Cep">Cep</label>
-                    <input asp-for="Cep" class="form-input-custom" required />
-                    <span asp-validation-for="Cep" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <label asp-for="Cep">CEP</label>
+                    <input asp-for="Cep" class="form-input-custom" />
                 </div>
                 <div class="form-group-custom c-5">
                     <label asp-for="Rua">Rua</label>
-                    <input asp-for="Rua" class="form-input-custom" required />
-                    <span asp-validation-for="Rua" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Rua" class="form-input-custom" />
                 </div>
                 <div class="form-group-custom c-5">
                     <label asp-for="Bairro">Bairro</label>
-                    <input asp-for="Bairro" class="form-input-custom" required />
-                    <span asp-validation-for="Bairro" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Bairro" class="form-input-custom" />
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group-custom c-1">
                     <label asp-for="Identificador">Identificador</label>
-                    <input asp-for="Identificador" class="form-input-custom" required />
-                    <span asp-validation-for="Identificador" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Identificador" class="form-input-custom" />
                 </div>
                 <div class="form-group-custom c-4">
                     <label asp-for="Cidade">Cidade</label>
-                    <input asp-for="Cidade" class="form-input-custom" required />
-                    <span asp-validation-for="Cidade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Cidade" class="form-input-custom" />
                 </div>
-
-                <div class="form-group-custom c-3">
-                    <label asp-for="Bairro">Bairro</label>
-                    <input asp-for="Bairro" class="form-input-custom" required />
-                    <span asp-validation-for="Bairro" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
+                @* CORREÇÃO: Adicionado o caractere '<' que faltava na abertura da div do Estado *@
                 <div class="form-group-custom c-2">
                     <label asp-for="Estado">Estado</label>
                     <select asp-for="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" required>
@@ -218,8 +174,37 @@
                 </div>
                 <div class="form-group-custom c-5">
                     <label asp-for="Complemento">Complemento</label>
-                    <input asp-for="Complemento" class="form-input-custom" required />
-                    <span asp-validation-for="Complemento" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Complemento" class="form-input-custom" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" id="sectionAlergiaInput" style="display: none;">
+            <div class="dynamic-block">
+                <span>Alergias a medicamentos</span>
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-3">
+                    <label>Medicamento</label>
+                    <select class="form-input-custom">
+                        <option value="Losartana">Losartana</option>
+                    </select>
+                </div>
+                <div class="form-group-custom c-5">
+                    <label>Descrição</label>
+                    <input type="text" class="form-input-custom" value="Dado vindo do vínculo de alergias." />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" id="sectionDeficienciaInput" style="display: none;">
+            <div class="dynamic-block">
+                <span>Deficiências</span>
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-5">
+                    <label>Descrição</label>
+                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
                 </div>
             </div>
         </div>
@@ -231,13 +216,11 @@
             <div class="form-row">
                 <div class="form-group-custom c-1">
                     <label asp-for="Ddd">DDD</label>
-                    <input asp-for="Ddd" class="form-input-custom" required />
-                    <span asp-validation-for="Ddd" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Ddd" class="form-input-custom" />
                 </div>
                 <div class="form-group-custom c-3">
                     <label asp-for="Telefone">Telefone</label>
-                    <input asp-for="Telefone" class="form-input-custom" required />
-                    <span asp-validation-for="Telefone" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                    <input asp-for="Telefone" class="form-input-custom" />
                 </div>
             </div>
 
@@ -249,48 +232,44 @@
                 <div class="form-group-custom c-1">
                     <label asp-for="DddResponsavel">DDD</label>
                     <input asp-for="DddResponsavel" class="form-input-custom" />
-                    <span asp-validation-for="DddResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
                 <div class="form-group-custom c-3">
                     <label asp-for="TelefoneResponsavel">Telefone</label>
                     <input asp-for="TelefoneResponsavel" class="form-input-custom" />
-                    <span asp-validation-for="TelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
                 <div class="form-group-custom c-6">
                     <label asp-for="NomeTelefoneResponsavel">Responsável</label>
                     <input asp-for="NomeTelefoneResponsavel" class="form-input-custom" />
-                    <span asp-validation-for="NomeTelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
                 </div>
             </div>
         </div>
 
         <div class="footer-buttons">
             <a asp-action="Index" class="btn-cancelar">Cancelar</a>
-            <button type="submit" class="btn-salvar-azul">Salvar</button>
+            <button type="submit" class="btn-salvar-azul">Atualizar</button>
         </div>
-
     </form>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleAlergiaBlock();
+        toggleDeficienciaBlock();
+    });
+
     function toggleAlergiaBlock() {
         var chk = document.getElementById('switchAlergia');
         var txt = document.getElementById('txtAlergia');
         var block = document.getElementById('sectionAlergiaInput');
-        var hiddenInput = document.getElementById('AlergiaMedicamentoHidden');
 
-        if(chk.checked) {
-            txt.innerText = "Sim";
-            block.style.display = "block";
-            hiddenInput.value = "1"; // Envia 1 (Sim) para o C#
-        } else {
-            txt.innerText = "Não";
-            block.style.display = "none";
-            hiddenInput.value = "0"; // Envia 0 (Não) para o C#
+        if(block) {
+            if(chk.checked) {
+                txt.innerText = "Sim";
+                block.style.display = "block";
+            } else {
+                txt.innerText = "Não";
+                block.style.display = "none";
+            }
         }
     }
 
@@ -298,16 +277,15 @@
         var chk = document.getElementById('switchDeficiencia');
         var txt = document.getElementById('txtDeficiencia');
         var block = document.getElementById('sectionDeficienciaInput');
-        var hiddenInput = document.getElementById('PossuiDeficienciaHidden');
 
-        if(chk.checked) {
-            txt.innerText = "Sim";
-            block.style.display = "block";
-            hiddenInput.value = "1"; // Envia 1 (Sim) para o C#
-        } else {
-            txt.innerText = "Não";
-            block.style.display = "none";
-            hiddenInput.value = "0"; // Envia 0 (Não) para o C#
+        if(block) {
+            if(chk.checked) {
+                txt.innerText = "Sim";
+                block.style.display = "block";
+            } else {
+                txt.innerText = "Não";
+                block.style.display = "none";
+            }
         }
     }
 
