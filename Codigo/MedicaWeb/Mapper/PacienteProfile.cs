@@ -9,8 +9,13 @@ namespace MedicaWeb.Mapper
     {
         public PacienteProfile()
         {
-            CreateMap<PacienteViewModel, Paciente>();
-            CreateMap<Paciente, PacienteDto>().ReverseMap();
+            CreateMap<PacienteDetailsDto, Paciente>();
+
+            CreateMap<Paciente, PacienteDto>();
+
+            CreateMap<Paciente, PacienteDetailsDto>()
+            .ForMember(dest => dest.Sexo, opt => opt.MapFrom(src => src.Sexo.ToString()))
+            .ForMember(dest => dest.Escolaridade, opt => opt.MapFrom(src => src.Escolaridade.ToString()));
         }
     }
 }
