@@ -1,0 +1,25 @@
+name: pr-validation-web
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Codigo/Web/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup .NET Environment
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build Web Application
+        run: dotnet build --configuration Release
+        working-directory: Codigo/Web
