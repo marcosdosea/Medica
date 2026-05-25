@@ -29,9 +29,9 @@ namespace Service
         /// <param name="idMedicamento">Id do medicamento</param>
         public void DeleteByMedicamento(uint idMedicamento)
         {
-            var prescricoes = context.Prescricaos
+            var prescricoes = context.Planejamentos
                              .Where(p => p.IdMedicamento == idMedicamento);
-            context.Prescricaos.RemoveRange(prescricoes);
+            context.Planejamentos.RemoveRange(prescricoes);
             context.SaveChanges();
         }
 
@@ -41,9 +41,10 @@ namespace Service
         /// <returns>Lista de prescrições</returns>
         public IEnumerable<Prescricao> GetAll(uint idMedicamento)
         {
-            return context.Prescricaos
-                    .Include(p => p.IdPacienteNavigation)
+            return (IEnumerable<Prescricao>)context.Planejamentos
+                    .Include(p => p.IdPaciente)
                     .Where(p => p.IdMedicamento == idMedicamento)
+                    .AsNoTracking()
                     .ToList();
         }
     }

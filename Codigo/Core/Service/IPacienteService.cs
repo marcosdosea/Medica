@@ -1,9 +1,15 @@
-﻿namespace Core.Service
+﻿using Core.Dto;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Core.Service
 {
     public interface IPacienteService
     {
-        IEnumerable<Paciente> GetByMedicamento(uint idMedicamento);
-
-        IEnumerable<Paciente> GetAll();
+        Task<IEnumerable<PacienteDto>> GetAsync(string searchTerm = "");
+        Task<PacienteDetailsDto?> GetAsync(uint id);
+        Task<IEnumerable<PacienteDto>> GetByMedicamentoAsync(uint idMedicamento);
+        Task<uint> CreateAsync(PacienteDetailsDto pacienteDetailsDto);
+        Task EditAsync(PacienteDetailsDto pacienteDetailsDto);
+        Task DeleteAsync(uint id);
     }
 }
