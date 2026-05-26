@@ -25,18 +25,5 @@ namespace Service
                     .OrderBy(p => p.Nome)
                     .ToList();
         }
-
-        /// <summary>
-        /// Buscar todos os pacientes cadastrados por medicamento
-        /// </summary>
-        /// <returns>Lista de pacientes</returns>
-        public IEnumerable<Paciente> GetByMedicamento(uint idMedicamento)
-        {
-            return context.Prescricaos
-                    .Where(p => p.IdMedicamento == idMedicamento)
-                    .Select(p => p.IdPacienteNavigation)
-                    .Distinct()
-                    .ToList();
-        }
     }
 }
