@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core;
+using Core.Dto;
 using Core.Dto.PacienteDto;
 using Core.Helper;
 using Core.Helpers;
@@ -20,9 +21,9 @@ namespace MedicaWeb.Controllers
             this.mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(string searchTerm = "")
+        public async Task<IActionResult> Index()
         {
-            var pacientes = await pacienteService.GetAsync(searchTerm);
+            var pacientes = await pacienteService.GetAsync();
             var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             return View(pacienteDtos);
         }
@@ -30,8 +31,6 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Details(uint id)
         {
             var paciente = await pacienteService.GetAsync(id);
-            if (paciente == null) return NotFound();
-
             var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
             return View(pacienteDetailsDto);
         }
@@ -56,10 +55,8 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Edit(uint id)
         {
             var paciente = await pacienteService.GetAsync(id);
-            if (paciente == null) return NotFound();
-
-            var dto = mapper.Map<PacienteDetailsDto>(paciente);
-            return View(dto);
+            var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
+            return View(pacienteDetailsDto);
         }
 
         [HttpPost]
