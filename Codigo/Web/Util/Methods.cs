@@ -140,12 +140,20 @@ namespace Util
             return value;
         }
 
+        public static bool ValidarTamanhoFoto(byte[] bytesArquivo, long tamanhoMaximoBytes)
+        {
+            if (bytesArquivo == null || bytesArquivo.Length == 0) return true;
+            return bytesArquivo.Length <= tamanhoMaximoBytes;
+        }
+
         public static bool ValidarExtensaoFoto(byte[] bytesArquivo)
         {
             if (bytesArquivo == null || bytesArquivo.Length == 0) return true;
             try
             {
-                var formato = Image.DetectFormat(bytesArquivo);
+                using var stream = new MemoryStream(bytesArquivo);
+                var formato = Image.DetectFormat(stream);
+
                 if (formato == null) return false;
 
                 string[] formatosPermitidos = { "JPEG", "PNG" };
@@ -157,18 +165,14 @@ namespace Util
             }
         }
 
-        public static bool ValidarTamanhoFoto(byte[] bytesArquivo, long tamanhoMaximoBytes)
-        {
-            if (bytesArquivo == null || bytesArquivo.Length == 0) return true;
-            return bytesArquivo.Length <= tamanhoMaximoBytes;
-        }
-
         public static bool ValidarDimensoesFoto(byte[] bytesArquivo, int larguraMaxima, int alturaMaxima)
         {
             if (bytesArquivo == null || bytesArquivo.Length == 0) return true;
             try
             {
-                var info = Image.Identify(bytesArquivo);
+                using var stream = new MemoryStream(bytesArquivo);
+                var info = Image.Identify(stream);
+
                 if (info == null) return false;
 
                 return info.Width <= larguraMaxima && info.Height <= alturaMaxima;
