@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Core;
-using Core.Dto;
+using Core.Dto.PacienteDto;
 using MedicaWeb.Models;
 
 namespace MedicaWeb.Mapper

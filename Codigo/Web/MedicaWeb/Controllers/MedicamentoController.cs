@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Core;
-using Core.Dto;
+using Core.Dto.PacienteDto;
 using Core.Service;
 using MedicaWeb.Models;
 using Microsoft.AspNetCore.Http;

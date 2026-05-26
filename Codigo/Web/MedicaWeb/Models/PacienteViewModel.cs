@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Enum.PacienteEnum;
 using Core.Enums;
 
 namespace MedicaWeb.Models

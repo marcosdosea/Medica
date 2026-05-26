@@ -1,5 +1,5 @@
 using AutoMapper;
-using Core.Dto;
+using Core.Dto.PacienteDto;
 using Core.Service;
 using Microsoft.AspNetCore.Mvc;
 using Service;

@@ -1,4 +1,4 @@
-﻿using Core.Dto;
+﻿using Core.Dto.PacienteDto;
 using System.ComponentModel.DataAnnotations;
 
 namespace MedicaWeb.Models
