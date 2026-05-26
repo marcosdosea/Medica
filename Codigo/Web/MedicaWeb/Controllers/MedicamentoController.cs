@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Core;
-using Core.Dto.PacienteDto;
+using Core.Dto;
 using Core.Service;
 using MedicaWeb.Models;
 using Microsoft.AspNetCore.Http;
@@ -12,14 +12,12 @@ namespace MedicaWeb.Controllers
     public class MedicamentoController : Controller
     {
         private readonly IMedicamentoService medicamentoService;
-        private readonly IPrescricaoService prescricaoService;
         private readonly IPacienteService pacienteService;
         private readonly IMapper mapper;
 
-        public MedicamentoController(IMedicamentoService medicamentoService, IPrescricaoService prescricaoService, IPacienteService pacienteService, IMapper mapper)
+        public MedicamentoController(IMedicamentoService medicamentoService, IPacienteService pacienteService, IMapper mapper)
         {
             this.medicamentoService = medicamentoService;
-            this.prescricaoService = prescricaoService;
             this.pacienteService = pacienteService;
             this.mapper = mapper;
         }
@@ -37,17 +35,13 @@ namespace MedicaWeb.Controllers
         {
             var medicamento = medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
-            var prescricoes = prescricaoService.GetAll((uint)id);
-            medicamentoModel.Pacientes = prescricoes
-                                            .Select(p => mapper.Map<PacienteDto>(p.IdPacienteNavigation))
-                                            .ToList();
             return View(medicamentoModel);
         }
 
         // GET: MedicamentoController/Create
         public ActionResult Create()
         {
-            var pacientes = pacienteService.GetAsync();
+            var pacientes = pacienteService.GetAll();
             var pacientesDto = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             var medicamentoModel = new MedicamentoViewModel
             {
@@ -73,15 +67,6 @@ namespace MedicaWeb.Controllers
             {
                 var medicamento = mapper.Map<Medicamento>(medicamentoModel);
                 medicamentoService.Create(medicamento);
-                foreach (var idPaciente in medicamentoModel.PacientesSelecionados!)
-                {
-                    var novaPrescricao = new Prescricao
-                    {
-                        IdMedicamento = medicamento.Id,
-                        IdPaciente = idPaciente
-                    };
-                    prescricaoService.Create(novaPrescricao);
-                }
 
             }
             return RedirectToAction(nameof(Index));
@@ -92,9 +77,7 @@ namespace MedicaWeb.Controllers
         {
             var medicamento = medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
-            var prescricoes = prescricaoService.GetAll((uint)id);
-            medicamentoModel.PacientesSelecionados = prescricoes.Select(p => p.IdPaciente).ToArray();
-            var pacientes = pacienteService.GetAsync();
+            var pacientes = pacienteService.GetAll();
             medicamentoModel.Pacientes = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             return View(medicamentoModel);
         }
@@ -120,16 +103,6 @@ namespace MedicaWeb.Controllers
             {
                 var medicamento = mapper.Map<Medicamento>(medicamentoModel);
                 medicamentoService.Edit(medicamento);
-                prescricaoService.DeleteByMedicamento((uint)id);
-
-                foreach (var idPaciente in medicamentoModel.PacientesSelecionados!)
-                {
-                    prescricaoService.Create(new Prescricao
-                    {
-                        IdMedicamento = (uint)id,
-                        IdPaciente = idPaciente
-                    });
-                }
             }
             return RedirectToAction(nameof(Index));
         }
@@ -139,10 +112,6 @@ namespace MedicaWeb.Controllers
         {
             var medicamento = medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
-            var prescricoes = prescricaoService.GetAll((uint)id);
-            medicamentoModel.Pacientes = prescricoes
-                                            .Select(p => mapper.Map<PacienteDto>(p.IdPacienteNavigation))
-                                            .ToList();
             return View(medicamentoModel);
         }
 
@@ -151,7 +120,6 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, MedicamentoViewModel _)
         {
-            prescricaoService.DeleteByMedicamento((uint)id);
             medicamentoService.Delete((uint)id);
             return RedirectToAction(nameof(Index));
         }

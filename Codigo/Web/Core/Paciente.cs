@@ -13,6 +13,8 @@ public partial class Paciente
 
     public string? CartaoSus { get; set; }
 
+    public DateTime? DataNascimento { get; set; }
+
     public string? TipoSanguineo { get; set; }
 
     public float? Peso { get; set; }
@@ -55,17 +57,18 @@ public partial class Paciente
 
     public string? TelefoneResponsavel { get; set; }
 
-    public string? NomeTelefoneResponsavel { get; set; }
+    /// <summary>
+    /// O nome do telefone responsável
+    /// </summary>
+    public string? NomeResponsavel { get; set; }
 
     public byte[]? Foto { get; set; }
-
-    public DateTime? DataNascimento { get; set; }
 
     public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
 
     public virtual ICollection<Deficiencium> Deficiencia { get; set; } = new List<Deficiencium>();
 
-    public virtual ICollection<Prescricao> Prescricaos { get; set; } = new List<Prescricao>();
+    public virtual ICollection<Planejamento> Planejamentos { get; set; } = new List<Planejamento>();
 
     public virtual ICollection<Vinculo> Vinculos { get; set; } = new List<Vinculo>();
 }

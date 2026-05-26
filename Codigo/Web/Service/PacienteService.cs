@@ -1,14 +1,12 @@
 ﻿using Core;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Service
 {
     public class PacienteService : IPacienteService
     {
+
         private readonly MedicaContext context;
 
         public PacienteService(MedicaContext context)
@@ -16,59 +14,16 @@ namespace Service
             this.context = context;
         }
 
-        public async Task<uint> CreateAsync(Paciente paciente)
+        /// <summary>
+        /// Buscar todos os pacientes cadastrados
+        /// </summary>
+        /// <returns>Lista de pacientes</returns>
+        public IEnumerable<Paciente> GetAll()
         {
-            await context.Pacientes.AddAsync(paciente);
-            await context.SaveChangesAsync();
-
-            return paciente.Id;
-        }
-
-        public async Task EditAsync(Paciente paciente)
-        {
-            context.Pacientes.Update(paciente);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(uint id)
-        {
-            var paciente = await context.Pacientes.FindAsync(id);
-            context.Pacientes.Remove(paciente!);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task<Paciente?> GetAsync(uint id)
-        {
-            return await context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-        }
-
-        public async Task<IEnumerable<Paciente>> GetByMedicamentoAsync(uint idMedicamento)
-        {
-            return await context.Planejamentos
-                .AsNoTracking()
-                .Where(p => p.IdMedicamento == idMedicamento)
-                .Select(p => p.IdPaciente)
-                .Distinct()
-                .Join(
-                    context.Pacientes.AsNoTracking(),
-                    idPaciente => idPaciente,
-                    paciente => paciente.Id,
-                    (idPaciente, paciente) => paciente
-                )
-                .OrderBy(p => p.Nome)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Paciente>> GetAsync(string searchTerm = "")
-        {
-            var query = context.Pacientes.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                query = query.Where(p => p.Nome.Contains(searchTerm) || p.Cpf.Contains(searchTerm));
-            }
-
-            return await query.OrderBy(p => p.Nome).ToListAsync();
+            return context.Pacientes
+                    .AsNoTracking()
+                    .OrderBy(p => p.Nome)
+                    .ToList();
         }
     }
 }

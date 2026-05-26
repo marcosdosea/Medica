@@ -11,11 +11,17 @@ public partial class Medicamento
 
     public string? Apelido { get; set; }
 
+    public int Quantidade { get; set; }
+
     public string FormaFarmaceutica { get; set; } = null!;
 
     public byte[]? Foto { get; set; }
 
+    public uint IdCuidador { get; set; }
+
     public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
 
-    public virtual ICollection<Prescricao> Prescricaos { get; set; } = new List<Prescricao>();
+    public virtual Cuidador IdCuidadorNavigation { get; set; } = null!;
+
+    public virtual ICollection<Planejamento> Planejamentos { get; set; } = new List<Planejamento>();
 }
