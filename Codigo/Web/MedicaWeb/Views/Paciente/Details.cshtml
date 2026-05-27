@@ -1,0 +1,306 @@
+﻿@using Core.Dto.PacienteDto
+@using Core.Enum.PacienteEnum
+@using Core.Enums
+@model PacienteDetailsDto
+
+@{
+    ViewData["Title"] = "Detalhes do Paciente";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
+    <style>
+        /* Garante o visual de apenas leitura para os campos */
+        .form-input-custom:disabled,
+        .form-input-custom[readonly] {
+            background-color: #f4f5f7;
+            color: #495057;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+
+        /* Estilização dos botões inferiores para bater com o protótipo */
+        .btn-excluir-vermelho {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            font-size: 14px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+            .btn-excluir-vermelho:hover {
+                background-color: #bd2130;
+                color: white;
+            }
+
+        /* Desabilita cliques nos switches visuais de apenas leitura */
+        .form-check-input:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+    </style>
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="cadastro-page-container">
+
+    <div class="cadastro-header">
+        <a asp-action="Index"><i class="bi bi-arrow-left"></i></a>
+        <h2>Detalhes do Paciente</h2>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">
+            <i class="bi bi-person-fill"></i> Sobre
+        </div>
+
+        <div class="form-row">
+            <div class="form-group-custom c-9">
+                <label asp-for="Nome">Nome</label>
+                <input asp-for="Nome" class="form-input-custom" readonly />
+            </div>
+            <div class="form-group-custom c-3">
+                <label asp-for="DataNascimento">Data de nascimento</label>
+                <div style="position: relative;">
+                    <input asp-for="DataNascimento" type="date" class="form-input-custom" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group-custom c-4">
+                <label asp-for="Cpf">CPF</label>
+                <input asp-for="Cpf" class="form-input-custom" readonly />
+            </div>
+            <div class="form-group-custom c-8">
+                <label asp-for="CartaoSus">Cartão SUS</label>
+                <input asp-for="CartaoSus" class="form-input-custom" readonly />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="switch-container c-3">
+                <label>Alergia a medicamentos?</label>
+                <div class="switch-wrapper">
+                    <div class="form-check form-switch p-0 m-0">
+                        <input class="form-check-input" type="checkbox" id="switchAlergia" disabled checked="@(Model.AlergiaMedicamento == 1)">
+                    </div>
+                    <span class="switch-label-text" id="txtAlergia">@(Model.AlergiaMedicamento == 1 ? "Sim" : "Não")</span>
+                </div>
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label asp-for="TipoSanguineo">Tipo sanguíneo</label>
+                <select asp-for="TipoSanguineo" class="form-input-custom" asp-items="Html.GetEnumSelectList<TipoSanguineo>()" disabled>
+                    <option value="">Não informado</option>
+                </select>
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label asp-for="Peso">Peso</label>
+                <input asp-for="Peso" class="form-input-custom" readonly placeholder="--" />
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label asp-for="Altura">Altura</label>
+                <input asp-for="Altura" class="form-input-custom" readonly placeholder="--" />
+            </div>
+
+            <div class="form-group-custom c-3">
+                <label asp-for="Sexo">Sexo</label>
+                <select asp-for="Sexo" class="form-input-custom" disabled>
+                    <option value=""></option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Feminino</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="switch-container c-3">
+                <label>Possui alguma deficiência?</label>
+                <div class="switch-wrapper">
+                    <div class="form-check form-switch p-0 m-0">
+                        <input class="form-check-input" type="checkbox" id="switchDeficiencia" disabled checked="@(Model.PossuiDeficiencia == 1)">
+                    </div>
+                    <span class="switch-label-text" id="txtDeficiencia">@(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")</span>
+                </div>
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label>Parentesco</label>
+                <input type="text" class="form-input-custom" readonly placeholder="--" />
+            </div>
+
+            <div class="form-group-custom c-4">
+                <label asp-for="Apelido">Apelido</label>
+                <input asp-for="Apelido" class="form-input-custom" readonly placeholder="--" />
+            </div>
+
+            <div class="form-group-custom c-3">
+                <label asp-for="Escolaridade">Escolaridade</label>
+                <select asp-for="Escolaridade" class="form-input-custom" asp-items="Html.GetEnumSelectList<Escolaridade>()" disabled>
+                    <option value="">Não informado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row" style="margin-top: 15px;">
+            <div class="form-group-custom c-12">
+                <label>Foto</label>
+                <button type="button" class="btn-upload-foto" style="cursor: not-allowed; background-color: #f4f5f7;" disabled>
+                    <span id="nomeArquivoFoto">@(Model.Foto != null ? "Foto_Atual.png" : "Sem Imagem.png")</span>
+                    <i class="bi bi-image"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">
+            <i class="bi bi-geo-alt-fill"></i> Endereço
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-2">
+                <label asp-for="Cep">CEP</label>
+                <input asp-for="Cep" class="form-input-custom" readonly placeholder="--" />
+            </div>
+            <div class="form-group-custom c-5">
+                <label asp-for="Rua">Rua</label>
+                <input asp-for="Rua" class="form-input-custom" readonly placeholder="--" />
+            </div>
+            <div class="form-group-custom c-5">
+                <label asp-for="Bairro">Bairro</label>
+                <input asp-for="Bairro" class="form-input-custom" readonly placeholder="--" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-1">
+                <label asp-for="Identificador">Identificador</label>
+                <input asp-for="Identificador" class="form-input-custom" readonly placeholder="--" />
+            </div>
+            <div class="form-row c-4" style="padding: 0; margin: 0;">
+                <div class="form-group-custom c-12">
+                    <label asp-for="Cidade">Cidade</label>
+                    <input asp-for="Cidade" class="form-input-custom" readonly placeholder="--" />
+                </div>
+            </div>
+            <div class="form-group-custom c-2">
+                <label asp-for="Estado">Estado</label>
+                <select asp-for="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" disabled>
+                    <option value="">--</option>
+                </select>
+            </div>
+            <div class="form-group-custom c-5">
+                <label asp-for="Complemento">Complemento</label>
+                <input asp-for="Complemento" class="form-input-custom" readonly placeholder="--" />
+            </div>
+        </div>
+    </div>
+
+    @if (Model.AlergiaMedicamento == 1)
+    {
+        <div class="form-section" id="sectionAlergiaInput">
+            <div class="dynamic-block">
+                <span>Alergias a medicamentos</span>
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-3">
+                    <label>Medicamento</label>
+                    <select class="form-input-custom" disabled>
+                        <option value="Losartana">Losartana</option>
+                    </select>
+                </div>
+                <div class="form-group-custom c-5">
+                    <label>Descrição</label>
+                    <input type="text" class="form-input-custom" value="Dado vindo do vínculo de alergias." readonly />
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.PossuiDeficiencia == 1)
+    {
+        <div class="form-section" id="sectionDeficienciaInput">
+            <div class="dynamic-block">
+                <span>Deficiências</span>
+            </div>
+            <div class="form-row">
+                <div class="form-group-custom c-5">
+                    <label>Descrição</label>
+                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." readonly />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="form-section">
+        <div class="section-title">
+            <i class="bi bi-phone-fill"></i> Contato
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-1">
+                <label asp-for="Ddd">DDD</label>
+                <input asp-for="Ddd" class="form-input-custom" readonly placeholder="--" />
+            </div>
+            <div class="form-group-custom c-3">
+                <label asp-for="Telefone">Telefone</label>
+                <input asp-for="Telefone" class="form-input-custom" readonly placeholder="--" />
+            </div>
+        </div>
+
+        <div style="color: #5c677d; font-size: 13px; font-weight: 600; margin: 15px 0 10px 0;">
+            <i class="bi bi-chevron-down"></i> Contato do responsável
+        </div>
+
+        <div class="form-row">
+            <div class="form-group-custom c-1">
+                <label asp-for="DddResponsavel">DDD</label>
+                <input asp-for="DddResponsavel" class="form-input-custom" readonly placeholder="--" />
+            </div>
+            <div class="form-group-custom c-3">
+                <label asp-for="TelefoneResponsavel">Telefone</label>
+                <input asp-for="TelefoneResponsavel" class="form-input-custom" readonly placeholder="--" />
+            </div>
+            <div class="form-group-custom c-6">
+                <label asp-for="NomeTelefoneResponsavel">Responsável</label>
+                <input asp-for="NomeTelefoneResponsavel" class="form-input-custom" readonly placeholder="--" />
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-buttons" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; padding-bottom: 20px;">
+        <button type="button" class="btn-excluir-vermelho" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+            Excluir
+        </button>
+
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-salvar-azul" style="text-align: center; text-decoration: none; line-height: 24px; padding: 10px 24px;">Editar</a>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 8px;">
+            <div class="modal-header" style="border-bottom: 1px solid #dee2e6;">
+                <h5 class="modal-title" id="confirmDeleteModalLabel" style="font-weight: 700; color: #343a40;">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="color: #495057; font-size: 15px;">
+                Tem certeza que deseja excluir permanentemente o cadastro do paciente <strong>@Model.Nome</strong>? Esta ação não poderá ser desfeita.
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #dee2e6;">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-weight: 600; border-radius: 6px;">Cancelar</button>
+
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="margin: 0;">
+                    <button type="submit" class="btn btn-danger" style="font-weight: 600; border-radius: 6px; padding: 6px 20px;">Confirmar Exclusão</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
-@model MedicaWeb.Models.MedicamentoViewModel
+@using Core.Dto.PacienteDto
+@model PacienteDetailsDto
 
 <div class="content-container">
     <form asp-action="Create" enctype="multipart/form-data" method="post">
@@ -6,99 +7,228 @@
             <a asp-action="Index" class="btn-voltar">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Cadastro de medicamento</h2>
+            <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Cadastro de paciente</h2>
         </div>
 
         <div class="row align-items-start">
             <div class="col-lg-7">
+
                 <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-pills" style="color: var(--text-muted);"></i>
-                    <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Medicamento</span>
+                    <i class="fas fa-address-card" style="color: var(--text-muted);"></i>
+                    <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Dados Pessoais</span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-12 form-group-custom">
-                        <label class="label-custom">Nome</label>
-                        <input asp-for="Nome" class="form-control-custom" placeholder="Digite o nome..." />
+                        <label class="label-custom">Nome Completo</label>
+                        <input asp-for="Nome" class="form-control-custom" placeholder="Digite o nome..." required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-custom">
+                        <label class="label-custom">CPF</label>
+                        <input asp-for="Cpf" class="form-control-custom" placeholder="000.000.000-00" required />
+                    </div>
+                    <div class="col-md-6 form-group-custom">
+                        <label class="label-custom">Cartão SUS</label>
+                        <input asp-for="CartaoSus" class="form-control-custom" placeholder="Digite o número do SUS..." />
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 form-group-custom">
                         <label class="label-custom">Apelido</label>
-                        <input asp-for="Apelido" class="form-control-custom" placeholder="Digite o apelido..." />
+                        <input asp-for="Apelido" class="form-control-custom" placeholder="Como é chamado..." />
                     </div>
                     <div class="col-md-6 form-group-custom">
-                        <label class="label-custom">Forma farmacêutica</label>
-                        <select asp-for="FormaFarmaceutica" class="form-control-custom select-custom">
-                            <option value="Creme">Creme</option>
-                            <option value="Inalante">Inalante</option>
-                            <option value="Ingerir">Ingerir</option>
-                            <option value="Injetável">Injetável</option>
-                            <option value="Líquido">Líquido</option>
-                            <option value="Supositório">Supositório</option>
+                        <label class="label-custom">Sexo</label>
+                        <select asp-for="Sexo" class="form-control-custom select-custom">
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
                         </select>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group-custom">
+                        <label class="label-custom">Tipo Sanguíneo</label>
+                        <select asp-for="TipoSanguineo" class="form-control-custom select-custom">
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group-custom">
+                        <label class="label-custom">Peso (kg)</label>
+                        <input asp-for="Peso" type="number" step="0.1" class="form-control-custom" placeholder="0.0" />
+                    </div>
+                    <div class="col-md-4 form-group-custom">
+                        <label class="label-custom">Altura (m)</label>
+                        <input asp-for="Altura" type="number" step="0.01" class="form-control-custom" placeholder="0.00" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-custom">
+                        <label class="label-custom">Escolaridade</label>
+                        <select asp-for="Escolaridade" class="form-control-custom select-custom">
+                            <option value="Não Alfabetizado">Não Alfabetizado</option>
+                            <option value="Fundamental Incompleto">Fundamental Incompleto</option>
+                            <option value="Fundamental Completo">Fundamental Completo</option>
+                            <option value="Médio Incompleto">Médio Incompleto</option>
+                            <option value="Médio Completo">Médio Completo</option>
+                            <option value="Superior Completo">Superior Completo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group-custom">
+                        <label class="label-custom">Possui Deficiência?</label>
+                        <select asp-for="PossuiDeficiencia" class="form-control-custom select-custom">
+                            <option value="0">Não</option>
+                            <option value="1">Sim</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group-custom">
+                        <label class="label-custom">Alergia a Remédio?</label>
+                        <select asp-for="AlergiaMedicamento" class="form-control-custom select-custom">
+                            <option value="0">Não</option>
+                            <option value="1">Sim</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="secao-header mt-4" style="border:none; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-map-marker-alt" style="color: var(--text-muted);"></i>
+                    <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Endereço</span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group-custom">
+                        <label class="label-custom">CEP</label>
+                        <input asp-for="Cep" class="form-control-custom" placeholder="00000-000" required />
+                    </div>
+                    <div class="col-md-8 form-group-custom">
+                        <label class="label-custom">Rua</label>
+                        <input asp-for="Rua" class="form-control-custom" placeholder="Nome da rua/avenida..." required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5 form-group-custom">
+                        <label class="label-custom">Bairro</label>
+                        <input asp-for="Bairro" class="form-control-custom" placeholder="Digite o bairro..." required />
+                    </div>
+                    <div class="col-md-5 form-group-custom">
+                        <label class="label-custom">Cidade</label>
+                        <input asp-for="Cidade" class="form-control-custom" placeholder="Digite a cidade..." required />
+                    </div>
+                    <div class="col-md-2 form-group-custom">
+                        <label class="label-custom">Estado</label>
+                        <input asp-for="Estado" class="form-control-custom" placeholder="UF" maxlength="2" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group-custom">
+                        <label class="label-custom">Identificador (Nº Casa/Apto)</label>
+                        <input asp-for="Identificador" class="form-control-custom" placeholder="Ex: Casa 15, Bloco B..." />
+                    </div>
+                    <div class="col-md-6 form-group-custom">
+                        <label class="label-custom">Complemento</label>
+                        <input asp-for="Complemento" class="form-control-custom" placeholder="Ponto de referência..." />
+                    </div>
+                </div>
+
+                <div class="secao-header mt-4" style="border:none; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-phone" style="color: var(--text-muted);"></i>
+                    <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Informações de Contato</span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 form-group-custom">
+                        <label class="label-custom">DDD</label>
+                        <input asp-for="Ddd" class="form-control-custom" placeholder="Ex: 79" maxlength="2" required />
+                    </div>
+                    <div class="col-md-9 form-group-custom">
+                        <label class="label-custom">Telefone do Paciente</label>
+                        <input asp-for="Telefone" class="form-control-custom" placeholder="00000-0000" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 form-group-custom">
+                        <label class="label-custom">Nome do Responsável (Caso possua)</label>
+                        <input asp-for="NomeTelefoneResponsavel" class="form-control-custom" placeholder="Nome do contato de emergência..." />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 form-group-custom">
+                        <label class="label-custom">DDD Resp.</label>
+                        <input asp-for="DddResponsavel" class="form-control-custom" placeholder="Ex: 79" maxlength="2" />
+                    </div>
+                    <div class="col-md-9 form-group-custom">
+                        <label class="label-custom">Telefone do Responsável</label>
+                        <input asp-for="TelefoneResponsavel" class="form-control-custom" placeholder="00000-0000" />
+                    </div>
+                </div>
+
             </div>
+
             <div class="col-lg-5">
-                <label class="label-custom">Foto</label>
+                <label class="label-custom">Foto do Paciente</label>
                 <div class="foto-medicamento-container">
-                    <div class="foto-wrapper" id="preview-box">
-                        <i class="fas fa-pills fa-3x" id="placeholder-icon" style="color: var(--border);"></i>
-                        <img id="img-preview" style="display:none; width:100%; height:100%; object-fit:cover;" />
+                    <div class="foto-wrapper" id="preview-box" style="height: 280px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border: 1px solid var(--border); border-radius: 12px 12px 0 0;">
+                        <i class="fas fa-user fa-5x" id="placeholder-icon" style="color: var(--border);"></i>
+                        <img id="img-preview" style="display:none; width:100%; height:100%; object-fit:cover; border-radius: 12px 12px 0 0;" />
                     </div>
                     <label for="f-upload" class="foto-medicamento-label" style="cursor: pointer; background-color: #4285F4; color: white; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 0 0 12px 12px;">
-                        <span id="file-name" style="font-size: 14px; font-weight: bold;">Upload.png</span>
+                        <span id="file-name" style="font-size: 14px; font-weight: bold;">Selecionar Foto.png</span>
                         <div style="background: white; color: #4285F4; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-arrow-up" style="font-size: 12px;"></i>
                         </div>
-                        <input type="file" id="f-upload" name="fotoMedicamento" accept=".png,image/png" style="display:none;" onchange="previewImage(this)" />
+                        <input type="file" id="f-upload" name="fotoPaciente" accept=".png,image/png,image/jpeg,image/jpg" style="display:none;" onchange="previewImage(this)" />
                     </label>
                 </div>
             </div>
         </div>
-        <div class="secao-header mt-2" style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
-            <i class="fas fa-user" style="color: var(--text-muted);"></i>
-            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Pacientes</span>
-        </div>
-        <div class="d-flex flex-wrap" style="gap: 25px; justify-content: flex-start;">
-            @if (Model.Pacientes != null)
-            {
-                @foreach (var p in Model.Pacientes)
-                {
-                    <div class="paciente-item-container" style="width: 220px; display: flex; flex-direction: column;">
 
-                        <div class="paciente-card" style="width: 100%; margin-bottom: 12px; padding: 20px; cursor: default; flex-grow: 1;">
-                            <div class="foto-wrapper" style="height: 180px; margin-bottom: 15px;">
-                                @if (p.Foto != null && p.Foto.Length > 0)
-                                {
-                                    var base64 = Convert.ToBase64String(p.Foto);
-                                    <img src="data:image/png;base64,@base64" alt="Paciente" />
-                                }
-                                else
-                                {
-                                    <i class="fas fa-user fa-3x" style="color: var(--border);"></i>
-                                }
-                            </div>
-                            <h3 class="paciente-nome" style="font-size: 1.1rem; margin: 0; min-height: 2.4em; display: flex; align-items: center; justify-content: center;">
-                                @p.Nome
-                            </h3>
-                            <p class="paciente-apelido" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">@p.Apelido</p>
-                        </div>
-                        <div class="form-check p-0 m-0">
-                            <input type="checkbox" name="PacientesSelecionados" value="@p.Id" id="p-@p.Id" class="btn-check" onchange="toggleText(this)" />
-                            <label class="btn btn-secondary w-100 btn-selecionar-custom" for="p-@p.Id" style="font-weight: bold; border-radius: 8px; padding: 10px;">
-                                Selecionar
-                            </label>
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-        <div class="actions-container">
+        <div class="actions-container" style="margin-top: 40px;">
             <a asp-action="Index" class="btn-med btn-med-danger" style="text-decoration: none;">Cancelar</a>
-            <button type="submit" class="btn-med btn-med-primary">Salvar</button>
+            <button type="submit" class="btn-med btn-med-primary">Salvar Paciente</button>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        function previewImage(input) {
+            const file = input.files[0];
+            const placeholder = document.getElementById('placeholder-icon');
+            const preview = document.getElementById('img-preview');
+            const fileNameSpan = document.getElementById('file-name');
+
+            if (file) {
+                fileNameSpan.textContent = file.name;
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+
+                reader.readAsDataURL(file);
+            } else {
+                fileNameSpan.textContent = "Selecionar Foto.png";
+                preview.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+        }
+    </script>
+}

@@ -18,7 +18,9 @@ namespace MedicaWeb
                 options => options.UseMySQL(builder.Configuration.GetConnectionString("MedicaConnection")!));
 
             builder.Services.AddScoped<IPacienteService, PacienteService>();
-            builder.Services.AddTransient<IMedicamentoService, MedicamentoService>();
+
+            // Alterado para Scoped para manter o mesmo ciclo de vida dos outros serviços
+            builder.Services.AddScoped<IMedicamentoService, MedicamentoService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -28,7 +30,6 @@ namespace MedicaWeb
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -39,6 +40,7 @@ namespace MedicaWeb
 
             app.UseAuthorization();
 
+            // ALTERADO: Agora a rota padrão inicial é o Index de Paciente!
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

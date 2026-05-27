@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    @await RenderSectionAsync("Styles", required: false)
+
 </head>
 <body>
     <header class="topbar">
@@ -33,7 +35,7 @@
                 <i class="bi bi-house"></i> <span>Início</span>
             </a>
 
-            <a class="nav-item @(controller == "Paciente" ? "active" : "")" href="#">
+            <a class="nav-item @(controller == "Paciente" ? "active" : "")" asp-controller="Paciente" asp-action="Index">
                 <i class="bi bi-person"></i> <span>Paciente</span>
             </a>
 
@@ -71,6 +73,7 @@
     <script src="~/js/home/home.js" asp-append-version="true"></script>
     <script src="~/js/home/calendar.js" asp-append-version="true"></script>
     <script src="~/js/form/form.js" asp-append-version="true"></script>
+    <partial name="_Notificacoes" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

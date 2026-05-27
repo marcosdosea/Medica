@@ -1,0 +1,1 @@
+dotnet ef dbcontext scaffold "server=127.0.0.1;port=3306;user=root;password=123456;database=Medica" MySql.EntityFrameworkCore --project Core --startup-project MedicaWeb -f -c MedicaContext -v

@@ -1,0 +1,34 @@
+﻿@if (TempData["Notificacao_Mensagem"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tipo = '@TempData["Notificacao_Tipo"]';
+            const titulo = '@TempData["Notificacao_Titulo"]';
+
+            // O Html.Raw impede que o ASP.NET Core transforme o <b> em texto puro
+            const mensagem = '@Html.Raw(TempData["Notificacao_Mensagem"])';
+
+            // Configuração estilo Toast (balão elegante que surge no canto superior direito)
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            // Dispara o alerta na tela
+            Toast.fire({
+                icon: tipo,
+                title: titulo,
+                html: mensagem
+            });
+        });
+    </script>
+}

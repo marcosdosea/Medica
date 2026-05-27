@@ -1,77 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Enum.PacienteEnum;
+using Core.Enums;
 
 namespace MedicaWeb.Models
 {
-
-    public enum TipoSanguineoEnum
-    {
-        [Display(Name = "A+")]
-        APositivo,
-
-        [Display(Name = "A-")]
-        ANegativo,
-
-        [Display(Name = "B+")]
-        BPositivo,
-
-        [Display(Name = "B-")]
-        BNegativo,
-
-        [Display(Name = "AB+")]
-        ABPositivo,
-
-        [Display(Name = "AB-")]
-        ABNegativo,
-
-        [Display(Name = "O+")]
-        OPositivo,
-
-        [Display(Name = "O-")]
-        ONegativo
-    }
-
-    public enum SexoEnum
-    {
-        [Display(Name = "Masculino")]
-        M,
-
-        [Display(Name = "Feminino")]
-        F
-    }
-
-    public enum EscolaridadeEnum
-    {
-        [Display(Name = "Analfabeto")]
-        Analfabeto,
-
-        [Display(Name = "Fundamental Incompleto")]
-        FundamentalIncompleto,
-
-        [Display(Name = "Fundamental Completo")]
-        FundamentalCompleto,
-
-        [Display(Name = "Médio Incompleto")]
-        MedioIncompleto,
-
-        [Display(Name = "Médio Completo")]
-        MedioCompleto,
-
-        [Display(Name = "Superior Incompleto")]
-        SuperiorIncompleto,
-
-        [Display(Name = "Superior Completo")]
-        SuperiorCompleto,
-
-        [Display(Name = "Pós-Graduação")]
-        PosGraduacao,
-
-        [Display(Name = "Mestrado")]
-        Mestrado,
-
-        [Display(Name = "Doutorado")]
-        Doutorado
-    }
-
     public class PacienteViewModel
     {
         public uint Id { get; set; }
@@ -92,7 +24,7 @@ namespace MedicaWeb.Models
 
         [Display(Name = "Tipo Sanguíneo")]
         [Required(ErrorMessage = "O tipo sanguíneo é obrigatório.")]
-        public TipoSanguineoEnum? TipoSanguineo { get; set; }
+        public TipoSanguineo? TipoSanguineo { get; set; }
 
         [Display(Name = "Peso")]
         [Range(0.0, 500.0, ErrorMessage = "Informe um peso válido.")]
@@ -108,7 +40,7 @@ namespace MedicaWeb.Models
         /// </summary>
         [Display(Name = "Sexo")]
         [Required(ErrorMessage = "O sexo é obrigatório.")]
-        public SexoEnum? Sexo { get; set; }
+        public Sexo? Sexo { get; set; }
 
         [Display(Name = "Apelido")]
         [StringLength(60, ErrorMessage = "O apelido deve ter no máximo 60 caracteres.")]
@@ -120,7 +52,7 @@ namespace MedicaWeb.Models
 
         [Display(Name = "Escolaridade")]
         [Required(ErrorMessage = "A escolaridade é obrigatória.")]
-        public EscolaridadeEnum? Escolaridade { get; set; }
+        public Escolaridade? Escolaridade { get; set; }
 
         [Display(Name = "Possui deficiência")]
         [Required(ErrorMessage = "Informe se possui deficiência.")]
@@ -185,5 +117,9 @@ namespace MedicaWeb.Models
 
         [Display(Name = "Foto")]
         public byte[]? Foto { get; set; }
+
+        [Display(Name = "Data de Nascimento")]
+        [Required(ErrorMessage = "A data de nascimento é obrigatória.")]
+        public DateTime? DataNascimento { get; set; }
     }
 }
