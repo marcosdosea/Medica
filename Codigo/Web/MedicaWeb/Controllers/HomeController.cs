@@ -21,7 +21,7 @@ namespace MedicaWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var pacientes = await pacienteService.GetAsync();
+            var pacientes = await pacienteService.GetAll();
             var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes); 
             return View(pacienteDtos);
         }

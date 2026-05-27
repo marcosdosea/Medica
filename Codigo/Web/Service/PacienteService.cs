@@ -16,7 +16,7 @@ namespace Service
             this.context = context;
         }
 
-        public async Task<uint> CreateAsync(Paciente paciente)
+        public async Task<uint> Create(Paciente paciente)
         {
             await context.Pacientes.AddAsync(paciente);
             await context.SaveChangesAsync();
@@ -24,25 +24,25 @@ namespace Service
             return paciente.Id;
         }
 
-        public async Task EditAsync(Paciente paciente)
+        public async Task Edit(Paciente paciente)
         {
             context.Pacientes.Update(paciente);
             await context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(uint id)
+        public async Task Delete(uint id)
         {
             var paciente = await context.Pacientes.FindAsync(id);
             context.Pacientes.Remove(paciente!);
             await context.SaveChangesAsync();
         }
 
-        public async Task<Paciente?> GetAsync(uint id)
+        public async Task<Paciente?> Get(uint id)
         {
             return await context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Paciente>> GetByMedicamentoAsync(uint idMedicamento)
+        public async Task<IEnumerable<Paciente>> GetByMedicamento(uint idMedicamento)
         {
             return await context.Planejamentos
                 .AsNoTracking()
@@ -59,7 +59,7 @@ namespace Service
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Paciente>> GetAsync()
+        public async Task<IEnumerable<Paciente>> GetAll()
         {
             var query = context.Pacientes.AsNoTracking();
             return await query.OrderBy(p => p.Nome).ToListAsync();

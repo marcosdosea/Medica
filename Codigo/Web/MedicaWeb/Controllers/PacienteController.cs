@@ -23,14 +23,14 @@ namespace MedicaWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var pacientes = await pacienteService.GetAsync();
+            var pacientes = await pacienteService.GetAll();
             var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             return View(pacienteDtos);
         }
 
         public async Task<IActionResult> Details(uint id)
         {
-            var paciente = await pacienteService.GetAsync(id);
+            var paciente = await pacienteService.Get(id);
             var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
             return View(pacienteDetailsDto);
         }
@@ -46,7 +46,7 @@ namespace MedicaWeb.Controllers
         {
             var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
 
-            await pacienteService.CreateAsync(pacienteModel);
+            await pacienteService.Create(pacienteModel);
 
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
             return RedirectToAction(nameof(Index));
@@ -54,7 +54,7 @@ namespace MedicaWeb.Controllers
 
         public async Task<IActionResult> Edit(uint id)
         {
-            var paciente = await pacienteService.GetAsync(id);
+            var paciente = await pacienteService.Get(id);
             var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
             return View(pacienteDetailsDto);
         }
@@ -67,7 +67,7 @@ namespace MedicaWeb.Controllers
 
             var pacienteModel = mapper.Map<Paciente>(dto);
 
-            await pacienteService.EditAsync(pacienteModel);
+            await pacienteService.Edit(pacienteModel);
             return RedirectToAction(nameof(Index));
         }
 
@@ -75,7 +75,7 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(uint id)
         {
-            await pacienteService.DeleteAsync(id);
+            await pacienteService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
     }
