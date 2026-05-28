@@ -141,11 +141,11 @@
     background-color: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 16px;
+    padding: 14px 18px;
+    font-size: 18px;
     color: var(--text-main);
     width: 100%;
-    min-height: 48px;
+    min-height: 54px;
     transition: border-color 0.2s, box-shadow 0.2s;
     outline: none;
 }

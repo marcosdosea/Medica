@@ -2,6 +2,8 @@
 using Core;
 using Core.Dto;
 using Core.Dto.PacienteDto;
+using Core.Helper;
+using Core.Helpers;
 using Core.Service;
 using MedicaWeb.Models;
 using Microsoft.AspNetCore.Http;
@@ -42,13 +44,7 @@ namespace MedicaWeb.Controllers
         // GET: MedicamentoController/Create
         public ActionResult Create()
         {
-            var pacientes = pacienteService.GetAll();
-            var pacientesDto = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
-            var medicamentoModel = new MedicamentoViewModel
-            {
-                Pacientes = pacientesDto
-            };
-            return View(medicamentoModel);
+            return View();
         }
 
         // POST: MedicamentoController/Create
@@ -56,8 +52,8 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(MedicamentoViewModel medicamentoModel)
         {
+            medicamentoModel.IdCuidador = 1;
             var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
-
             if (fotoMedicamento != null && fotoMedicamento.Length > 0)
             {
                 using var ms = new MemoryStream();
@@ -70,6 +66,7 @@ namespace MedicaWeb.Controllers
                 medicamentoService.Create(medicamento);
 
             }
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
             return RedirectToAction(nameof(Index));
         }
 
@@ -78,8 +75,6 @@ namespace MedicaWeb.Controllers
         {
             var medicamento = medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
-            var pacientes = pacienteService.GetAll();
-            medicamentoModel.Pacientes = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             return View(medicamentoModel);
         }
 
@@ -88,6 +83,7 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, MedicamentoViewModel medicamentoModel)
         {
+            medicamentoModel.IdCuidador = 1;
             var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
             if (fotoMedicamento != null && fotoMedicamento.Length > 0)
             {
@@ -105,6 +101,7 @@ namespace MedicaWeb.Controllers
                 var medicamento = mapper.Map<Medicamento>(medicamentoModel);
                 medicamentoService.Edit(medicamento);
             }
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
             return RedirectToAction(nameof(Index));
         }
 
@@ -122,6 +119,7 @@ namespace MedicaWeb.Controllers
         public ActionResult Delete(int id, MedicamentoViewModel _)
         {
             medicamentoService.Delete((uint)id);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
             return RedirectToAction(nameof(Index));
         }
     }

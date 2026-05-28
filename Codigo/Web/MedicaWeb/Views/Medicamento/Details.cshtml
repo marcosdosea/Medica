@@ -30,6 +30,10 @@
                     <div class="form-control-static">@Model.FormaFarmaceutica</div>
                 </div>
             </div>
+            <div class="col-md-3 form-group-custom">
+                <label class="label-custom">Quantidade</label>
+                <input asp-for="Quantidade" type="number" min="1" class="form-control-custom" placeholder="0" />
+            </div>
         </div>
         <div class="col-lg-5">
             <label class="label-custom">Foto</label>
@@ -50,33 +54,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="secao-header mt-2" style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
-        <i class="fas fa-user" style="color: var(--text-muted);"></i>
-        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Pacientes</span>
-    </div>
-    <div class="d-flex gap-4 flex-wrap">
-        @if (Model.Pacientes != null)
-        {
-            @foreach (var p in Model.Pacientes)
-            {
-                <div class="paciente-card" style="width: 220px; padding: 20px; cursor: default;">
-                    <div class="foto-wrapper" style="height: 180px; margin-bottom: 15px;">
-                        @if (p.Foto != null && p.Foto.Length > 0)
-                        {
-                            var base64 = Convert.ToBase64String(p.Foto);
-                            <img src="data:image/png;base64,@base64" alt="Paciente" />
-                        }
-                        else
-                        {
-                            <i class="fas fa-user fa-3x" style="color: var(--border);"></i>
-                        }
-                    </div>
-                    <h3 class="paciente-nome" style="font-size: 1.2rem; margin: 0;">@p.Nome</h3>
-                    <p class="paciente-apelido" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">@p.Apelido</p>
-                </div>
-            }
-        }
     </div>
     <div class="actions-container">
         <div class="actions-container">

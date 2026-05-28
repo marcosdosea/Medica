@@ -45,9 +45,7 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Create(PacienteDetailsDto pacienteDetailsDto)
         {
             var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
-
             await pacienteService.Create(pacienteModel);
-
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
             return RedirectToAction(nameof(Index));
         }
@@ -64,9 +62,7 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Edit(uint id, PacienteDetailsDto dto)
         {
             dto.Id = id;
-
             var pacienteModel = mapper.Map<Paciente>(dto);
-
             await pacienteService.Edit(pacienteModel);
             return RedirectToAction(nameof(Index));
         }
