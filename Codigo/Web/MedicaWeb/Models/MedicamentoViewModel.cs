@@ -1,5 +1,7 @@
 ﻿using Core.Dto.PacienteDto;
+using Core.Enums;
 using System.ComponentModel.DataAnnotations;
+using Util;
 
 namespace MedicaWeb.Models
 {
@@ -16,18 +18,16 @@ namespace MedicaWeb.Models
         [Display(Name = "Apelido")]
         public string? Apelido { get; set; }
 
+        [Required(ErrorMessage = "O quantidade do medicamento é obrigatório")]
+        public int Quantidade { get; set; }
+
         [Display(Name = "Forma Farmacêutica")]
         [Required(ErrorMessage = "A forma farmacêutica é obrigatória")]
-        public string FormaFarmaceutica { get; set; } = null!;
+        public FormaFarmaceutica FormaFarmaceutica { get; set; }
 
         [Display(Name = "Foto do Medicamento")]
         public byte[]? Foto { get; set; }
 
-
-        [Required(ErrorMessage = "Selecione pelo menos um paciente")]
-        [MinLength(1, ErrorMessage = "Você deve selecionar pelo menos um paciente")]
-        public uint[]? PacientesSelecionados { get; set; }
-
-        public IEnumerable<PacienteDto>? Pacientes { get; set; }
+        public uint IdCuidador { get; set; }
     }
 }
