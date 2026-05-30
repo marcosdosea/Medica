@@ -248,7 +248,7 @@ public partial class MedicaContext : DbContext
                 .HasMaxLength(9)
                 .HasColumnName("telefoneResponsavel");
             entity.Property(e => e.TipoSanguineo)
-                .HasColumnType("enum('A+','A-','B+','B-','AB+','AB-','O+','O-')")
+                .HasColumnType("enum('A_POSITIVO','A_NEGATIVO','B_POSITIVO','B_NEGATIVO','AB_POSITIVO','AB_NEGATIVO','O_POSITIVO','O_NEGATIVO')")
                 .HasColumnName("tipoSanguineo");
         });
 
