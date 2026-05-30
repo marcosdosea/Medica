@@ -1,15 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace Core.Enum.PacienteEnum
+
+namespace Core.Enum.Paciente
 {
     public enum TipoSanguineo
     {
-        [Display(Name = "A+")] APositivo,
-        [Display(Name = "A-")] ANegativo,
-        [Display(Name = "B+")] BPositivo,
-        [Display(Name = "B-")] BNegativo,
-        [Display(Name = "AB+")] ABPositivo,
-        [Display(Name = "AB-")] ABNegativo,
-        [Display(Name = "O+")] OPositivo,
-        [Display(Name = "O-")] ONegativo
+        [Display(Name = "A+")] 
+        A_POSITIVO,
+
+        [Display(Name = "A-")] 
+        A_NEGATIVO,
+
+        [Display(Name = "B+")] 
+        B_POSITIVO,
+        
+        [Display(Name = "B-")] 
+        B_NEGATIVO,
+        [Display(Name = "AB+")] 
+        AB_POSITIVO,
+
+        [Display(Name = "AB-")] 
+        AB_NEGATIVO,
+        
+        [Display(Name = "O+")] 
+        O_POSITIVO,
+
+        [Display(Name = "O-")] 
+        O_NEGATIVO
     }
 }

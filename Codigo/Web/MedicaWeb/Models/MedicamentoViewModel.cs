@@ -1,7 +1,5 @@
-﻿using Core.Dto.PacienteDto;
-using Core.Enums;
+﻿using Core.Enum.Medicamento;
 using System.ComponentModel.DataAnnotations;
-using Util;
 
 namespace MedicaWeb.Models
 {

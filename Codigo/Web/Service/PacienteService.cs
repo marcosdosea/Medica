@@ -39,7 +39,11 @@ namespace Service
 
         public async Task<Paciente?> Get(uint id)
         {
-            return await context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            return await context.Pacientes
+                                .Include(p => p.Alergia)
+                                    .ThenInclude(a => a.IdMedicamentoNavigation)
+                                .Include(p => p.Deficiencia)
+                                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<Paciente>> GetByMedicamento(uint idMedicamento)

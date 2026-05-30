@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Core.Enums
+namespace Core.Enum.Medicamento
 {
     public enum FormaFarmaceutica
     {        [Display(Name = "Comprimido")]

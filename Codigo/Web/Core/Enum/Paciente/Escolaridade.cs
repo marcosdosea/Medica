@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Core.Enums
+namespace Core.Enum.Paciente
 {
     public enum Escolaridade
     {
