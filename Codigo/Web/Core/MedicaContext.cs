@@ -214,7 +214,7 @@ public partial class MedicaContext : DbContext
                 .HasMaxLength(2)
                 .HasColumnName("dddResponsavel");
             entity.Property(e => e.Escolaridade)
-                .HasColumnType("enum('Analfabeto','FundamentalIncompleto','FundamentalCompleto','MedioIncompleto','MedioCompleto','SuperiorIncompleto','SuperiorCompleto','PosGraduacao','Mestrado','Doutorado')")
+                .HasColumnType("enum('ANALFABETO','FUNDAMENTAL_INCOMPLETO','FUNDAMENTAL_COMPLETO','MEDIO_INCOMPLETO','MEDIO_COMPLETO','SUPERIOR_INCOMPLETO','SUPERIOR_COMPLETO','POS_GRADUACAO','MESTRADO','DOUTORADO')")
                 .HasColumnName("escolaridade");
             entity.Property(e => e.Estado)
                 .HasMaxLength(2)
