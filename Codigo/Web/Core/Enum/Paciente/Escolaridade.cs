@@ -1,36 +1,37 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace Core.Enums
-{ 
+{
     public enum Escolaridade
     {
         [Display(Name = "Analfabeto")]
-        Analfabeto,
+        ANALFABETO,
 
         [Display(Name = "Fundamental Incompleto")]
-        FundamentalIncompleto,
+        FUNDAMENTAL_INCOMPLETO,
 
         [Display(Name = "Fundamental Completo")]
-        FundamentalCompleto,
+        FUNDAMENTAL_COMPLETO,
 
         [Display(Name = "Médio Incompleto")]
-        MedioIncompleto,
+        MEDIO_INCOMPLETO,
 
         [Display(Name = "Médio Completo")]
-        MedioCompleto,
+        MEDIO_COMPLETO,
 
         [Display(Name = "Superior Incompleto")]
-        SuperiorIncompleto,
+        SUPERIOR_INCOMPLETO,
 
         [Display(Name = "Superior Completo")]
-        SuperiorCompleto,
+        SUPERIOR_COMPLETO,
 
         [Display(Name = "Pós-Graduação")]
-        PosGraduacao,
+        POS_GRADUACAO,
 
         [Display(Name = "Mestrado")]
-        Mestrado,
+        MESTRADO,
 
         [Display(Name = "Doutorado")]
-        Doutorado
+        DOUTORADO
     }
 }
