@@ -1,4 +1,6 @@
 ﻿using Core;
+using Core.Dto.PacienteDto;
+using Core.Enum.Paciente;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -67,6 +69,28 @@ namespace Service
         {
             var query = context.Pacientes.AsNoTracking();
             return await query.OrderBy(p => p.Nome).ToListAsync();
+        }
+
+        public async Task<IEnumerable<PacienteMobileDto>> GetMobileAsync()
+        {
+            // 1. Busca os dados brutos do banco de dados primeiro (SQL puro)
+            var pacientesDoBanco = await context.Pacientes
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Escolaridade,
+                    p.PossuiDeficiencia
+                })
+                .ToListAsync(); 
+
+            var resultadoDto = pacientesDoBanco.Select(p => new PacienteMobileDto
+            {
+                Id = p.Id,
+                Escolaridade = int.Parse( p.Escolaridade.ToString()),
+                PossuiDeficiencia = p.PossuiDeficiencia == 1
+            }).ToList();
+
+            return resultadoDto;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Core.Service
+﻿using Core.Dto.PacienteDto;
+
+namespace Core.Service
 {
     public interface IPacienteService
     {
@@ -8,5 +10,8 @@
         Task<uint> Create(Paciente paciente);
         Task Edit(Paciente paciente);
         Task Delete(uint id);
+        Task<IEnumerable<PacienteMobileDto>> GetMobileAsync();
+
+
     }
 }
