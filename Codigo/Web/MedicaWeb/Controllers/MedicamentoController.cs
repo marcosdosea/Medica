@@ -26,17 +26,17 @@ namespace MedicaWeb.Controllers
         }
 
         // GET: MedicamentoController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var listaMedicamentos = medicamentoService.GetAll();
+            var listaMedicamentos = await medicamentoService.GetAll();
             var listaMedicamentosModel = mapper.Map<List<MedicamentoViewModel>>(listaMedicamentos);
             return View(listaMedicamentosModel);
         }
 
         // GET: MedicamentoController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            var medicamento = medicamentoService.Get((uint)id);
+            var medicamento = await medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
             return View(medicamentoModel);
         }
@@ -50,7 +50,7 @@ namespace MedicaWeb.Controllers
         // POST: MedicamentoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(MedicamentoViewModel medicamentoModel)
+        public async Task<ActionResult> Create(MedicamentoViewModel medicamentoModel)
         {
             medicamentoModel.IdCuidador = 1;
             var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
@@ -63,7 +63,7 @@ namespace MedicaWeb.Controllers
             if (ModelState.IsValid)
             {
                 var medicamento = mapper.Map<Medicamento>(medicamentoModel);
-                medicamentoService.Create(medicamento);
+                await medicamentoService.Create(medicamento);
 
             }
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
@@ -71,9 +71,9 @@ namespace MedicaWeb.Controllers
         }
 
         // GET: MedicamentoController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var medicamento = medicamentoService.Get((uint)id);
+            var medicamento = await medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
             return View(medicamentoModel);
         }
@@ -81,7 +81,7 @@ namespace MedicaWeb.Controllers
         // POST: MedicamentoController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, MedicamentoViewModel medicamentoModel)
+        public async Task<ActionResult> Edit(int id, MedicamentoViewModel medicamentoModel)
         {
             medicamentoModel.IdCuidador = 1;
             var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
@@ -93,22 +93,22 @@ namespace MedicaWeb.Controllers
             }
             else
             {
-                var medicamentoAtual = medicamentoService.Get((uint)id);
+                var medicamentoAtual = await medicamentoService.Get((uint)id);
                 medicamentoModel.Foto = medicamentoAtual!.Foto;
             }
             if (ModelState.IsValid)
             {
                 var medicamento = mapper.Map<Medicamento>(medicamentoModel);
-                medicamentoService.Edit(medicamento);
+                await medicamentoService.Edit(medicamento);
             }
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
             return RedirectToAction(nameof(Index));
         }
 
         // GET: MedicamentoController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var medicamento = medicamentoService.Get((uint)id);
+            var medicamento = await medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
             return View(medicamentoModel);
         }
@@ -116,9 +116,9 @@ namespace MedicaWeb.Controllers
         // POST: MedicamentoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, MedicamentoViewModel _)
+        public async Task<ActionResult> Delete(int id, MedicamentoViewModel _)
         {
-            medicamentoService.Delete((uint)id);
+            await medicamentoService.Delete((uint)id);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
             return RedirectToAction(nameof(Index));
         }

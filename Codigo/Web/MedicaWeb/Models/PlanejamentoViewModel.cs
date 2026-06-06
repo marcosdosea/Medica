@@ -1,11 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Core.Enum;
+using Core.Enum.Planejamento;
+using System.ComponentModel.DataAnnotations;
 
 namespace MedicaWeb.Models
 {
     public class PlanejamentoViewModel
     {
+        public uint Id { get; set; }
+
+        [Display(Name = "Paciente")]
+        [Required(ErrorMessage = "O paciente é obrigatório.")]
         public uint IdPaciente { get; set; }
 
+        [Display(Name = "Medicamento")]
+        [Required(ErrorMessage = "O medicamento é obrigatório.")]
         public uint IdMedicamento { get; set; }
 
         [Display(Name = "Data de Início")]
@@ -14,41 +22,31 @@ namespace MedicaWeb.Models
         public DateTime DataInicio { get; set; }
 
         [Display(Name = "Data de Fim")]
+        [Required(ErrorMessage = "A data de fim é obrigatória.")]
         [DataType(DataType.Date)]
-        public DateTime? DataFim { get; set; }
+        public DateTime DataFim { get; set; }
 
-        [Display(Name = "Hora de Início")]
-        [Required(ErrorMessage = "A hora de início é obrigatória.")]
+        [Display(Name = "Dias da Semana")]
+        [Required(ErrorMessage = "Selecione ao menos um dia da semana.")]
+        [StringLength(7, ErrorMessage = "Os dias da semana devem ter no máximo 7 caracteres.")]
+        public string DiaSemana { get; set; } = null!;
+
+        [Display(Name = "Hora do Medicamento")]
+        [Required(ErrorMessage = "A hora é obrigatória.")]
         [DataType(DataType.Time)]
-        public TimeSpan HoraInicio { get; set; }
-
-        [Display(Name = "Frequência")]
-        [Required(ErrorMessage = "A frequência é obrigatória.")]
-        public TimeSpan Frequencia { get; set; }
+        public TimeSpan Hora { get; set; }
 
         [Display(Name = "Dosagem")]
         [Required(ErrorMessage = "A dosagem é obrigatória.")]
-        [StringLength(30, ErrorMessage = "A dosagem deve ter no máximo 30 caracteres.")]
-        public string Dosagem { get; set; } = null!;
+        [Range(1, int.MaxValue, ErrorMessage = "A dosagem deve ser um número maior que zero.")]
+        public int Dosagem { get; set; }
 
-        [Display(Name = "Data de Confirmação")]
-        [DataType(DataType.Date)]
-        public DateTime? DataConfirmacao { get; set; }
+        [Display(Name = "Unidade de Dosagem")]
+        [Required(ErrorMessage = "A unidade de dosagem é obrigatória.")]
+        public UnidadeDosagem Unidade { get; set; }
 
-        [Display(Name = "Hora de Confirmação")]
-        [DataType(DataType.Time)]
-        public TimeSpan? HoraConfirmacao { get; set; }
-
-        [Display(Name = "Latitude")]
-        [Range(-90, 90, ErrorMessage = "Informe uma latitude válida.")]
-        public decimal? Latitude { get; set; }
-
-        [Display(Name = "Longitude")]
-        [Range(-180, 180, ErrorMessage = "Informe uma longitude válida.")]
-        public decimal? Longitude { get; set; }
-
-        [Display(Name = "Foto")]
-        public byte[]? Foto { get; set; }
-
+        [Display(Name = "Status Ativo")]
+        [Required(ErrorMessage = "O status ativo é obrigatório.")]
+        public StatusAtivo Ativo { get; set; } = StatusAtivo.S;
     }
 }

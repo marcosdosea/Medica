@@ -1,9 +1,6 @@
 ﻿using Core;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Service
 {
@@ -20,7 +17,6 @@ namespace Service
         {
             await context.Pacientes.AddAsync(paciente);
             await context.SaveChangesAsync();
-
             return paciente.Id;
         }
 

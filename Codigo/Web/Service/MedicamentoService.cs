@@ -19,10 +19,10 @@ namespace Service
         /// </summary>
         /// <param name="medicamento">Dados do medicamento</param>
         /// <returns>Id do novo medicamento</returns>
-        public uint Create(Medicamento medicamento)
+        public async Task<uint> Create(Medicamento medicamento)
         {
-            context.Add(medicamento);
-            context.SaveChanges();
+            await context.AddAsync(medicamento);
+            await context.SaveChangesAsync();
             return medicamento.Id;
         }
 
@@ -30,20 +30,20 @@ namespace Service
         /// Remover dados de um medicamento da base de dados
         /// </summary>
         /// <param name="id">id do medicamento</param>
-        public void Delete(uint id)
+        public async Task Delete(uint id)
         {
             context.Remove(new Medicamento { Id = id });
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
         /// <summary>
         /// Atualizar dados de um medicamento da base de dados
         /// </summary>
         /// <param name="medicamento">Novos dados do medicamento</param>
-        public void Edit(Medicamento medicamento)
+        public async Task Edit(Medicamento medicamento)
         {
             context.Update(medicamento);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -51,18 +51,18 @@ namespace Service
         /// </summary>
         /// <param name="id">id do medicamento</param>
         /// <returns>Dados do medicamento</returns>
-        public Medicamento? Get(uint id)
+        public async Task<Medicamento?> Get(uint id)
         {
-            return context.Medicamentos.AsNoTracking().FirstOrDefault(m => m.Id == id);
+            return await context.Medicamentos.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
         }
 
         /// <summary>
         /// Buscar todos os medicamentos cadastrados
         /// </summary>
         /// <returns>Lista de medicamentos</returns>
-        public IEnumerable<Medicamento> GetAll()
+        public async Task<IEnumerable<Medicamento>> GetAll()
         {
-            return context.Medicamentos.AsNoTracking();
+            return await context.Medicamentos.AsNoTracking().ToListAsync();
         }
     }
 }
