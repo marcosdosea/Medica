@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.6.11819.183 stable
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37301.10 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicaWeb", "MedicaWeb\MedicaWeb.csproj", "{B2CDAA37-D9AF-48EE-9290-9F53942B07DF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -16,6 +16,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util", "Util\Util.csproj", "{47EAD44D-73D9-4A84-BEFB-3DA8FCC7E2B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicaAPI", "..\MedicaAPI\MedicaAPI.csproj", "{527B5CD0-7C04-48D1-A155-A4E0AD7B25C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BCC9A086-AE38-4782-80D4-F7F728775BB2} = {BCC9A086-AE38-4782-80D4-F7F728775BB2}
+		{F0CC451A-BA45-47D6-89EE-B8798FCD9208} = {F0CC451A-BA45-47D6-89EE-B8798FCD9208}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,10 @@ Global
 		{47EAD44D-73D9-4A84-BEFB-3DA8FCC7E2B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47EAD44D-73D9-4A84-BEFB-3DA8FCC7E2B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47EAD44D-73D9-4A84-BEFB-3DA8FCC7E2B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{527B5CD0-7C04-48D1-A155-A4E0AD7B25C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{527B5CD0-7C04-48D1-A155-A4E0AD7B25C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{527B5CD0-7C04-48D1-A155-A4E0AD7B25C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{527B5CD0-7C04-48D1-A155-A4E0AD7B25C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
