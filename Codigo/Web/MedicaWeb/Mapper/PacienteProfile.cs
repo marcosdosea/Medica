@@ -11,7 +11,8 @@ namespace MedicaWeb.Mapper
         {
             CreateMap<PacienteDetailsDto, Paciente>();
 
-            CreateMap<Paciente, PacienteDto>();
+            CreateMap<Paciente, PacienteDto>()
+                            .ForMember(dest => dest.Ativo, opt => opt.MapFrom(src => src.Ativo.ToString()));
 
             CreateMap<Paciente, PacienteDetailsDto>()
                             .ForMember(dest => dest.Sexo, opt => opt.MapFrom(src => src.Sexo.ToString()))
@@ -24,6 +25,9 @@ namespace MedicaWeb.Mapper
             CreateMap<Alergium, PacienteAlergiaDto>()
                 .ForMember(dest => dest.MedicamentoNome,
                            opt => opt.MapFrom(src => src.IdMedicamentoNavigation != null ? src.IdMedicamentoNavigation.Nome : null));
+
+            CreateMap<Vinculo, VinculoDto>()
+                            .ForMember(dest => dest.Parentesco, opt => opt.MapFrom(src => src.Parentesco.ToString()));
         }
     }
 }

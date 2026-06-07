@@ -30,8 +30,12 @@ namespace MedicaWeb.Controllers
 
         public async Task<IActionResult> Details(uint id)
         {
+            uint idCuidador = 1;
             var paciente = await pacienteService.Get(id);
+            var vinculos = paciente!.Vinculos
+                                          .FirstOrDefault(v => v.IdCuidador == idCuidador);
             var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
+            pacienteDetailsDto.Vinculo = mapper.Map<PacienteDetailsDto.VinculoDto>(vinculos);
             return View(pacienteDetailsDto);
         }
 
@@ -72,6 +76,7 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Delete(uint id)
         {
             await pacienteService.Delete(id);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
             return RedirectToAction(nameof(Index));
         }
     }

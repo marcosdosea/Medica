@@ -1,4 +1,5 @@
 ﻿using Core.Enum.Alergia;
+using Core.Enum.Paciente;
 
 namespace Core.Dto.PacienteDto
 {
@@ -12,7 +13,7 @@ namespace Core.Dto.PacienteDto
 
         public string? CartaoSus { get; set; }
 
-        public string? TipoSanguineo { get; set; }
+        public TipoSanguineo TipoSanguineo { get; set; }
 
         public float? Peso { get; set; }
 
@@ -56,9 +57,11 @@ namespace Core.Dto.PacienteDto
 
         public DateTime? DataNascimento { get; set; }
 
-        public List<PacienteDeficienciaDto> Deficiencias { get; set; } = new();
+        public VinculoDto Vinculo { get; set; } = null!;
 
-        public List<PacienteAlergiaDto> Alergias { get; set; } = new();
+        public List<PacienteDeficienciaDto> Deficiencias { get; set; } = [];
+
+        public List<PacienteAlergiaDto> Alergias { get; set; } = [];
 
         public class PacienteDeficienciaDto
         {
@@ -76,6 +79,11 @@ namespace Core.Dto.PacienteDto
             public int? IdMedicamento { get; set; }
 
             public string? MedicamentoNome { get; set; }
+        }
+
+        public class VinculoDto
+        {
+            public string Parentesco { get; set; } = null!;
         }
     }
 }

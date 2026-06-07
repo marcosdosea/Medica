@@ -11,7 +11,7 @@
             <tr>
                 <th>Nome</th>
                 <th>Forma Farmacêutica</th>
-                <th>Apelido</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -20,7 +20,16 @@
                 <tr onclick="location.href='@Url.Action("Details", "Medicamento", new { id = item.Id })'" style="cursor:pointer;">
                     <td class="font-bold">@item.Nome</td>
                     <td>@Html.DisplayFor(modelItem => item.FormaFarmaceutica)</td>
-                    <td>@item.Apelido</td>
+                    <td>
+                        @if (item.Ativo == "S")
+                        {
+                            <span>Ativo</span>
+                        }
+                        else
+                        {
+                            <span>Inativo</span>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
@@ -40,8 +49,8 @@
                 "dom": 'rt<"bottom"lp><"clear">',
                 "columnDefs": [
                     { "width": "45%", "targets": 0 },
-                    { "width": "25%", "targets": 1 },
-                    { "width": "30%", "targets": 2 }
+                    { "width": "35%", "targets": 1 },
+                    { "width": "20%", "targets": 2 }
                 ]
             });
         });

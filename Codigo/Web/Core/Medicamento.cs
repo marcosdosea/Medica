@@ -19,6 +19,8 @@ public partial class Medicamento
 
     public uint IdCuidador { get; set; }
 
+    public string Ativo { get; set; } = null!;
+
     public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
 
     public virtual Cuidador IdCuidadorNavigation { get; set; } = null!;
