@@ -1,0 +1,80 @@
+@model MedicaWeb.Models.PlanejamentoViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>PlanejamentoViewModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IdPaciente)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IdPaciente)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IdMedicamento)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IdMedicamento)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataInicio)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataInicio)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataFim)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataFim)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DiaSemana)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DiaSemana)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Hora)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Hora)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Dosagem)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Dosagem)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Unidade)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Unidade)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Ativo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Ativo)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

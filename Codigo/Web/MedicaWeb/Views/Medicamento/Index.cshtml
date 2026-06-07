@@ -19,7 +19,7 @@
             {
                 <tr onclick="location.href='@Url.Action("Details", "Medicamento", new { id = item.Id })'" style="cursor:pointer;">
                     <td class="font-bold">@item.Nome</td>
-                    <td>@item.FormaFarmaceutica</td>
+                    <td>@Html.DisplayFor(modelItem => item.FormaFarmaceutica)</td>
                     <td>@item.Apelido</td>
                 </tr>
             }

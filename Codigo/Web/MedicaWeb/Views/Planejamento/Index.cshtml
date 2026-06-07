@@ -1,0 +1,66 @@
+@using Core.Dto.Planejamento
+@model IEnumerable<PlanejamentoDto>
+
+@{
+    ViewData["Title"] = "Planejamentos";
+}
+
+<div class="calendario-container">
+    <div class="table-header">
+        <h2 class="titulo-sessao">Planejamentos</h2>
+        <a asp-controller="Planejamento" asp-action="Create" class="btn-novo">Novo</a>
+    </div>
+
+    <table id="tabelaPlanejamentos" class="custom-table">
+        <thead>
+            <tr>
+                <th>Paciente</th>
+                <th>Medicamento</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var item in Model)
+                {
+                    <tr onclick="location.href='@Url.Action("Details", "Planejamento", new { id = item.Id })'" style="cursor:pointer;">
+                        <td class="font-bold">@item.NomePaciente</td>
+                        <td>@item.NomeMedicamento</td>
+                        <td>
+                            @if (item.Ativo == "S")
+                            {
+                                <span>Ativo</span>
+                            }
+                            else
+                            {
+                                <span>Inativo</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tabelaPlanejamentos').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                "pageLength": 10,
+                "searching": false,
+                "info": false,
+                "dom": 'rt<"bottom"lp><"clear">',
+                "columnDefs": [
+                    { "width": "40%", "targets": 0 },
+                    { "width": "40%", "targets": 1 },
+                    { "width": "20%", "targets": 2 }
+                ]
+            });
+        });
+    </script>
+}

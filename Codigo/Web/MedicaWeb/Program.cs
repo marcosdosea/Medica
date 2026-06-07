@@ -17,10 +17,9 @@ namespace MedicaWeb
             builder.Services.AddDbContext<MedicaContext>(
                 options => options.UseMySQL(builder.Configuration.GetConnectionString("MedicaConnection")!));
 
-            builder.Services.AddScoped<IPacienteService, PacienteService>();
-
-            // Alterado para Scoped para manter o mesmo ciclo de vida dos outros serviços
             builder.Services.AddScoped<IMedicamentoService, MedicamentoService>();
+            builder.Services.AddScoped<IPacienteService, PacienteService>();
+            builder.Services.AddScoped<IPlanejamentoService, PlanejamentoService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
