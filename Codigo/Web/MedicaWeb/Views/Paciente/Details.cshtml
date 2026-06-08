@@ -49,7 +49,7 @@
                 </div>
                 <div class="col-xl-2 col-lg-6 col-md-12 col-12 form-group-custom">
                     <label class="label-custom">Tipo sanguíneo</label>
-                    <div class="form-control-static">@(Model.TipoSanguineo?.ToString() ?? "--")</div>
+                    <div class="form-control-static">@Html.DisplayFor(model => model.TipoSanguineo)</div>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-4 col-6 form-group-custom">
                     <label class="label-custom">Peso</label>
@@ -72,7 +72,7 @@
                 </div>
                 <div class="col-xl-2 col-lg-6 col-md-6 col-12 form-group-custom">
                     <label class="label-custom">Parentesco</label>
-                    <div class="form-control-static">--</div>
+                    <div class="form-control-static">@(Model.Vinculo?.Parentesco ?? "--")</div>
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6 col-12 form-group-custom">
                     <label class="label-custom">Apelido</label>
@@ -223,7 +223,7 @@
     <div class="actions-container">
         <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: inline; margin: 0;">
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn-med btn-med-danger" onclick="return confirm('Tem certeza que deseja excluir permanentemente o cadastro do paciente @Model.Nome?');">Excluir</button>
+            <button type="submit" class="btn-med btn-med-danger">Excluir</button>
         </form>
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
     </div>

@@ -1,4 +1,5 @@
 ﻿using Core;
+using Core.Enum;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,8 +29,41 @@ namespace Service
 
         public async Task Delete(uint id)
         {
-            var paciente = await context.Pacientes.FindAsync(id);
-            context.Pacientes.Remove(paciente!);
+            var paciente = await this.Get(id);
+
+            bool possuiExecucoes = await context.Planejamentos
+                                                .AnyAsync(pl => pl.IdPaciente == id && pl.Execucaos.Any());
+
+            if (possuiExecucoes)
+            {
+                paciente!.Ativo = StatusAtivo.N.ToString();
+                context.Pacientes.Update(paciente);
+            }
+            else
+            {
+                if (paciente!.Vinculos != null && paciente.Vinculos.Count != 0)
+                {
+                    context.Vinculos.RemoveRange(paciente.Vinculos);
+                }
+
+                if (paciente!.Planejamentos != null && paciente.Planejamentos.Count != 0)
+                {
+                    context.Planejamentos.RemoveRange(paciente.Planejamentos);
+                }
+
+                if (paciente.Alergia != null && paciente.Alergia.Count != 0)
+                {
+                    context.Alergia.RemoveRange(paciente.Alergia);
+                }
+
+                if (paciente.Deficiencia != null && paciente.Deficiencia.Count != 0)
+                {
+                    context.Deficiencia.RemoveRange(paciente.Deficiencia);
+                }
+
+                context.Pacientes.Remove(paciente);
+            }
+
             await context.SaveChangesAsync();
         }
 
@@ -39,6 +73,10 @@ namespace Service
                                 .Include(p => p.Alergia)
                                     .ThenInclude(a => a.IdMedicamentoNavigation)
                                 .Include(p => p.Deficiencia)
+                                .Include(p => p.Planejamentos)
+                                    .ThenInclude(pl => pl.Execucaos)
+                                .Include(p => p.Vinculos) 
+                                    .ThenInclude(v => v.IdCuidadorNavigation)
                                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -62,7 +100,7 @@ namespace Service
         public async Task<IEnumerable<Paciente>> GetAll()
         {
             var query = context.Pacientes.AsNoTracking();
-            return await query.OrderBy(p => p.Nome).ToListAsync();
+            return await query.ToListAsync();
         }
     }
 }

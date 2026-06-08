@@ -150,6 +150,10 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.Apelido)
                 .HasMaxLength(60)
                 .HasColumnName("apelido");
+            entity.Property(e => e.Ativo)
+                .HasDefaultValueSql("'S'")
+                .HasColumnType("enum('S','N')")
+                .HasColumnName("ativo");
             entity.Property(e => e.FormaFarmaceutica)
                 .HasColumnType("enum('COMPRIMIDO','CAPSULA','SOLUCAO_ORAL','CREME','POMADA','INJETAVEL','SUPOSITORIO')")
                 .HasColumnName("formaFarmaceutica");
@@ -186,6 +190,10 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.Apelido)
                 .HasMaxLength(60)
                 .HasColumnName("apelido");
+            entity.Property(e => e.Ativo)
+                .HasDefaultValueSql("'S'")
+                .HasColumnType("enum('S','N')")
+                .HasColumnName("ativo");
             entity.Property(e => e.Bairro)
                 .HasMaxLength(60)
                 .HasColumnName("bairro");
@@ -264,6 +272,7 @@ public partial class MedicaContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Ativo)
+                .HasDefaultValueSql("'S'")
                 .HasColumnType("enum('S','N')")
                 .HasColumnName("ativo");
             entity.Property(e => e.DataFim)
