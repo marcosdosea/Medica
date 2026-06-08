@@ -125,8 +125,16 @@
     border: none;
     transition: 0.2s;
     text-decoration: none;
-    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
+
+    .btn-med:hover {
+        color: #000000;
+        cursor: pointer;
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
 
 .btn-med-danger {
     background-color: #FF4D4D;
@@ -136,6 +144,11 @@
 .btn-med-primary {
     background-color: #4285F4;
     color: white;
+}
+
+.btn-med-success {
+    background-color: #2ec4b6;
+    color: #ffffff;
 }
 
 .paciente-card-footer {

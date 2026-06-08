@@ -74,7 +74,18 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="actions-container">
+    <form method="post" style="display: inline; margin: 0;">
+        @Html.AntiForgeryToken()
+
+        @if (Model.Ativo.ToString() == "S")
+        {
+            <button type="submit" asp-action="Delete" asp-route-id="@Model.Id" class="btn-med btn-med-danger">Excluir</button>
+        }
+        else
+        {
+            <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-success">Ativar</button>
+        }
+    </form>
+    <button asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</button>
 </div>

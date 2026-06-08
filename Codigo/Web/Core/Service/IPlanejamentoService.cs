@@ -7,5 +7,6 @@
         Task<uint> Create(Planejamento planejamento);
         Task Edit(Planejamento planejamento);
         Task Delete(uint id);
+        Task Activate(uint id);
     }
 }

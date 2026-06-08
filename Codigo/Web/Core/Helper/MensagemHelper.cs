@@ -6,6 +6,7 @@
         public static string CadastroSucesso => "Cadastro realizado com sucesso!";
         public static string EdicaoSucesso => "Alterações salvas com sucesso!";
         public static string DelecaoSucesso => "Registro removido ou inativado com sucesso!";
+        public static string AtivacaoSucesso => "Registro reativado com sucesso!";
         public static string ErroInesperado => "Ocorreu um erro interno ao processar a solicitação.";
     }
 }

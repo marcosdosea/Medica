@@ -6,12 +6,25 @@
             const tipo = '@TempData["Notificacao_Tipo"]';
             const titulo = '@TempData["Notificacao_Titulo"]';
             const mensagem = '@Html.Raw(TempData["Notificacao_Mensagem"])';
+
+            let corFundo = '#4285F4';
+
+            if (tipo === 'success') 
+                corFundo = '#2ec4b6';
+            if (tipo === 'error') 
+                corFundo = '#FF4D4D';
+            if (tipo === 'warning') 
+                corFundo = '#FFA500';
+
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
                 timer: 4000,
                 timerProgressBar: true,
+                background: corFundo,
+                color: '#ffffff',
+                iconColor: '#ffffff',
                 didOpen: (toast) => {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)

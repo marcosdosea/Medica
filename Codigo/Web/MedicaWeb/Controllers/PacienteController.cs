@@ -21,6 +21,7 @@ namespace MedicaWeb.Controllers
             this.mapper = mapper;
         }
 
+        // GET: PacienteController
         public async Task<IActionResult> Index()
         {
             var pacientes = await pacienteService.GetAll();
@@ -28,22 +29,25 @@ namespace MedicaWeb.Controllers
             return View(pacienteDtos);
         }
 
+        // GET: PacienteController/Details/5
         public async Task<IActionResult> Details(uint id)
         {
             uint idCuidador = 1;
             var paciente = await pacienteService.Get(id);
             var vinculos = paciente!.Vinculos
-                                          .FirstOrDefault(v => v.IdCuidador == idCuidador);
+                                    .FirstOrDefault(v => v.IdCuidador == idCuidador);
             var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
             pacienteDetailsDto.Vinculo = mapper.Map<PacienteDetailsDto.VinculoDto>(vinculos);
             return View(pacienteDetailsDto);
         }
 
+        // GET: PacienteController/Create
         public IActionResult Create()
         {
             return View(new PacienteDetailsDto());
         }
 
+        // POST: PacienteController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PacienteDetailsDto pacienteDetailsDto)
@@ -54,6 +58,7 @@ namespace MedicaWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: PacienteController/Edit/5
         public async Task<IActionResult> Edit(uint id)
         {
             var paciente = await pacienteService.Get(id);
@@ -61,6 +66,7 @@ namespace MedicaWeb.Controllers
             return View(pacienteDetailsDto);
         }
 
+        // POST: PacienteController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(uint id, PacienteDetailsDto dto)
@@ -71,12 +77,23 @@ namespace MedicaWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: PacienteController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(uint id)
         {
             await pacienteService.Delete(id);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: PacienteController/Activate/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Activate(uint id)
+        {
+            await pacienteService.Activate(id);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.AtivacaoSucesso);
             return RedirectToAction(nameof(Index));
         }
     }
