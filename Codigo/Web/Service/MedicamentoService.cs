@@ -1,4 +1,5 @@
 ﻿using Core;
+using Core.Enum;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +33,31 @@ namespace Service
         /// <param name="id">id do medicamento</param>
         public async Task Delete(uint id)
         {
-            context.Remove(new Medicamento { Id = id });
+            var medicamento = await this.Get(id);
+
+            bool possuiExecucoes = await context.Planejamentos
+                                                .AnyAsync(pl => pl.IdMedicamento == id && pl.Execucaos.Any());
+
+            if (possuiExecucoes)
+            {
+                medicamento!.Ativo = StatusAtivo.N.ToString();
+                context.Medicamentos.Update(medicamento);
+            }
+            else
+            {
+                if (medicamento!.Alergia != null && medicamento.Alergia.Count != 0)
+                {
+                    context.Alergia.RemoveRange(medicamento.Alergia);
+                }
+
+                if (medicamento.Planejamentos != null && medicamento.Planejamentos.Count != 0)
+                {
+                    context.Planejamentos.RemoveRange(medicamento.Planejamentos);
+                }
+
+                context.Medicamentos.Remove(medicamento);
+            }
+
             await context.SaveChangesAsync();
         }
 
@@ -53,7 +78,11 @@ namespace Service
         /// <returns>Dados do medicamento</returns>
         public async Task<Medicamento?> Get(uint id)
         {
-            return await context.Medicamentos.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+            return await context.Medicamentos
+                                .Include(m => m.Alergia)
+                                .Include(m => m.Planejamentos)
+                                    .ThenInclude(pl => pl.Execucaos)
+                                .FirstOrDefaultAsync(m => m.Id == id);
         }
 
         /// <summary>
@@ -63,6 +92,22 @@ namespace Service
         public async Task<IEnumerable<Medicamento>> GetAll()
         {
             return await context.Medicamentos.AsNoTracking().ToListAsync();
+        }
+
+        /// <summary>
+        /// Reativa um medicamento com status inativo
+        /// </summary>
+        /// <param name="id">id do medicamento</param>
+        public async Task Activate(uint id)
+        {
+            var medicamento = await this.Get(id);
+            if (medicamento!.Ativo == StatusAtivo.S.ToString())
+            {
+                return;
+            }
+            medicamento.Ativo = StatusAtivo.S.ToString();
+            context.Medicamentos.Update(medicamento);
+            await context.SaveChangesAsync();
         }
     }
 }

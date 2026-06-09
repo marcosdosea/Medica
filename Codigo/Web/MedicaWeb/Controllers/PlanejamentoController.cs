@@ -6,6 +6,7 @@ using Core.Helpers;
 using Core.Service;
 using MedicaWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Service;
 
 namespace MedicaWeb.Controllers
 {
@@ -20,6 +21,7 @@ namespace MedicaWeb.Controllers
             this.mapper = mapper;
         }
 
+        // GET: PlanejamentoController
         public async Task<IActionResult> Index()
         {
             var planejamentos = await planejamentoService.GetAll();
@@ -27,6 +29,7 @@ namespace MedicaWeb.Controllers
             return View(planejamentoDtos);
         }
 
+        // GET: PlanejamentoController/Details/5
         public async Task<IActionResult> Details(uint id)
         {
             var planejamento = await planejamentoService.Get(id);
@@ -34,11 +37,13 @@ namespace MedicaWeb.Controllers
             return View(planejamentoViewModel);
         }
 
+        // GET: PlanejamentoController/Create
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: PlanejamentoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PlanejamentoViewModel planejamentoViewModel)
@@ -49,6 +54,7 @@ namespace MedicaWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: PlanejamentoController/Edit/5
         public async Task<IActionResult> Edit(uint id)
         {
             var planejamento = await planejamentoService.Get(id);
@@ -56,6 +62,7 @@ namespace MedicaWeb.Controllers
             return View(planejamentoViewModel);
         }
 
+        // POST: PlanejamentoController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(uint id, PlanejamentoViewModel planejamentoViewModel)
@@ -63,14 +70,27 @@ namespace MedicaWeb.Controllers
             planejamentoViewModel.Id = id;
             var planejamentoModel = mapper.Map<Planejamento>(planejamentoViewModel);
             await planejamentoService.Edit(planejamentoModel);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
             return RedirectToAction(nameof(Index));
         }
 
+        // POST: PlanejamentoController/Activate/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(uint id)
         {
             await planejamentoService.Delete(id);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: PlanejamentoController/Activate/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Activate(uint id)
+        {
+            await planejamentoService.Activate(id);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.AtivacaoSucesso);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,4 +1,5 @@
-﻿using Core.Enum.Alergia;
+﻿using Core.Enum;
+using Core.Enum.Alergia;
 using Core.Enum.Paciente;
 
 namespace Core.Dto.PacienteDto
@@ -54,6 +55,8 @@ namespace Core.Dto.PacienteDto
         public string? NomeTelefoneResponsavel { get; set; }
 
         public byte[]? Foto { get; set; }
+
+        public string? Ativo { get; set; }
 
         public DateTime? DataNascimento { get; set; }
 

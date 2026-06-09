@@ -14,6 +14,11 @@ namespace Service
             this.context = context;
         }
 
+        /// <summary>
+        /// Criar um novo paciente na base de dados
+        /// </summary>
+        /// <param name="paciente">Dados do paciente</param>
+        /// <returns>Id do novo paciente</returns>
         public async Task<uint> Create(Paciente paciente)
         {
             await context.Pacientes.AddAsync(paciente);
@@ -21,12 +26,20 @@ namespace Service
             return paciente.Id;
         }
 
+        /// <summary>
+        /// Atualizar dados de um paciente da base de dados
+        /// </summary>
+        /// <param name="paciente">Novos dados do paciente</param>
         public async Task Edit(Paciente paciente)
         {
             context.Pacientes.Update(paciente);
             await context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Remover dados de um paciente da base de dados
+        /// </summary>
+        /// <param name="id">id do paciente</param>
         public async Task Delete(uint id)
         {
             var paciente = await this.Get(id);
@@ -67,6 +80,11 @@ namespace Service
             await context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Buscar um paciente na base de dados
+        /// </summary>
+        /// <param name="id">id do paciente</param>
+        /// <returns>Dados do paciente</returns>
         public async Task<Paciente?> Get(uint id)
         {
             return await context.Pacientes
@@ -80,27 +98,30 @@ namespace Service
                                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Paciente>> GetByMedicamento(uint idMedicamento)
-        {
-            return await context.Planejamentos
-                .AsNoTracking()
-                .Where(p => p.IdMedicamento == idMedicamento)
-                .Select(p => p.IdPaciente)
-                .Distinct()
-                .Join(
-                    context.Pacientes.AsNoTracking(),
-                    idPaciente => idPaciente,
-                    paciente => paciente.Id,
-                    (idPaciente, paciente) => paciente
-                )
-                .OrderBy(p => p.Nome)
-                .ToListAsync();
-        }
-
+        /// <summary>
+        /// Buscar todos os pacientes cadastrados
+        /// </summary>
+        /// <returns>Lista de paciente</returns>
         public async Task<IEnumerable<Paciente>> GetAll()
         {
             var query = context.Pacientes.AsNoTracking();
             return await query.ToListAsync();
+        }
+
+        /// <summary>
+        /// Reativa um paciente com status inativo
+        /// </summary>
+        /// <param name="id">id do paciente</param>
+        public async Task Activate(uint id)
+        {
+            var paciente = await this.Get(id);
+            if(paciente!.Ativo == StatusAtivo.S.ToString())
+            {
+                return;
+            }
+            paciente.Ativo = StatusAtivo.S.ToString();
+            context.Pacientes.Update(paciente);
+            await context.SaveChangesAsync();
         }
     }
 }

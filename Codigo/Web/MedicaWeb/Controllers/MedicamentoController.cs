@@ -105,14 +105,6 @@ namespace MedicaWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: MedicamentoController/Delete/5
-        public async Task<ActionResult> Delete(int id)
-        {
-            var medicamento = await medicamentoService.Get((uint)id);
-            var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
-            return View(medicamentoModel);
-        }
-
         // POST: MedicamentoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -120,6 +112,16 @@ namespace MedicaWeb.Controllers
         {
             await medicamentoService.Delete((uint)id);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: MedicamentoController/Activate/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Activate(uint id)
+        {
+            await medicamentoService.Activate(id);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.AtivacaoSucesso);
             return RedirectToAction(nameof(Index));
         }
     }

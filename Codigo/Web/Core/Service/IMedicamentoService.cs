@@ -7,5 +7,6 @@
         Task Edit(Medicamento medicamento);
         Task Delete(uint id);
         Task<IEnumerable<Medicamento>> GetAll();
+        Task Activate(uint id);
     }
 }

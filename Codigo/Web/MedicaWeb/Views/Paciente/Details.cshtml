@@ -221,10 +221,18 @@
     </div>
 
     <div class="actions-container">
-        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: inline; margin: 0;">
+        <form method="post" style="display: inline; margin: 0;">
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn-med btn-med-danger">Excluir</button>
+
+            @if (Model.Ativo == "S")
+            {
+                <button type="submit" asp-action="Delete" asp-route-id="@Model.Id" class="btn-med btn-med-danger">Excluir</button>
+            }
+            else
+            {
+                <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-success">Ativar</button>
+            }
         </form>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
+        <button asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</button>
     </div>
 </div>
