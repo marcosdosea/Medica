@@ -75,7 +75,8 @@ namespace Service
             return await context.Planejamentos
                 .Include(p => p.IdPacienteNavigation)
                 .Include(p => p.IdMedicamentoNavigation)
-                .AsNoTracking()
+                .Where(p => p.IdPacienteNavigation.Ativo == StatusAtivo.S.ToString() &&
+                    p.IdMedicamentoNavigation.Ativo == StatusAtivo.S.ToString())
                 .ToListAsync();
         }
 
