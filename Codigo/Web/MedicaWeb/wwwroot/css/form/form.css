@@ -202,3 +202,15 @@
 .btn-selecionar-custom {
     transition: all 0.2s ease;
 }
+
+.form-check-static {
+    cursor: default !important;
+}
+
+.form-check-input.form-check-static:disabled {
+    opacity: 0.8 !important;
+}
+
+.form-check-label-static {
+    user-select: none;
+}

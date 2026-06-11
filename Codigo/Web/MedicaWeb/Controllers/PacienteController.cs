@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Core;
-using Core.Dto;
-using Core.Dto.PacienteDto;
+using Core.Dto.Paciente;
 using Core.Helper;
 using Core.Helpers;
 using Core.Service;

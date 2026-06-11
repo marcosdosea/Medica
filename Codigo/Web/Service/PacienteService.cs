@@ -1,5 +1,6 @@
 ﻿using Core;
 using Core.Enum;
+using Core.Enum.Planejamento;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +52,18 @@ namespace Service
             {
                 paciente!.Ativo = StatusAtivo.N.ToString();
                 context.Pacientes.Update(paciente);
+
+                var planejamentosPaciente = await context.Planejamentos
+                                                         .Where(pl => pl.IdPaciente == id && pl.Ativo == StatusAtivo.S.ToString())
+                                                         .ToListAsync();
+
+                foreach (var planejamento in planejamentosPaciente)
+                {
+                    planejamento.Ativo = StatusAtivo.N.ToString();
+                    planejamento.Status = Status.INTERROMPIDO.ToString();
+                }
+
+                context.Planejamentos.UpdateRange(planejamentosPaciente);
             }
             else
             {
@@ -93,7 +106,7 @@ namespace Service
                                 .Include(p => p.Deficiencia)
                                 .Include(p => p.Planejamentos)
                                     .ThenInclude(pl => pl.Execucaos)
-                                .Include(p => p.Vinculos) 
+                                .Include(p => p.Vinculos)
                                     .ThenInclude(v => v.IdCuidadorNavigation)
                                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -104,8 +117,11 @@ namespace Service
         /// <returns>Lista de paciente</returns>
         public async Task<IEnumerable<Paciente>> GetAll()
         {
-            var query = context.Pacientes.AsNoTracking();
-            return await query.ToListAsync();
+            return await context.Pacientes
+                                .AsNoTracking()
+                                .Include(p => p.Planejamentos)
+                                    .ThenInclude(pl => pl.Execucaos)
+                                .ToListAsync();
         }
 
         /// <summary>
@@ -115,7 +131,7 @@ namespace Service
         public async Task Activate(uint id)
         {
             var paciente = await this.Get(id);
-            if(paciente!.Ativo == StatusAtivo.S.ToString())
+            if (paciente!.Ativo == StatusAtivo.S.ToString())
             {
                 return;
             }

@@ -33,8 +33,8 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Details(uint id)
         {
             var planejamento = await planejamentoService.Get(id);
-            var planejamentoViewModel = mapper.Map<PlanejamentoViewModel>(planejamento);
-            return View(planejamentoViewModel);
+            var planejamentoDetailsDto = mapper.Map<PlanejamentoDetailsDto>(planejamento);
+            return View(planejamentoDetailsDto);
         }
 
         // GET: PlanejamentoController/Create

@@ -33,7 +33,7 @@ namespace Service
         /// <param name="id">id do planejamento</param>
         public async Task Delete(uint id)
         {
-            var planejamento = await context.Planejamentos.FindAsync((int) id);
+            var planejamento = await context.Planejamentos.FindAsync((int)id);
 
             bool possuiExecucao = await context.Execucaos.AnyAsync(e => e.IdPlanejamento == id);
 
@@ -63,7 +63,11 @@ namespace Service
 
         public async Task<Planejamento?> Get(uint id)
         {
-            return await context.Planejamentos.FindAsync((int) id);
+            return await context.Planejamentos
+                                .Include(p => p.IdPacienteNavigation)
+                                .Include(p => p.IdMedicamentoNavigation)
+                                .Include(p => p.Execucaos)
+                                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         /// <summary>
@@ -75,8 +79,6 @@ namespace Service
             return await context.Planejamentos
                 .Include(p => p.IdPacienteNavigation)
                 .Include(p => p.IdMedicamentoNavigation)
-                .Where(p => p.IdPacienteNavigation.Ativo == StatusAtivo.S.ToString() &&
-                    p.IdMedicamentoNavigation.Ativo == StatusAtivo.S.ToString())
                 .ToListAsync();
         }
 

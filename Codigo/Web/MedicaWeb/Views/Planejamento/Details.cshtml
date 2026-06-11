@@ -1,91 +1,203 @@
-@model MedicaWeb.Models.PlanejamentoViewModel
+@model Core.Dto.Planejamento.PlanejamentoDetailsDto
 
-@{
-    ViewData["Title"] = "Details";
+<div class="content-container">
+    <div class="header-inline mb-4">
+        <a asp-action="Index" class="btn-voltar">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Detalhes do planejamento</h2>
+    </div>
+
+    <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-user" style="color: var(--text-muted);"></i>
+        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Paciente</span>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-8 form-group-custom">
+            <label class="label-custom">Nome</label>
+            <div class="form-control-static">@Model.NomePaciente</div>
+        </div>
+        <div class="col-md-4 form-group-custom">
+            <label class="label-custom">CPF</label>
+            <div class="form-control-static">@Model.CpfPaciente</div>
+        </div>
+    </div>
+
+    <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-pills" style="color: var(--text-muted);"></i>
+        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Medicamento</span>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-6 form-group-custom">
+            <label class="label-custom">Nome</label>
+            <div class="form-control-static">@Model.NomeMedicamento</div>
+        </div>
+        <div class="col-md-6 form-group-custom">
+            <label class="label-custom">Apelido</label>
+            <div class="form-control-static">@(Model.ApelidoMedicamento ?? "--")</div>
+        </div>
+    </div>
+
+    <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-calendar-alt" style="color: var(--text-muted);"></i>
+        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Planejamento</span>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6 form-group-custom">
+            <label class="label-custom">Data de Início</label>
+            <div class="form-control-static">@Model.DataInicio.ToString("dd/MM/yyyy")</div>
+        </div>
+        <div class="col-md-6 form-group-custom">
+            <label class="label-custom">Data de Fim</label>
+            <div class="form-control-static">@Model.DataFim.ToString("dd/MM/yyyy")</div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-2 col-sm-4 form-group-custom">
+            <label class="label-custom">Hora</label>
+            <div class="form-control-static text-center">@Model.Hora.ToString(@"hh\:mm")</div>
+        </div>
+        <div class="col-md-2 col-sm-4 form-group-custom">
+            <label class="label-custom">Dosagem</label>
+            <div class="form-control-static text-center">@Model.Dosagem</div>
+        </div>
+        <div class="col-md-2 col-sm-4 form-group-custom">
+            <label class="label-custom">Unidade de Dosagem</label>
+            <div class="form-control-static text-center">@Model.Unidade</div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <label class="label-custom mb-3" style="display: block; font-size: 15px;">Dias da semana</label>
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="form-check fs-6">
+                        <input class="form-check-input form-check-static" type="checkbox" id="dom" disabled @(Model.DiaSemana[0] != 'X' ? "checked" : "") />
+                        <label class="form-check-label text-dark form-check-label-static" for="dom">Domingo</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check fs-6">
+                        <input class="form-check-input form-check-static" type="checkbox" id="seg" disabled @(Model.DiaSemana[1] != 'X' ? "checked" : "") />
+                        <label class="form-check-label text-dark form-check-label-static" for="seg">Segunda</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check fs-6">
+                        <input class="form-check-input form-check-static" type="checkbox" id="ter" disabled @(Model.DiaSemana[2] != 'X' ? "checked" : "") />
+                        <label class="form-check-label text-dark form-check-label-static" for="ter">Terça</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check fs-6">
+                        <input class="form-check-input form-check-static" type="checkbox" id="qua" disabled @(Model.DiaSemana[3] != 'X' ? "checked" : "") />
+                        <label class="form-check-label text-dark form-check-label-static" for="qua">Quarta</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check fs-6">
+                        <input class="form-check-input form-check-static" type="checkbox" id="qui" disabled @(Model.DiaSemana[4] != 'X' ? "checked" : "") />
+                        <label class="form-check-label text-dark form-check-label-static" for="qui">Quinta</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check fs-6">
+                        <input class="form-check-input form-check-static" type="checkbox" id="sex" disabled @(Model.DiaSemana[5] != 'X' ? "checked" : "") />
+                        <label class="form-check-label text-dark form-check-label-static" for="sex">Sexta</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check fs-6">
+                        <input class="form-check-input form-check-static" type="checkbox" id="sab" disabled @(Model.DiaSemana[6] != 'X' ? "checked" : "") />
+                        <label class="form-check-label text-dark form-check-label-static" for="sab">Sábado</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="calendario-container mb-5">
+        <div class="table-header">
+            <h2 class="titulo-sessao" style="display: flex; align-items: center; gap: 10px;">
+                Histórico de Execuções
+            </h2>
+        </div>
+
+        <table id="tabelaExecucoes" class="custom-table w-100">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Horário de Confirmação</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Execucoes != null)
+                {   
+                    @if (Model.Execucoes.Any())
+                    {
+                        foreach (var execucao in Model.Execucoes)
+                        {
+                            <tr>
+                                <td>@execucao.DataConfirmacao</td>
+                                <td>@(string.IsNullOrWhiteSpace(execucao.HoraConfirmacao) ? "--" : execucao.HoraConfirmacao)</td>
+                                <td>@Html.DisplayFor(modelItem => execucao.Status)</td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions-container">
+        <form method="post" style="display: inline; margin: 0;">
+            @Html.AntiForgeryToken()
+
+            @if (Model.Status != Core.Enum.Planejamento.Status.INTERROMPIDO)
+            {
+                @if (Model.Ativo == "S")
+                {
+                    <button type="submit" asp-action="Delete" asp-route-id="@Model.Id" class="btn-med btn-med-danger">Excluir</button>
+                }
+                else
+                {
+                    <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-success">Ativar</button>
+                }
+            }
+            else
+            {
+                <span class="badge bg-secondary text-white px-3 py-3 fs-6" style="font-weight: 600;">Planejamento Interrompido</span>
+            }
+        </form>
+
+        @if (Model.Status != Core.Enum.Planejamento.Status.INTERROMPIDO)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Editar</a>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tabelaExecucoes').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                "pageLength": 10,
+                "searching": false,
+                "info": false,
+                "dom": 'rt<"bottom"lp><"clear">',
+                "columnDefs": [
+                    { "width": "40%", "targets": 0 },
+                    { "width": "40%", "targets": 1 },
+                    { "width": "20%", "targets": 2 }
+                ]
+            });
+        });
+    </script>
 }
-
-<h1>Details</h1>
-
-<div>
-    <h4>PlanejamentoViewModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdPaciente)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdPaciente)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdMedicamento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdMedicamento)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataInicio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataInicio)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataFim)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataFim)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DiaSemana)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DiaSemana)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Hora)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hora)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Dosagem)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Dosagem)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Unidade)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Unidade)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ativo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ativo)
-        </dd>
-    </dl>
-</div>
-<div class="actions-container">
-    <form method="post" style="display: inline; margin: 0;">
-        @Html.AntiForgeryToken()
-
-        @if (Model.Ativo.ToString() == "S")
-        {
-            <button type="submit" asp-action="Delete" asp-route-id="@Model.Id" class="btn-med btn-med-danger">Excluir</button>
-        }
-        else
-        {
-            <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-success">Ativar</button>
-        }
-    </form>
-    <button asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</button>
-</div>

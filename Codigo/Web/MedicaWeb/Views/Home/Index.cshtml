@@ -1,4 +1,4 @@
-﻿@using Core.Dto.PacienteDto
+﻿@using Core.Dto.Paciente
 @model IEnumerable<PacienteDto>
 
 <div class="home-wrapper">
@@ -35,10 +35,35 @@
         <div id='calendar'></div>
 
         <div class="caption-container">
-            <span class="legenda-item"><span class="caption confirmado"></span> Confirmado</span>
             <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
             <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
             <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        window.EventosDoCalendario = [
+            @if (Model != null)
+            {
+                foreach (var paciente in Model)
+                {
+                    foreach (var falha in paciente.ExecucoesFalhas)
+                    {
+                        <text>
+                            {
+                                title: '@falha.Quantidade',
+                                start: '@falha.Data',
+                                display: 'block',
+                                extendedProps: {
+                                    status: '@falha.Status'
+                                }
+                            },
+                        </text>
+                    }
+                }
+            }
+        ];
+    </script>
+}

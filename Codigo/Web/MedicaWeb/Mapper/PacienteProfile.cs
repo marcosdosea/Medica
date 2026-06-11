@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Core;
-using Core.Dto.PacienteDto;
-using static Core.Dto.PacienteDto.PacienteDetailsDto;
+using Core.Dto.Paciente;
+using static Core.Dto.Paciente.PacienteDetailsDto;
 
 namespace MedicaWeb.Mapper
 {
@@ -12,7 +12,20 @@ namespace MedicaWeb.Mapper
             CreateMap<PacienteDetailsDto, Paciente>();
 
             CreateMap<Paciente, PacienteDto>()
-                            .ForMember(dest => dest.Ativo, opt => opt.MapFrom(src => src.Ativo.ToString()));
+                            .ForMember(dest => dest.Ativo, opt => opt.MapFrom(src => src.Ativo.ToString()))
+                            .ForMember(dest => dest.ExecucoesFalhas, opt => opt.MapFrom(src =>
+                                src.Planejamentos
+                                   .SelectMany(pl => pl.Execucaos)
+                                   .Where(e => e.Status != Core.Enum.Execucao.Status.SUCESSO.ToString())
+                                   .GroupBy(e => e.DataConfirmacao)
+                                        .Select(grupoDoDia => new PacienteDto.ExecucaoDto
+                                        {
+                                            IdPlanejamento = src.Id,
+                                            Data = grupoDoDia.Key.ToString("yyyy-MM-dd"),
+                                            Quantidade = grupoDoDia.Count(),
+                                            Status = grupoDoDia.Any(e => e.Status == "FALHA") ? "FALHA" : "ATRASO"
+                                        })
+                            ));
 
             CreateMap<Paciente, PacienteDetailsDto>()
                             .ForMember(dest => dest.Sexo, opt => opt.MapFrom(src => src.Sexo.ToString()))
