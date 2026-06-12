@@ -1,5 +1,6 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
+    const eventosDoBanco = window.EventosDoCalendario || [];
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'pt-br',
@@ -17,21 +18,24 @@
             const monthCap = month.charAt(0).toUpperCase() + month.slice(1);
             return `${monthCap} - ${year}`;
         },
-        events: [
-            { title: '3 medicamentos', start: '2026-05-01', display: 'block', extendedProps: { status: 'confirmado' } },
-            { title: '2 medicamentos', start: '2026-05-06', display: 'block', extendedProps: { status: 'atraso' } },
-        ],
+        events: eventosDoBanco,
         eventDidMount: function (info) {
             const cell = info.el.closest('.fc-daygrid-day');
             if (cell) {
                 const cores = {
-                    'confirmado': '#D8FFE3',
-                    'atraso': '#FFF3C7',
-                    'sem-confirmacao': '#FFDEE3'
+                    'ATRASO': '#FFF3C7',
+                    'FALHA': '#FFDEE3'
                 };
                 const status = info.event.extendedProps.status;
-                if (cores[status]) {
-                    cell.style.backgroundColor = cores[status];
+                const statusAtualDaCelula = cell.getAttribute('data-status');
+                if (status === 'FALHA') {
+                    cell.style.setProperty('background-color', cores['FALHA'], 'important');
+                    cell.setAttribute('data-status', 'FALHA');
+                } else if (status === 'ATRASO') {
+                    if (statusAtualDaCelula !== 'FALHA') {
+                        cell.style.setProperty('background-color', cores['ATRASO'], 'important');
+                        cell.setAttribute('data-status', 'ATRASO');
+                    }
                 }
             }
         }

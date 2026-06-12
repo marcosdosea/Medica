@@ -1,8 +1,7 @@
-﻿using Core.Enum;
-using Core.Enum.Alergia;
+﻿using Core.Enum.Alergia;
 using Core.Enum.Paciente;
 
-namespace Core.Dto.PacienteDto
+namespace Core.Dto.Paciente
 {
     public class PacienteDetailsDto
     {

@@ -115,6 +115,8 @@ public partial class MedicaContext : DbContext
 
             entity.HasIndex(e => e.IdPlanejamento, "fk_Execucao_Planejamento1_idx");
 
+            entity.HasIndex(e => e.Latitude, "latitude_UNIQUE").IsUnique();
+
             entity.Property(e => e.Id)
                 .HasComment("Esta tabela guarda informações da execucao do planejamento das medicações.")
                 .HasColumnName("id");
@@ -131,6 +133,9 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.Longitude)
                 .HasPrecision(11, 8)
                 .HasColumnName("longitude");
+            entity.Property(e => e.Status)
+                .HasColumnType("enum('SUCESSO','ATRASO','FALHA')")
+                .HasColumnName("status");
 
             entity.HasOne(d => d.IdPlanejamentoNavigation).WithMany(p => p.Execucaos)
                 .HasForeignKey(d => d.IdPlanejamento)
@@ -291,6 +296,9 @@ public partial class MedicaContext : DbContext
                 .HasColumnName("hora");
             entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
             entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.Status)
+                .HasColumnType("enum('NAO_INICIADO','EM_ANDAMENTO','CONCLUIDO','INTERROMPIDO')")
+                .HasColumnName("status");
             entity.Property(e => e.UnidadeDosagem)
                 .HasColumnType("enum('ML','MG','G','UI')")
                 .HasColumnName("unidadeDosagem");

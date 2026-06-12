@@ -17,6 +17,7 @@
                 <th>Paciente</th>
                 <th>Medicamento</th>
                 <th>Status</th>
+                <th>Ativo</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,7 @@
                     <tr onclick="location.href='@Url.Action("Details", "Planejamento", new { id = item.Id })'" style="cursor:pointer;">
                         <td class="font-bold">@item.NomePaciente</td>
                         <td>@item.NomeMedicamento</td>
+                        <td>@Html.DisplayFor(modelItem => item.Status)</td>
                         <td>
                             @if (item.Ativo == "S")
                             {
@@ -56,9 +58,10 @@
                 "info": false,
                 "dom": 'rt<"bottom"lp><"clear">',
                 "columnDefs": [
-                    { "width": "40%", "targets": 0 },
-                    { "width": "40%", "targets": 1 },
-                    { "width": "20%", "targets": 2 }
+                    { "width": "30%", "targets": 0 },
+                    { "width": "30%", "targets": 1 },
+                    { "width": "20%", "targets": 2 },
+                    { "width": "20%", "targets": 3 }
                 ]
             });
         });

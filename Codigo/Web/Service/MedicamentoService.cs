@@ -42,6 +42,18 @@ namespace Service
             {
                 medicamento!.Ativo = StatusAtivo.N.ToString();
                 context.Medicamentos.Update(medicamento);
+
+                var planejamentosMedicamento = await context.Planejamentos
+                                                            .Where(pl => pl.IdMedicamento == id && pl.Ativo == StatusAtivo.S.ToString())
+                                                            .ToListAsync();
+
+                foreach (var planejamento in planejamentosMedicamento)
+                {
+                    planejamento.Ativo = StatusAtivo.N.ToString();
+                    planejamento.Status = Core.Enum.Planejamento.Status.INTERROMPIDO.ToString();
+                }
+
+                context.Planejamentos.UpdateRange(planejamentosMedicamento);
             }
             else
             {

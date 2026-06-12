@@ -10,22 +10,22 @@ namespace Core.Enum.Vinculo
         [Display(Name = "Mãe")]
         MAE,
 
-        [Display(Name = "Filho(a)")]
+        [Display(Name = "Filho")]
         FILHO,
 
         [Display(Name = "Cônjuge")]
         CONJUGE,
 
-        [Display(Name = "Irmão/Irmã")]
+        [Display(Name = "Irmão")]
         IRMAO,
 
         [Display(Name = "Avô/Avó")]
         AVO,
 
-        [Display(Name = "Tio(a)")]
+        [Display(Name = "Tio")]
         TIO,
 
-        [Display(Name = "Sobrinho(a)")]
+        [Display(Name = "Sobrinho")]
         SOBRINHO,
 
         [Display(Name = "Outros")]
