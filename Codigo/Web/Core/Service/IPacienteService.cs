@@ -2,7 +2,7 @@
 {
     public interface IPacienteService
     {
-        Task<IEnumerable<Paciente>> GetAll();
+        Task<IEnumerable<Paciente>> GetAll(int? ano = null, int? mes = null);
         Task<Paciente?> Get(uint id);
         Task<uint> Create(Paciente paciente);
         Task Edit(Paciente paciente);

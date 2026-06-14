@@ -15,16 +15,15 @@ namespace MedicaWeb.Mapper
                             .ForMember(dest => dest.Ativo, opt => opt.MapFrom(src => src.Ativo.ToString()))
                             .ForMember(dest => dest.ExecucoesFalhas, opt => opt.MapFrom(src =>
                                 src.Planejamentos
-                                   .SelectMany(pl => pl.Execucaos)
-                                   .Where(e => e.Status != Core.Enum.Execucao.Status.SUCESSO.ToString())
-                                   .GroupBy(e => e.DataConfirmacao)
-                                        .Select(grupoDoDia => new PacienteDto.ExecucaoDto
-                                        {
-                                            IdPlanejamento = src.Id,
-                                            Data = grupoDoDia.Key.ToString("yyyy-MM-dd"),
-                                            Quantidade = grupoDoDia.Count(),
-                                            Status = grupoDoDia.Any(e => e.Status == "FALHA") ? "FALHA" : "ATRASO"
-                                        })
+                                   .SelectMany(pl => pl.Execucaos, (pl, e) => new { Planejamento = pl, Execucao = e })
+                                   .Where(e => e.Execucao.Status != Core.Enum.Execucao.Status.SUCESSO.ToString())
+                                   .Select(e => new PacienteDto.ExecucaoDto
+                                   {
+                                       Data = e.Execucao.DataConfirmacao.ToString("yyyy-MM-dd"),
+                                       Status = e.Execucao.Status,
+                                       NomeMedicamentoHora = $"{e.Planejamento.Hora:hh\\:mm} - " +
+                                                             $"{e.Planejamento.IdMedicamentoNavigation.Nome}"
+                                   })
                             ));
 
             CreateMap<Paciente, PacienteDetailsDto>()
