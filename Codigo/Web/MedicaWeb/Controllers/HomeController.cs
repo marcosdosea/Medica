@@ -36,5 +36,13 @@ namespace MedicaWeb.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DetailsExecucoes(int mes, int ano)
+        {
+            var pacientes = await pacienteService.GetAll(ano, mes);
+            var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
+            return Json(pacienteDtos);
+        }
     }
 }
