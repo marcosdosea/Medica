@@ -16,17 +16,15 @@
 
         public string Ativo { get; set; } = "S";
 
-        public IEnumerable<ExecucaoDto> ExecucoesFalhas { get; set; } = new List<ExecucaoDto>();
+        public IEnumerable<ExecucaoDto> ExecucoesFalhas { get; set; } = [];
 
         public class ExecucaoDto
         {
-            public uint IdPlanejamento { get; set; }
-
-            public int Quantidade { get; set; }
-
             public string Data { get; set; } = null!;
 
             public string Status { get; set; } = null!;
+
+            public string NomeMedicamentoHora { get; set; } = null!;
         }
     }
 }

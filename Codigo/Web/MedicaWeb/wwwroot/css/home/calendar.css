@@ -19,6 +19,13 @@
         font-weight: 700;
         color: var(--text-main);
         text-transform: capitalize;
+        margin-right: 10px;
+    }
+
+    .calendario-container .fc-toolbar-chunk:last-child {
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 
     .calendario-container .fc-scroller {
@@ -53,22 +60,6 @@
         background-color: transparent;
     }
 
-    .calendario-container .fc-event {
-        background: transparent;
-        border: none;
-        padding: 4px 8px;
-    }
-
-    .calendario-container .fc-event-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #1a1a1a;
-    }
-
-    .calendario-container .fc-daygrid-event-dot {
-        display: none;
-    }
-
     .calendario-container .fc .fc-day-today {
         background-color: #e0f2ff !important;
     }
@@ -77,6 +68,54 @@
             color: #007bff;
             font-weight: bold;
         }
+
+    .calendario-container .fc-daygrid-event-dot {
+        display: none !important;
+    }
+
+    .calendario-container .fc-daygrid-day-events,
+    .calendario-container .fc-daygrid-event-harness {
+        display: block !important;
+        position: relative !important;
+    }
+
+    .calendario-container .fc-daygrid-event {
+        display: block !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 6px 8px 6px !important;
+    }
+
+    .calendario-container .fc-event-main {
+        padding: 0 !important;
+        display: block !important;
+    }
+
+.badge-medicamento {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+    .badge-medicamento.status-atraso {
+        background-color: #FFF3C7 !important;
+        color: #A16207 !important;
+    }
+
+    .badge-medicamento.status-falha {
+        background-color: #FFDEE3 !important;
+        color: #9F1239 !important;
+    }
 
 .caption-container {
     display: flex;
@@ -116,5 +155,4 @@
 
     .caption.hoje {
         background-color: #007bff;
-        ;
     }

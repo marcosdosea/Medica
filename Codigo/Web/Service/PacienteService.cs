@@ -115,12 +115,21 @@ namespace Service
         /// Buscar todos os pacientes cadastrados
         /// </summary>
         /// <returns>Lista de paciente</returns>
-        public async Task<IEnumerable<Paciente>> GetAll()
+        public async Task<IEnumerable<Paciente>> GetAll(int? ano = null, int? mes = null)
         {
+            int anoFiltro = ano ?? DateTime.Today.Year;
+            int mesFiltro = mes ?? DateTime.Today.Month;
+
+            var dataInicio = new DateTime(anoFiltro, mesFiltro, 1);
+            var dataFim = dataInicio.AddMonths(1).AddDays(-1);
+
             return await context.Pacientes
                                 .AsNoTracking()
                                 .Include(p => p.Planejamentos)
-                                    .ThenInclude(pl => pl.Execucaos)
+                                    .ThenInclude(pl => pl.Execucaos.Where(e => e.DataConfirmacao >= dataInicio && e.DataConfirmacao <= dataFim))
+                                .Include(p => p.Planejamentos)
+                                    .ThenInclude(pl => pl.IdMedicamentoNavigation)
+                                .OrderBy(p => p.Nome)
                                 .ToListAsync();
         }
 
