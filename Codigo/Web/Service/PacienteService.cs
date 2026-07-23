@@ -115,7 +115,7 @@ namespace Service
         /// Buscar todos os pacientes cadastrados
         /// </summary>
         /// <returns>Lista de paciente</returns>
-        public async Task<IEnumerable<Paciente>> GetAll(int? ano = null, int? mes = null)
+        public async Task<IEnumerable<Paciente>> GetAll(uint idCuidador, int? ano = null, int? mes = null)
         {
             int anoFiltro = ano ?? DateTime.Today.Year;
             int mesFiltro = mes ?? DateTime.Today.Month;
@@ -125,6 +125,7 @@ namespace Service
 
             return await context.Pacientes
                                 .AsNoTracking()
+                                .Where(p => p.Vinculos.Any(v => v.IdCuidador == idCuidador))
                                 .Include(p => p.Planejamentos)
                                     .ThenInclude(pl => pl.Execucaos.Where(e => e.DataConfirmacao >= dataInicio && e.DataConfirmacao <= dataFim))
                                 .Include(p => p.Planejamentos)

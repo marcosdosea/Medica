@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MedicaWeb.Controllers
 {
     [Authorize(Roles = "Cuidador")]
-    public class MedicamentoController : Controller
+    public class MedicamentoController : BaseController
     {
         private readonly IMedicamentoService medicamentoService;
         private readonly IPacienteService pacienteService;
@@ -50,7 +50,7 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(MedicamentoViewModel medicamentoModel)
         {
-            medicamentoModel.IdCuidador = 1;
+            var idCuidador = GetIdUserLogado();
             var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
             if (fotoMedicamento != null && fotoMedicamento.Length > 0)
             {

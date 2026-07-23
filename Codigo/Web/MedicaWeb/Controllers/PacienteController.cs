@@ -6,6 +6,7 @@ using Core.Helpers;
 using Core.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Service;
 
 
 namespace MedicaWeb.Controllers
@@ -14,18 +15,22 @@ namespace MedicaWeb.Controllers
     public class PacienteController : Controller
     {
         private readonly IPacienteService pacienteService;
+        private readonly ICuidadorService cuidadorService;
         private readonly IMapper mapper;
 
-        public PacienteController(IPacienteService pacienteService, IMapper mapper)
+        public PacienteController(IPacienteService pacienteService, ICuidadorService cuidadorService, IMapper mapper)
         {
             this.pacienteService = pacienteService;
+            this.cuidadorService = cuidadorService;
             this.mapper = mapper;
         }
 
         // GET: PacienteController
         public async Task<IActionResult> Index()
         {
-            var pacientes = await pacienteService.GetAll();
+            var cpf = User?.Identity?.Name;
+            var idCuidador = await cuidadorService.GetIdByCpf(cpf!);
+            var pacientes = await pacienteService.GetAll(idCuidador);
             var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             return View(pacienteDtos);
         }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MedicaWeb.Controllers
 {
     [Authorize(Roles = "Cuidador")]
-    public class PlanejamentoController : Controller
+    public class PlanejamentoController : BaseController
     {
         private readonly IPlanejamentoService planejamentoService;
         private readonly IMapper mapper;

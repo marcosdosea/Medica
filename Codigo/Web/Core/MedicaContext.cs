@@ -76,6 +76,11 @@ public partial class MedicaContext : DbContext
             entity.HasIndex(e => e.Cpf, "cpf_UNIQUE").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Ativo)
+                .HasDefaultValueSql("'S'")
+                .HasComment("Campo onde o administrador pode gerenciar o usuário.")
+                .HasColumnType("enum('S','N')")
+                .HasColumnName("ativo");
             entity.Property(e => e.Cpf)
                 .HasMaxLength(11)
                 .HasColumnName("cpf");

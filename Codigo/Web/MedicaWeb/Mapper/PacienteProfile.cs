@@ -14,9 +14,6 @@ namespace MedicaWeb.Mapper
 
             CreateMap<Paciente, PacienteDto>()
                             .ForMember(dest => dest.Ativo, opt => opt.MapFrom(src => src.Ativo.ToString()))
-                            .ForMember(dest => dest.Cpf, opt => opt.MapFrom(src =>
-                                    ulong.Parse(src.Cpf).ToString(@"000\.000\.000\-00")
-                             ))
                             .ForMember(dest => dest.ExecucoesFalhas, opt => opt.MapFrom(src =>
                                 src.Planejamentos
                                    .SelectMany(pl => pl.Execucaos, (pl, e) => new { Planejamento = pl, Execucao = e })

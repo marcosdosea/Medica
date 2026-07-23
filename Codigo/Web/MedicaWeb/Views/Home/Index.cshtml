@@ -1,86 +1,90 @@
 ﻿@using Core.Dto.Paciente
 @model IEnumerable<PacienteDto>
 
-<div class="home-wrapper">
-    <section class="pacientes-topo">
-        <div>
-            <h2 class="titulo-home">Pacientes</h2>
-        </div>
 
-        @if (!Model.Any())
-        {
-            <div class="alert alert-info text-center p-4" style="border-radius: 12px;">
-                <i class="bi bi-people" style="font-size: 2rem;"></i>
-                <p class="mt-2 mb-0" style="font-size: 1.2rem; font-weight: 600;">Nenhum paciente cadastrado até o momento.</p>
+            @if (User.IsInRole("Cuidador"))
+{
+    <div class="home-wrapper">
+        <section class="pacientes-topo">
+            <div>
+                <h2 class="titulo-home">Pacientes</h2>
             </div>
-        }
-        else
-        {
-            <div class="cards-grid">
-                @foreach (var paciente in Model)
-                {
-                    <div class="paciente-card paciente-clicavel" data-id="@paciente.Id">
-                        <div class="foto-wrapper">
-                            @if (paciente.Foto != null && paciente.Foto.Length > 0)
-                            {
-                                var base64 = Convert.ToBase64String(paciente.Foto);
-                                <img src="data:image/png;base64,@base64" alt="@paciente.Nome" />
-                            }
-                            else
-                            {
-                                <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
-                            }
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info text-center p-4" style="border-radius: 12px;">
+                    <i class="bi bi-people" style="font-size: 2rem;"></i>
+                    <p class="mt-2 mb-0" style="font-size: 1.2rem; font-weight: 600;">Nenhum paciente cadastrado até o momento.</p>
+                </div>
+            }
+            else
+            {
+                <div class="cards-grid">
+                    @foreach (var paciente in Model)
+                    {
+                        <div class="paciente-card paciente-clicavel" data-id="@paciente.Id">
+                            <div class="foto-wrapper">
+                                @if (paciente.Foto != null && paciente.Foto.Length > 0)
+                                {
+                                    var base64 = Convert.ToBase64String(paciente.Foto);
+                                    <img src="data:image/png;base64,@base64" alt="@paciente.Nome" />
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
+                                }
+                            </div>
+                            <div class="paciente-info">
+                                <h3 class="paciente-nome">@paciente.Nome</h3>
+                                <p class="paciente-apelido">@paciente.Apelido</p>
+                            </div>
                         </div>
-                        <div class="paciente-info">
-                            <h3 class="paciente-nome">@paciente.Nome</h3>
-                            <p class="paciente-apelido">@paciente.Apelido</p>
-                        </div>
-                    </div>
-                }
+                    }
+                </div>
+            }
+        </section>
+
+        <div class="calendario-container">
+            <div class="calendario-cabecalho-customizado">
+                <h2 id="titulo-cronograma">Cronograma</h2>
             </div>
-        }
-    </section>
+            <div id="calendar"></div>
 
-    <div class="calendario-container">
-        <div class="calendario-cabecalho-customizado">
-            <h2 id="titulo-cronograma">Cronograma</h2>
-        </div>
-        <div id="calendar"></div>
-
-        <div class="caption-container">
-            <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
-            <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
-            <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>
+            <div class="caption-container">
+                <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
+                <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
+                <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>
+            </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    <script>
-        window.PacientesEventos = {
-            @if (Model != null)
-            {
-                foreach (var paciente in Model)
+    @section Scripts {
+        <script>
+            window.PacientesEventos = {
+                        @if (Model != null)
                 {
-                    <text>
-                        '@paciente.Id': [
-                            @foreach (var falha in paciente.ExecucoesFalhas)
-                            {
-                                <text>
+                                foreach (var paciente in Model)
+                    {
+                        <text>
+                                '@paciente.Id': [
+                                                @foreach (var falha in paciente.ExecucoesFalhas)
                                 {
-                                    title: '@Html.Raw(falha.NomeMedicamentoHora)',
-                                    start: '@falha.Data',
-                                    display: 'block',
-                                    extendedProps: {
-                                        status: '@falha.Status',
-                                    },
+                                    <text>
+                                            {
+                                                title: '@Html.Raw(falha.NomeMedicamentoHora)',
+                                            start: '@falha.Data',
+                                            display: 'block',
+                                            extendedProps: {
+                                                status: '@falha.Status',
+                                                                },
+                                                                }
+                                    </text>
                                 }
-                                </text>
-                            }
-                        ],
-                    </text>
+                                ],
+                        </text>
                 }
-            }
-        };
-    </script>
+                }
+                        };
+        </script>
+    }
 }
