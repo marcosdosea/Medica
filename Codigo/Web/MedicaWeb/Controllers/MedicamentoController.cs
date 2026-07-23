@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaWeb.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Cuidador")]
     public class MedicamentoController : Controller
     {
         private readonly IMedicamentoService medicamentoService;

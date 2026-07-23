@@ -22,7 +22,9 @@ namespace MedicaWeb
             builder.Services.AddDbContext<IdentityContext>(options =>
                 options.UseMySQL(builder.Configuration.GetConnectionString("MedicaConnection")!));
 
-            builder.Services.AddDefaultIdentity<Usuario>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<IdentityContext>();
+            builder.Services.AddDefaultIdentity<Usuario>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<IdentityContext>();
 
             builder.Services.AddScoped<IMedicamentoService, MedicamentoService>();
             builder.Services.AddScoped<IPacienteService, PacienteService>();
