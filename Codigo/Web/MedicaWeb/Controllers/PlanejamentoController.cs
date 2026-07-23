@@ -5,11 +5,13 @@ using Core.Helper;
 using Core.Helpers;
 using Core.Service;
 using MedicaWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 
 namespace MedicaWeb.Controllers
 {
+    [Authorize]
     public class PlanejamentoController : Controller
     {
         private readonly IPlanejamentoService planejamentoService;

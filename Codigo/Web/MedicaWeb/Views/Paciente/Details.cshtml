@@ -32,59 +32,79 @@
             </div>
 
             <div class="row">
-                <div class="col-md-4 col-12 form-group-custom">
+                <div class="col-xxl-3 col-lg-4 col-md-6 col-12 form-group-custom">
                     <label class="label-custom">CPF</label>
                     <div class="form-control-static">@Model.Cpf</div>
                 </div>
-                <div class="col-md-8 col-12 form-group-custom">
+                <div class="col-xxl-6 col-lg-5 col-md-6 col-12 form-group-custom">
                     <label class="label-custom">Cartão SUS</label>
                     <div class="form-control-static">@(string.IsNullOrEmpty(Model.CartaoSus) ? "--" : Model.CartaoSus)</div>
                 </div>
-            </div>
-
-            <div class="row align-items-end">
-                <div class="col-xl-3 col-lg-6 col-md-12 col-12 form-group-custom">
-                    <label class="label-custom">Alergia a medicamentos?</label>
-                    <div class="form-control-static">@(Model.AlergiaMedicamento == 1 ? "Sim" : "Não")</div>
-                </div>
-                <div class="col-xl-2 col-lg-6 col-md-12 col-12 form-group-custom">
-                    <label class="label-custom">Tipo sanguíneo</label>
-                    <div class="form-control-static">@Html.DisplayFor(model => model.TipoSanguineo)</div>
-                </div>
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 form-group-custom">
-                    <label class="label-custom">Peso</label>
-                    <div class="form-control-static">@(Model.Peso > 0 ? Model.Peso.ToString() + " kg" : "--")</div>
-                </div>
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 form-group-custom">
-                    <label class="label-custom">Altura</label>
-                    <div class="form-control-static">@(Model.Altura > 0 ? Model.Altura.ToString() + " m" : "--")</div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-4 col-12 form-group-custom">
+                <div class="col-xxl-3 col-lg-3 col-md-12 col-12 form-group-custom">
                     <label class="label-custom">Sexo</label>
                     <div class="form-control-static">@(Model.Sexo == "M" ? "Masculino" : Model.Sexo == "F" ? "Feminino" : "--")</div>
                 </div>
             </div>
 
             <div class="row align-items-end">
-                <div class="col-xl-3 col-lg-6 col-md-12 col-12 form-group-custom">
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
+                    <label class="label-custom">Alergia a medicamentos?</label>
+                    <div class="switch-container-custom">
+                        <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
+                            <input class="form-check-input m-0" type="checkbox" role="switch" id="switchAlergia" @(Model.AlergiaMedicamento == 1 ? "checked" : "") disabled style="cursor: default;">
+                            <label class="form-check-label switch-label-custom mb-0" for="switchAlergia">
+                                @(Model.AlergiaMedicamento == 1 ? "Sim" : "Não")
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
+                    <label class="label-custom">Tipo sanguíneo</label>
+                    <div class="form-control-static">@Html.DisplayFor(model => model.TipoSanguineo)</div>
+                </div>
+
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
+                    <label class="label-custom">Altura</label>
+                    <div class="form-control-static">@(Model.Altura > 0 ? Model.Altura.ToString() + " m" : "--")</div>
+                </div>
+
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
+                    <label class="label-custom">Peso</label>
+                    <div class="form-control-static">@(Model.Peso > 0 ? Model.Peso.ToString() + " kg" : "--")</div>
+                </div>
+            </div>
+
+            <div class="row align-items-end">
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
                     <label class="label-custom">Possui deficiência?</label>
-                    <div class="form-control-static">@(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")</div>
+                    <div class="switch-container-custom">
+                        <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
+                            <input class="form-check-input m-0" type="checkbox" role="switch" id="switchDeficiencia" @(Model.PossuiDeficiencia == 1 ? "checked" : "") disabled style="cursor: default;">
+                            <label class="form-check-label switch-label-custom mb-0" for="switchDeficiencia">
+                                @(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-xl-2 col-lg-6 col-md-6 col-12 form-group-custom">
-                    <label class="label-custom">Parentesco</label>
-                    <div class="form-control-static">@(Model.Vinculo?.Parentesco ?? "--")</div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6 col-12 form-group-custom">
+
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
                     <label class="label-custom">Apelido</label>
                     <div class="form-control-static">@(string.IsNullOrEmpty(Model.Apelido) ? "--" : Model.Apelido)</div>
                 </div>
-                <div class="col-xl-4 col-lg-6 col-md-12 col-12 form-group-custom">
+
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
                     <label class="label-custom">Escolaridade</label>
-                    <div class="form-control-static" style="white-space: nowrap;">
+                    <div class="form-control-static">
                         @(Model.Escolaridade == "SuperiorIncompleto" ? "Superior Incompleto" :
                           Model.Escolaridade == "SuperiorCompleto" ? "Superior Completo" :
                           Model.Escolaridade == "MedioCompleto" ? "Médio Completo" : Model.Escolaridade?.ToString() ?? "--")
                     </div>
+                </div>
+
+                <div class="col-xxl-3 col-lg-6 col-md-6 col-12 form-group-custom">
+                    <label class="label-custom">Parentesco</label>
+                    <div class="form-control-static">@(Model.Vinculo?.Parentesco ?? "--")</div>
                 </div>
             </div>
         </div>
@@ -208,11 +228,11 @@
                     <label class="label-custom">Cidade</label>
                     <div class="form-control-static">@Model.Cidade</div>
                 </div>
-                <div class="col-xl-2 col-lg-1 col-md-3 col-sm-4 col-12 form-group-custom">
+                <div class="col-xl-2 col-lg-2 col-md-3 col-4 form-group-custom">
                     <label class="label-custom">Estado</label>
                     <div class="form-control-static">@Model.Estado</div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 form-group-custom">
+                <div class="col-xl-4 col-lg-3 col-md-12 col-8 form-group-custom">
                     <label class="label-custom">Complemento</label>
                     <div class="form-control-static">@(string.IsNullOrEmpty(Model.Complemento) ? "--" : Model.Complemento)</div>
                 </div>
@@ -233,6 +253,6 @@
                 <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-success">Ativar</button>
             }
         </form>
-        <button asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</button>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
     </div>
 </div>

@@ -4,10 +4,12 @@ using Core.Helper;
 using Core.Helpers;
 using Core.Service;
 using MedicaWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaWeb.Controllers
 {
+    [Authorize]
     public class MedicamentoController : Controller
     {
         private readonly IMedicamentoService medicamentoService;

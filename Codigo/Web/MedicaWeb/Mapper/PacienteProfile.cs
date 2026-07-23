@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core;
 using Core.Dto.Paciente;
+using Util;
 using static Core.Dto.Paciente.PacienteDetailsDto;
 
 namespace MedicaWeb.Mapper
@@ -13,6 +14,9 @@ namespace MedicaWeb.Mapper
 
             CreateMap<Paciente, PacienteDto>()
                             .ForMember(dest => dest.Ativo, opt => opt.MapFrom(src => src.Ativo.ToString()))
+                            .ForMember(dest => dest.Cpf, opt => opt.MapFrom(src =>
+                                    ulong.Parse(src.Cpf).ToString(@"000\.000\.000\-00")
+                             ))
                             .ForMember(dest => dest.ExecucoesFalhas, opt => opt.MapFrom(src =>
                                 src.Planejamentos
                                    .SelectMany(pl => pl.Execucaos, (pl, e) => new { Planejamento = pl, Execucao = e })
@@ -24,13 +28,21 @@ namespace MedicaWeb.Mapper
                                        NomeMedicamentoHora = $"{e.Planejamento.Hora:hh\\:mm} - " +
                                                              $"{e.Planejamento.IdMedicamentoNavigation.Nome}"
                                    })
-                            ));
+                            ))
+                            .AfterMap((src, dest) =>
+                            {
+                                dest.Cpf = FormatterCpf.FormatarCpf(src.Cpf);
+                            });
 
             CreateMap<Paciente, PacienteDetailsDto>()
                             .ForMember(dest => dest.Sexo, opt => opt.MapFrom(src => src.Sexo.ToString()))
                             .ForMember(dest => dest.Escolaridade, opt => opt.MapFrom(src => src.Escolaridade.ToString()))
                             .ForMember(dest => dest.Alergias, opt => opt.MapFrom(src => src.Alergia))
-                            .ForMember(dest => dest.Deficiencias, opt => opt.MapFrom(src => src.Deficiencia));
+                            .ForMember(dest => dest.Deficiencias, opt => opt.MapFrom(src => src.Deficiencia))
+                            .AfterMap((src, dest) =>
+                            {
+                                dest.Cpf = FormatterCpf.FormatarCpf(src.Cpf);
+                            });
 
             CreateMap<Deficiencium, PacienteDeficienciaDto>();
 

@@ -2,6 +2,8 @@ using Core;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
 using Service;
+using MedicaWeb.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace MedicaWeb
 {
@@ -16,6 +18,11 @@ namespace MedicaWeb
 
             builder.Services.AddDbContext<MedicaContext>(
                 options => options.UseMySQL(builder.Configuration.GetConnectionString("MedicaConnection")!));
+
+            builder.Services.AddDbContext<IdentityContext>(options =>
+                options.UseMySQL(builder.Configuration.GetConnectionString("MedicaConnection")!));
+
+            builder.Services.AddDefaultIdentity<Usuario>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<IdentityContext>();
 
             builder.Services.AddScoped<IMedicamentoService, MedicamentoService>();
             builder.Services.AddScoped<IPacienteService, PacienteService>();
@@ -37,12 +44,14 @@ namespace MedicaWeb
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            // ALTERADO: Agora a rota padrão inicial é o Index de Paciente!
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapRazorPages();
 
             app.Run();
         }
