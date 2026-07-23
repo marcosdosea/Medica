@@ -77,23 +77,23 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
-            [Required(ErrorMessage = "O Nome é obrigatório")]
+            [Required(ErrorMessage = "O {0} é obrigatório")]
             [Display(Name = "Nome")]
             public string Nome { get; set; }
 
             [CPF]
-            [Required(ErrorMessage = "O CPF é obrigatório")]
+            [Required(ErrorMessage = "O {0} é obrigatório")]
             [StringLength(14, MinimumLength = 11, ErrorMessage = "O CPF deve ter 11 dígitos")]
             [Display(Name = "CPF")]
             public string UserName { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "O {0} é obrigatório")]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
-            [StringLength(100, ErrorMessage = "A {0} deve ter entre {2} e {1} caracteres.", MinimumLength = 6)]
+            [Required(ErrorMessage = "A {0} é obrigatória")]
+            [StringLength(20, ErrorMessage = "A {0} deve ter entre {2} e {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Senha")]
             public string Password { get; set; }

@@ -74,11 +74,12 @@ namespace Service
         /// Buscar todos os planejamentos cadastrados
         /// </summary>
         /// <returns>Lista de planejamentos</returns>
-        public async Task<IEnumerable<Planejamento>> GetAll()
+        public async Task<IEnumerable<Planejamento>> GetAll(uint idCuidador)
         {
             return await context.Planejamentos
                 .Include(p => p.IdPacienteNavigation)
                 .Include(p => p.IdMedicamentoNavigation)
+                .Where(p => p.IdMedicamentoNavigation.IdCuidador == idCuidador)
                 .ToListAsync();
         }
 

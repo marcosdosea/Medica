@@ -25,7 +25,8 @@ namespace MedicaWeb.Controllers
         // GET: PlanejamentoController
         public async Task<IActionResult> Index()
         {
-            var planejamentos = await planejamentoService.GetAll();
+            var idCuidador = GetIdUserLogado();
+            var planejamentos = await planejamentoService.GetAll(idCuidador);
             var planejamentoDtos = mapper.Map<IEnumerable<PlanejamentoDto>>(planejamentos);
             return View(planejamentoDtos);
         }

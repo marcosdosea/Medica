@@ -30,7 +30,7 @@
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <input asp-for="Input.UserName" class="custom-input" autocomplete="username" aria-required="true" placeholder="CPF" maxlength="14" oninput="mascaraCpf(this)" />
+                <input asp-for="Input.UserName" class="custom-input" autocomplete="username" aria-required="true" placeholder="CPF" maxlength="20" oninput="mascaraCpf(this)" />
             </div>
             <span asp-validation-for="Input.UserName" class="text-warning text-start d-block mb-2 validation-error-text"></span>
 

@@ -101,9 +101,12 @@ namespace Service
         /// Buscar todos os medicamentos cadastrados
         /// </summary>
         /// <returns>Lista de medicamentos</returns>
-        public async Task<IEnumerable<Medicamento>> GetAll()
+        public async Task<IEnumerable<Medicamento>> GetAll(uint idCuidador)
         {
-            return await context.Medicamentos.AsNoTracking().ToListAsync();
+            return await context.Medicamentos
+                                .AsNoTracking()
+                                .Where(m => m.IdCuidador == idCuidador)
+                                .ToListAsync();
         }
 
         /// <summary>

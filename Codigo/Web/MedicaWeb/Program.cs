@@ -1,9 +1,10 @@
 using Core;
 using Core.Service;
+using MedicaWeb.Areas.Identity.Data;
+using MedicaWeb.Areas.Identity.Data.Util;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Service;
-using MedicaWeb.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
 
 namespace MedicaWeb
 {
@@ -27,9 +28,27 @@ namespace MedicaWeb
             builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
+                options.User.RequireUniqueEmail = true;
+
+                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredUniqueChars = 2;
+
+                options.User.AllowedUserNameCharacters =
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
             })
             .AddEntityFrameworkStores<IdentityContext>()
             .AddDefaultTokenProviders()
+            .AddErrorDescriber<IdentityMensagem>()
             .AddSignInManager<ApplicationSignInManager>();
 
             builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, Microsoft.AspNetCore.Identity.UI.Services.NoOpEmailSender>();
@@ -39,6 +58,17 @@ namespace MedicaWeb
                 options.LoginPath = "/Identity/Account/Login";
                 options.LogoutPath = "/Identity/Account/Logout";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.ExpireTimeSpan = TimeSpan.FromHours(2);
+                options.SlidingExpiration = true;
+            });
+
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
 
             builder.Services.AddScoped<IMedicamentoService, MedicamentoService>();
@@ -61,6 +91,7 @@ namespace MedicaWeb
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();
