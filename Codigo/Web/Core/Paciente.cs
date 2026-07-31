@@ -22,8 +22,7 @@ public partial class Paciente
     public float? Altura { get; set; }
 
     /// <summary>
-    /// &apos;M&apos; = Masculino;
-    /// &apos;F&apos; = Feminino.
+    /// &apos;M&apos; = Masculino;\n&apos;F&apos; = Feminino.
     /// </summary>
     public string Sexo { get; set; } = null!;
 
@@ -69,6 +68,8 @@ public partial class Paciente
     public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
 
     public virtual ICollection<Deficiencium> Deficiencia { get; set; } = new List<Deficiencium>();
+
+    public virtual ICollection<Dispositivopaciente> Dispositivopacientes { get; set; } = new List<Dispositivopaciente>();
 
     public virtual ICollection<Planejamento> Planejamentos { get; set; } = new List<Planejamento>();
 

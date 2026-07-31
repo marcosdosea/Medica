@@ -21,6 +21,8 @@ public partial class MedicaContext : DbContext
 
     public virtual DbSet<Deficiencium> Deficiencia { get; set; }
 
+    public virtual DbSet<Dispositivopaciente> Dispositivopacientes { get; set; }
+
     public virtual DbSet<Execucao> Execucaos { get; set; }
 
     public virtual DbSet<Medicamento> Medicamentos { get; set; }
@@ -32,6 +34,7 @@ public partial class MedicaContext : DbContext
     public virtual DbSet<Vinculo> Vinculos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySQL("server=127.0.0.1;port=3306;user=root;password=123456;database=Medica");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -110,6 +113,29 @@ public partial class MedicaContext : DbContext
                 .HasForeignKey(d => d.IdPaciente)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_Deficiencia_Paciente1");
+        });
+
+        modelBuilder.Entity<Dispositivopaciente>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("dispositivopaciente");
+
+            entity.HasIndex(e => e.IdPaciente, "fk_dispositivopaciente_paciente1_idx");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.DataAtualizacao)
+                .HasColumnType("datetime")
+                .HasColumnName("dataAtualizacao");
+            entity.Property(e => e.FcmToken)
+                .HasColumnType("text")
+                .HasColumnName("fcmToken");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+
+            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Dispositivopacientes)
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_dispositivopaciente_paciente1");
         });
 
         modelBuilder.Entity<Execucao>(entity =>
@@ -256,7 +282,7 @@ public partial class MedicaContext : DbContext
                 .HasMaxLength(60)
                 .HasColumnName("rua");
             entity.Property(e => e.Sexo)
-                .HasComment("'M' = Masculino;\n'F' = Feminino.")
+                .HasComment("'M' = Masculino;\\n'F' = Feminino.")
                 .HasColumnType("enum('M','F')")
                 .HasColumnName("sexo");
             entity.Property(e => e.Telefone)
@@ -301,6 +327,9 @@ public partial class MedicaContext : DbContext
                 .HasColumnName("hora");
             entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
             entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.IntervaloExecucao)
+                .HasColumnType("time")
+                .HasColumnName("intervaloExecucao");
             entity.Property(e => e.Status)
                 .HasColumnType("enum('NAO_INICIADO','EM_ANDAMENTO','CONCLUIDO','INTERROMPIDO')")
                 .HasColumnName("status");

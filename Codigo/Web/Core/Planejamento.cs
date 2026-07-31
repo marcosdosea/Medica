@@ -22,6 +22,8 @@ public partial class Planejamento
 
     public TimeSpan Hora { get; set; }
 
+    public TimeSpan IntervaloExecucao { get; set; }
+
     public int Dosagem { get; set; }
 
     public string UnidadeDosagem { get; set; } = null!;
