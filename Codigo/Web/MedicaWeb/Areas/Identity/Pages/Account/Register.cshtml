@@ -1,0 +1,72 @@
+﻿@page
+@model RegisterModel
+
+@{
+    ViewData["Title"] = "Registre-se";
+}
+
+<div class="login-wrapper">
+    <div class="login-box">
+
+        <div class="login-logo">
+            <img src="~/img/logo.png" alt="Logo" />
+        </div>
+
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 validation-summary-box" role="alert"></div>
+
+            <div class="custom-input-group">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <input asp-for="Input.Nome" class="custom-input" aria-required="true" placeholder="NOME" />
+            </div>
+
+            <span asp-validation-for="Input.Nome" class="text-warning text-start d-block mb-2 validation-error-text"></span>
+
+            <div class="custom-input-group">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <input asp-for="Input.UserName" class="custom-input" autocomplete="username" aria-required="true" placeholder="CPF" maxlength="20" oninput="mascaraCpf(this)" />
+            </div>
+            <span asp-validation-for="Input.UserName" class="text-warning text-start d-block mb-2 validation-error-text"></span>
+
+            <div class="custom-input-group">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <input asp-for="Input.Email" type="email" class="custom-input" autocomplete="email" aria-required="true" placeholder="E-MAIL" />
+            </div>
+            <span asp-validation-for="Input.Email" class="text-warning text-start d-block mb-2 validation-error-text"></span>
+            <div class="custom-input-group">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <input asp-for="Input.Password" type="password" class="custom-input" autocomplete="new-password" aria-required="true" placeholder="SENHA" />
+            </div>
+            <span asp-validation-for="Input.Password" class="text-warning text-start d-block mb-2 validation-error-text"></span>
+            <div class="custom-input-group">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <input asp-for="Input.ConfirmPassword" type="password" class="custom-input" autocomplete="new-password" aria-required="true" placeholder="REPETIR SENHA" />
+            </div>
+            <span asp-validation-for="Input.ConfirmPassword" class="text-warning text-start d-block mb-2 validation-error-text"></span>
+            <button id="registerSubmit" type="submit" class="btn-login">CADASTRAR</button>
+            <div class="login-links">
+                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Já tem uma conta? Faça login</a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: "📖 Documentação da API"
+    url: https://quasar-garage-d28.notion.site/MedicaApi-9c282d54e58f8242b0b601cc42ddb3c5
+    about: Desenvolvedor, consulte nossos endpoints aqui.
