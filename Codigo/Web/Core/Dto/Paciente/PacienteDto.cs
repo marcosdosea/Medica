@@ -1,4 +1,4 @@
-﻿namespace Core.Dto.PacienteDto
+﻿namespace Core.Dto.Paciente
 {
     public class PacienteDto
     {
@@ -8,28 +8,23 @@
 
         public string Cpf { get; set; } = null!;
 
-        public string Sexo { get; set; } = null!;
-
         public DateTime? DataNascimento { get; set; }
 
         public byte[]? Foto { get; set; }
 
         public string? Apelido { get; set; }
 
-        public string Idade
+        public string Ativo { get; set; } = "S";
+
+        public IEnumerable<ExecucaoDto> ExecucoesFalhas { get; set; } = [];
+
+        public class ExecucaoDto
         {
-            get
-            {
-                if (!DataNascimento.HasValue)
-                    return "--";
+            public string Data { get; set; } = null!;
 
-                var hoje = DateTime.Today;
-                var idade = hoje.Year - DataNascimento.Value.Year;
-                if (DataNascimento.Value.Date > hoje.AddYears(-idade))
-                    idade--;
+            public string Status { get; set; } = null!;
 
-                return $"{idade} anos";
-            }
+            public string NomeMedicamentoHora { get; set; } = null!;
         }
     }
 }

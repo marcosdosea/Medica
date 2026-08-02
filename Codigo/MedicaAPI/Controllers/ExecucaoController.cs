@@ -1,82 +1,59 @@
-﻿using Microsoft.AspNetCore.Http;
+using AutoMapper;
+using Core;
+using Core.Dto.Execucao;
+using Core.Service;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MedicaAPI.Controllers
+namespace Api.Controllers
 {
-    public class ExecucaoController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class ExecucaoController : ControllerBase
     {
-        // GET: ExecucaoController
-        public ActionResult Index()
+        private readonly IExecucaoService _execucaoService;
+        private readonly IMapper _mapper;
+
+        public ExecucaoController(IExecucaoService execucaoService, IMapper mapper)
         {
-            return View();
+            _execucaoService = execucaoService;
+            _mapper = mapper;
         }
 
-        // GET: ExecucaoController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: ExecucaoController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ExecucaoController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> RegistrarExecucao([FromBody] ExecucaoRequestDto request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    sucesso = false,
+                    mensagem = "Dados inválidos enviados pelo aplicativo.",
+                    timestamp = DateTime.UtcNow
+                });
+            }
+
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                var execucao = _mapper.Map<Execucao>(request);
 
-        // GET: ExecucaoController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+                await _execucaoService.Create(execucao);
 
-        // POST: ExecucaoController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
+                return StatusCode(201, new
+                {
+                    sucesso = true,
+                    mensagem = "Execução inserida com sucesso.",
+                    timestamp = DateTime.UtcNow,
+                    data = (object)null!
+                });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
-            }
-        }
-
-        // GET: ExecucaoController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ExecucaoController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                return BadRequest(new
+                {
+                    sucesso = false,
+                    mensagem = $"Erro ao registrar a execução: {ex.Message}",
+                    timestamp = DateTime.UtcNow
+                });
             }
         }
     }
