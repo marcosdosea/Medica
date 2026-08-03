@@ -30,8 +30,6 @@ public partial class Planejamento
 
     public string Ativo { get; set; } = null!;
 
-    public string Status { get; set; } = null!;
-
     public virtual ICollection<Execucao> Execucaos { get; set; } = new List<Execucao>();
 
     public virtual Medicamento IdMedicamentoNavigation { get; set; } = null!;

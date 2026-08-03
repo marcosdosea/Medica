@@ -1,8 +1,11 @@
 ﻿using Core;
-using Core.Enum;
-using Core.Enum.Planejamento;
+using Core.Dto.PacienteDto;
+using Core.Enum.Paciente;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Service
 {
@@ -15,139 +18,79 @@ namespace Service
             this.context = context;
         }
 
-        /// <summary>
-        /// Criar um novo paciente na base de dados
-        /// </summary>
-        /// <param name="paciente">Dados do paciente</param>
-        /// <returns>Id do novo paciente</returns>
         public async Task<uint> Create(Paciente paciente)
         {
             await context.Pacientes.AddAsync(paciente);
             await context.SaveChangesAsync();
+
             return paciente.Id;
         }
 
-        /// <summary>
-        /// Atualizar dados de um paciente da base de dados
-        /// </summary>
-        /// <param name="paciente">Novos dados do paciente</param>
         public async Task Edit(Paciente paciente)
         {
             context.Pacientes.Update(paciente);
             await context.SaveChangesAsync();
         }
 
-        /// <summary>
-        /// Remover dados de um paciente da base de dados
-        /// </summary>
-        /// <param name="id">id do paciente</param>
         public async Task Delete(uint id)
         {
-            var paciente = await this.Get(id);
-
-            bool possuiExecucoes = await context.Planejamentos
-                                                .AnyAsync(pl => pl.IdPaciente == id && pl.Execucaos.Any());
-
-            if (possuiExecucoes)
-            {
-                paciente!.Ativo = StatusAtivo.N.ToString();
-                context.Pacientes.Update(paciente);
-
-                var planejamentosPaciente = await context.Planejamentos
-                                                         .Where(pl => pl.IdPaciente == id && pl.Ativo == StatusAtivo.S.ToString())
-                                                         .ToListAsync();
-
-                foreach (var planejamento in planejamentosPaciente)
-                {
-                    planejamento.Ativo = StatusAtivo.N.ToString();
-                    planejamento.Status = Status.INTERROMPIDO.ToString();
-                }
-
-                context.Planejamentos.UpdateRange(planejamentosPaciente);
-            }
-            else
-            {
-                if (paciente!.Vinculos != null && paciente.Vinculos.Count != 0)
-                {
-                    context.Vinculos.RemoveRange(paciente.Vinculos);
-                }
-
-                if (paciente!.Planejamentos != null && paciente.Planejamentos.Count != 0)
-                {
-                    context.Planejamentos.RemoveRange(paciente.Planejamentos);
-                }
-
-                if (paciente.Alergia != null && paciente.Alergia.Count != 0)
-                {
-                    context.Alergia.RemoveRange(paciente.Alergia);
-                }
-
-                if (paciente.Deficiencia != null && paciente.Deficiencia.Count != 0)
-                {
-                    context.Deficiencia.RemoveRange(paciente.Deficiencia);
-                }
-
-                context.Pacientes.Remove(paciente);
-            }
-
+            var paciente = await context.Pacientes.FindAsync(id);
+            context.Pacientes.Remove(paciente!);
             await context.SaveChangesAsync();
         }
 
-        /// <summary>
-        /// Buscar um paciente na base de dados
-        /// </summary>
-        /// <param name="id">id do paciente</param>
-        /// <returns>Dados do paciente</returns>
         public async Task<Paciente?> Get(uint id)
         {
             return await context.Pacientes
                                 .Include(p => p.Alergia)
                                     .ThenInclude(a => a.IdMedicamentoNavigation)
                                 .Include(p => p.Deficiencia)
-                                .Include(p => p.Planejamentos)
-                                    .ThenInclude(pl => pl.Execucaos)
-                                .Include(p => p.Vinculos)
-                                    .ThenInclude(v => v.IdCuidadorNavigation)
                                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        /// <summary>
-        /// Buscar todos os pacientes cadastrados
-        /// </summary>
-        /// <returns>Lista de paciente</returns>
-        public async Task<IEnumerable<Paciente>> GetAll(uint idCuidador, int? ano = null, int? mes = null)
+        public async Task<IEnumerable<Paciente>> GetByMedicamento(uint idMedicamento)
         {
-            int anoFiltro = ano ?? DateTime.Today.Year;
-            int mesFiltro = mes ?? DateTime.Today.Month;
-
-            var dataInicio = new DateTime(anoFiltro, mesFiltro, 1);
-            var dataFim = dataInicio.AddMonths(1).AddDays(-1);
-
-            return await context.Pacientes
-                                .AsNoTracking()
-                                .Where(p => p.Vinculos.Any(v => v.IdCuidador == idCuidador))
-                                .Include(p => p.Planejamentos)
-                                    .ThenInclude(pl => pl.Execucaos.Where(e => e.DataConfirmacao >= dataInicio && e.DataConfirmacao <= dataFim))
-                                .Include(p => p.Planejamentos)
-                                    .ThenInclude(pl => pl.IdMedicamentoNavigation)
-                                .OrderBy(p => p.Nome)
-                                .ToListAsync();
+            return await context.Planejamentos
+                .AsNoTracking()
+                .Where(p => p.IdMedicamento == idMedicamento)
+                .Select(p => p.IdPaciente)
+                .Distinct()
+                .Join(
+                    context.Pacientes.AsNoTracking(),
+                    idPaciente => idPaciente,
+                    paciente => paciente.Id,
+                    (idPaciente, paciente) => paciente
+                )
+                .OrderBy(p => p.Nome)
+                .ToListAsync();
         }
 
-        /// <summary>
-        /// Reativa um paciente com status inativo
-        /// </summary>
-        /// <param name="id">id do paciente</param>
-        public async Task Activate(uint id)
+        public async Task<IEnumerable<Paciente>> GetAll()
         {
-            var paciente = await this.Get(id);
-            if (paciente!.Ativo == StatusAtivo.S.ToString())
+            var query = context.Pacientes.AsNoTracking();
+            return await query.OrderBy(p => p.Nome).ToListAsync();
+        }
+
+        public async Task<IEnumerable<PacienteMobileDto>> GetMobileAsync()
+        {
+            // 1. Busca os dados brutos do banco de dados primeiro (SQL puro)
+            var pacientesDoBanco = await context.Pacientes
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Escolaridade,
+                    p.PossuiDeficiencia
+                })
+                .ToListAsync(); 
+
+            var resultadoDto = pacientesDoBanco.Select(p => new PacienteMobileDto
             {
-                return;
-            }
-            paciente.Ativo = StatusAtivo.S.ToString();
-            context.Pacientes.Update(paciente);
-            await context.SaveChangesAsync();
+                Id = p.Id,
+                Escolaridade = int.Parse( p.Escolaridade.ToString()),
+                PossuiDeficiencia = p.PossuiDeficiencia == 1
+            }).ToList();
+
+            return resultadoDto;
         }
     }
 }

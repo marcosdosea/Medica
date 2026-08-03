@@ -13,11 +13,6 @@ public partial class Cuidador
 
     public byte[]? Foto { get; set; }
 
-    /// <summary>
-    /// Campo onde o administrador pode gerenciar o usuário.
-    /// </summary>
-    public string Ativo { get; set; } = null!;
-
     public virtual ICollection<Medicamento> Medicamentos { get; set; } = new List<Medicamento>();
 
     public virtual ICollection<Vinculo> Vinculos { get; set; } = new List<Vinculo>();

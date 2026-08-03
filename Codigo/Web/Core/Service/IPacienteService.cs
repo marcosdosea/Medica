@@ -1,12 +1,17 @@
-﻿namespace Core.Service
+﻿using Core.Dto.PacienteDto;
+
+namespace Core.Service
 {
     public interface IPacienteService
     {
-        Task<IEnumerable<Paciente>> GetAll(uint idCuidador, int? ano = null, int? mes = null);
+        Task<IEnumerable<Paciente>> GetAll();
         Task<Paciente?> Get(uint id);
+        Task<IEnumerable<Paciente>> GetByMedicamento(uint idMedicamento);
         Task<uint> Create(Paciente paciente);
         Task Edit(Paciente paciente);
         Task Delete(uint id);
-        Task Activate(uint id);
+        Task<IEnumerable<PacienteMobileDto>> GetMobileAsync();
+
+
     }
 }

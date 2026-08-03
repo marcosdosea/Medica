@@ -26,8 +26,6 @@ namespace MedicaWeb.Models
         [Display(Name = "Foto do Medicamento")]
         public byte[]? Foto { get; set; }
 
-        public string Ativo { get; set; } = "S";
-
         public uint IdCuidador { get; set; }
     }
 }
