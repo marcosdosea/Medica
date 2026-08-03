@@ -1,4 +1,4 @@
-﻿using Core.Enum.Alergia;
+using Core.Enum.Alergia;
 using Core.Enum.Paciente;
 
 namespace Core.Dto.Paciente
@@ -13,7 +13,7 @@ namespace Core.Dto.Paciente
 
         public string? CartaoSus { get; set; }
 
-        public TipoSanguineo TipoSanguineo { get; set; }
+        public TipoSanguineo? TipoSanguineo { get; set; }
 
         public float? Peso { get; set; }
 

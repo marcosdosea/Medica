@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
 using Core;
-using Core.Dto;
-using Core.Dto.PacienteDto;
 using Core.Helper;
 using Core.Helpers;
 using Core.Service;
 using MedicaWeb.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Service;
 
 namespace MedicaWeb.Controllers
 {

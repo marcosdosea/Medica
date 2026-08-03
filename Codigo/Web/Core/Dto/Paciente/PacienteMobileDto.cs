@@ -7,6 +7,7 @@ namespace Core.Dto.Paciente
         public string Escolaridade { get; set; } = null!;
 
         public List<DeficienciaMobileDto> Deficiencias { get; set; } = new();
+        public uint Id { get; set; }
 
         public class DeficienciaMobileDto
         {

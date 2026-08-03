@@ -15,8 +15,8 @@ namespace MedicaAPI.Mapper
                 .ForMember(dest => dest.HoraConfirmacao, opt =>
                     opt.MapFrom(src => string.IsNullOrWhiteSpace(src.HoraConfirmacao)
                         ? (TimeSpan?)null
-                        : TimeSpan.Parse(src.HoraConfirmacao)))
-                .ForMember(dest => dest.Status, opt => opt.Ignore());
+                        : TimeSpan.Parse(src.HoraConfirmacao)));
+                
         }
     }
 }

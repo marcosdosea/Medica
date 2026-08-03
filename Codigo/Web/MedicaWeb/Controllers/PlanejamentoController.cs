@@ -92,7 +92,7 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Activate(uint id)
         {
             await planejamentoService.Activate(id);
-            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.AtivacaoSucesso);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
             return RedirectToAction(nameof(Index));
         }
     }

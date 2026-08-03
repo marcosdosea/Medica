@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Core;
-using Core.Dto.PacienteDto;
-using static Core.Dto.PacienteDto.PacienteDetailsDto;
+using Core.Dto.Paciente;
+using static Core.Dto.Paciente.PacienteDetailsDto;
 
 namespace MedicaWeb.Mapper
 {

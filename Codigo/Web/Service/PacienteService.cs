@@ -1,5 +1,5 @@
 ﻿using Core;
-using Core.Dto.PacienteDto;
+using Core.Dto.Paciente;
 using Core.Enum.Paciente;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
@@ -86,7 +86,7 @@ namespace Service
             var resultadoDto = pacientesDoBanco.Select(p => new PacienteMobileDto
             {
                 Id = p.Id,
-                Escolaridade = int.Parse( p.Escolaridade.ToString()),
+                Escolaridade = p.Escolaridade.ToString(),
                 PossuiDeficiencia = p.PossuiDeficiencia == 1
             }).ToList();
 

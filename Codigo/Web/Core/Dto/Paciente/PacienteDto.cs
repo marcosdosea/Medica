@@ -1,4 +1,4 @@
-﻿namespace Core.Dto.Paciente
+namespace Core.Dto.Paciente
 {
     public class PacienteDto
     {
@@ -13,6 +13,8 @@
         public byte[]? Foto { get; set; }
 
         public string? Apelido { get; set; }
+
+        public string Sexo { get; set; } = null!;
 
         public string Ativo { get; set; } = "S";
 

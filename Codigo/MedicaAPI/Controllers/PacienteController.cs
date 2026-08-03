@@ -23,7 +23,7 @@ namespace Api.Controllers
         {
             var paciente = await _pacienteService.Get(id);
 
-            if (paciente == null || paciente.Ativo == "N")
+            if (paciente == null)
             {
                 return NotFound(new
                 {
