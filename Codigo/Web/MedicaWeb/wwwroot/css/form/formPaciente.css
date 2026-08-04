@@ -1,0 +1,259 @@
+﻿
+.cadastro-page-container {
+    background-color: transparent;
+    padding: 30px;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+    .cadastro-page-container * {
+        box-sizing: border-box;
+    }
+
+.cadastro-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+    .cadastro-header h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .cadastro-header a {
+        color: #212529;
+        font-size: 22px;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+        .cadastro-header a:hover {
+            color: #0d6efd;
+        }
+
+.form-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .section-title i {
+        color: #6c757d;
+        font-size: 18px;
+    }
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -10px;
+    margin-left: -10px;
+    margin-bottom: 15px;
+}
+
+.form-group-custom,
+.switch-container {
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+}
+
+.c-1 {
+    width: 8.333333%;
+}
+
+.c-2 {
+    width: 16.666667%;
+}
+
+.c-3 {
+    width: 25%;
+}
+
+.c-4 {
+    width: 33.333333%;
+}
+
+.c-5 {
+    width: 41.666667%;
+}
+
+.c-6 {
+    width: 50%;
+}
+
+.c-7 {
+    width: 58.333333%;
+}
+
+.c-8 {
+    width: 66.666667%;
+}
+
+.c-9 {
+    width: 75%;
+}
+
+.c-10 {
+    width: 83.333333%;
+}
+
+.c-11 {
+    width: 91.666667%;
+}
+
+.c-12 {
+    width: 100%;
+}
+
+.form-group-custom label {
+    display: block;
+    font-size: 11px;
+    color: #6c757d;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-input-custom {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #495057;
+    font-size: 14px;
+    transition: box-shadow 0.2s ease, outline 0.2s ease;
+    min-height: 40px; 
+}
+
+    .form-input-custom:focus {
+        outline: 2px solid #3b82f6; 
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+    }
+
+.btn-upload-foto {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1e90ff; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+    .btn-upload-foto:hover {
+        background-color: #0d6efd;
+    }
+
+    .btn-upload-foto i {
+        font-size: 18px;
+    }
+
+.switch-container label {
+    display: block;
+    font-size: 11px;
+    color: #6c757d;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.switch-wrapper .form-check.form-switch {
+    padding-left: 2.5em !important;
+    margin-left: 0 !important;
+}
+
+.switch-wrapper .form-check-input {
+    margin-left: -2.5em !important; 
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+/* ==========================================================================
+   Blocos Dinâmicos (+ Adicionar)
+   ========================================================================== */
+.dynamic-block {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 10px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .dynamic-block i {
+        color: #3b82f6;
+        cursor: pointer;
+        font-size: 18px;
+        transition: color 0.2s;
+    }
+
+        .dynamic-block i:hover {
+            color: #0d6efd;
+        }
+
+/* ==========================================================================
+   Rodapé e Botões de Ação
+   ========================================================================== */
+.footer-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 40px;
+    padding-top: 20px;
+}
+
+.btn-cancelar {
+    background-color: #ff4d4f; /* Vermelho */
+    color: white;
+    padding: 10px 35px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .btn-cancelar:hover {
+        background-color: #ff7875;
+        color: white;
+    }
+
+.btn-salvar-azul {
+    background-color: #4096ff; /* Azul claro */
+    color: white;
+    padding: 10px 35px;
+    border-radius: 4px;
+    border: none;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .btn-salvar-azul:hover {
+        background-color: #1677ff;
+    }
