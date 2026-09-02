@@ -1,10 +1,12 @@
 using AutoMapper;
 using Core.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace MedicaWeb.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IPacienteService pacienteService;

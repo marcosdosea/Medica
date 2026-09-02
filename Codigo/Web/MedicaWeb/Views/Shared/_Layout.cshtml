@@ -43,13 +43,18 @@
                 <i class="bi bi-clipboard-pulse"></i> <span>Medicamento</span>
             </a>
 
-            <a class="nav-item @(controller == "Planejamento" ? "active" : "")" href="#">
+            <a class="nav-item @(controller == "Planejamento" ? "active" : "")" asp-controller="Planejamento" asp-action="Index">
                 <i class="bi bi-calendar3"></i> <span>Planejamento</span>
             </a>
 
             <span class="nav-label"></span>
             <a class="nav-item" href="#"><i class="bi bi-bell"></i> <span>Notificações</span></a>
             <a class="nav-item" href="#"><i class="bi bi-gear"></i> <span>Configuração</span></a>
+            <form class="d-inline w-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                <button type="submit" class="nav-item border-0 bg-transparent w-100 text-start text-inherit" style="cursor: pointer; font-family: inherit;">
+                    <i class="bi bi-box-arrow-right"></i> <span>Sair</span>
+                </button>
+            </form>
         </nav>
         <footer class="sidebar-footer">
             <div class="theme-switch">
@@ -62,9 +67,7 @@
         <div class="content-container">
             @RenderBody()
         </div>
-        <footer class="content-footer">
-            &copy; 2026 - MedicaWeb - <a asp-action="Privacy">Privacidade</a>
-        </footer>
+        <footer class="content-footer"></footer>
     </main>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>

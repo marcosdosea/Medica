@@ -163,7 +163,18 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
                 }
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    if (error.Code == "DuplicateUserName")
+                    {
+                        ModelState.AddModelError("Input.UserName", "Este CPF já está cadastrado.");
+                    }
+                    else if (error.Code == "DuplicateEmail")
+                    {
+                        ModelState.AddModelError("Input.Email", "Este e-mail já está cadastrado.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
             }
 
