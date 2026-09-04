@@ -149,3 +149,22 @@
         .dynamic-block i:hover {
             color: #0d6efd;
         }
+
+.select2-container .select2-selection--single {
+    height: 42px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 40px !important;
+    padding-left: 12px !important;
+    color: #495057 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px !important;
+    right: 8px !important;
+}

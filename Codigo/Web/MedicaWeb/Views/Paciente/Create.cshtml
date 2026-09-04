@@ -8,6 +8,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 }
 
 <div class="header-inline mb-4">
@@ -92,13 +93,13 @@
 
             <div class="form-group-custom c-2">
                 <label asp-for="Peso" class="label-custom">Peso (kg)</label>
-                <input asp-for="Peso" type="number" step="0.01" min="0" max="500" class="form-input-custom" placeholder="70.5" />
+                <input asp-for="Peso" type="number" step="0.01" min="0" max="500" class="form-input-custom" placeholder="" />
                 <span asp-validation-for="Peso" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
             <div class="form-group-custom c-2">
                 <label asp-for="Altura" class="label-custom">Altura (m)</label>
-                <input asp-for="Altura" type="number" step="0.01" min="0" max="3" class="form-input-custom" placeholder="1.75" />
+                <input asp-for="Altura" type="number" step="0.01" min="0" max="3" class="form-input-custom" placeholder="" />
                 <span asp-validation-for="Altura" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
@@ -156,33 +157,65 @@
     </div>
 
     <div class="form-section" id="sectionAlergiaInput" style="display: none;">
-        <div class="dynamic-block d-inline-flex align-items-center gap-2">
-            <label class="label-custom mb-0">Alergias a medicamentos</label>
-            <i class="bi bi-plus-circle-fill"></i>
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 15px;">
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Alergias</span>
         </div>
-        <div class="form-row">
+
+        <div class="form-row mb-3">
             <div class="form-group-custom c-3">
-                <label class="label-custom">Medicamento</label>
-                <select class="form-input-custom">
-                    <option value="Losartana">Losartana</option>
+                <label class="label-custom">Tipo de alergia</label>
+                <select class="form-input-custom" id="inputTipoAlergia" asp-items="Html.GetEnumSelectList<Core.Enum.TipoAlergia.TipoAlergia>()" onchange="verificarTipoAlergia(this.value)">
+                    <option value="" disabled selected hidden>Selecionar</option>
                 </select>
+                <span id="alergia-tipo-error" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-5">
+
+            <div class="form-group-custom c-3" id="colunaMedicamentoAlergia">
+                <label class="label-custom">Medicamento</label>
+                <select class="form-input-custom" id="inputMedicamentoAlergia" asp-items="ViewBag.Medicamentos" disabled>
+                    <option value="">Selecione</option>
+                </select>
+                <span id="alergia-error" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+
+            <div class="form-group-custom c-4" id="colunaDescricaoAlergia">
                 <label class="label-custom">Descrição</label>
-                <input type="text" class="form-input-custom" maxlength="100" placeholder="Descrição da alergia" />
+                <textarea id="inputDescricaoAlergia" class="form-input-custom" rows="2" maxlength="100" style="resize: vertical; min-height: 42px;"></textarea>
+            </div>
+
+            <div class="form-group-custom c-2" style="align-self: flex-end; margin-bottom: 5px;">
+                <button type="button" class="btn-novo" style="border: none; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; height: 42px;" onclick="adicionarAlergia()">
+                    Adicionar
+                </button>
             </div>
         </div>
+
+        <div class="calendario-container mt-3" style="padding: 0; margin-bottom: 25px;">
+            <table id="tabelaAlergias" class="custom-table" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Medicamento</th>
+                        <th>Descrição</th>
+                        <th style="text-align: center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="hiddenAlergiasContainer"></div>
     </div>
 
     <div class="form-section" id="sectionDeficienciaInput" style="display: none;">
-        <div class="dynamic-block d-inline-flex align-items-center gap-2">
-            <label class="label-custom mb-0">Deficiências</label>
-            <i class="bi bi-plus-circle-fill"></i>
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px;">
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Deficiência</span>
         </div>
         <div class="form-row">
-            <div class="form-group-custom c-5">
+            <div class="form-group-custom c-6">
                 <label class="label-custom">Descrição</label>
-                <input type="text" class="form-input-custom" maxlength="100" placeholder="Descrição da deficiência" />
+                <textarea asp-for="Deficiencia" class="form-input-custom" rows="3" maxlength="100" style="resize: vertical; min-height: 64px;"></textarea>
             </div>
         </div>
     </div>
@@ -195,45 +228,48 @@
         <div class="form-row">
             <div class="form-group-custom c-2">
                 <label asp-for="Cep" class="label-custom">Cep</label>
-                <input asp-for="Cep" 
+                <input asp-for="Cep"
                        id="Cep"
-                       class="form-input-custom" 
+                       class="form-input-custom"
                        type="tel"
                        inputmode="numeric"
-                       maxlength="8" 
+                       maxlength="8"
                        pattern="\d{8}"
                        title="Digite os 8 números do CEP"
                        placeholder="00000000"
-                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); document.getElementById('cep-error').innerText = '';"
-                       onblur="buscarCep(this.value)"
+                       oninput="this.value = this.value.replace(/\D/g, '');
+                const err = document.getElementById('cep-error');
+                if(err) err.innerText = '';
+                if(this.value.length === 8) buscarCep(this.value);"
+                       onblur="if(this.value.length === 8) buscarCep(this.value);"
                        required />
                 <span asp-validation-for="Cep" id="cep-error" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
             <div class="form-group-custom c-5">
                 <label asp-for="Rua" class="label-custom">Rua</label>
-                <input asp-for="Rua" class="form-input-custom" maxlength="60" placeholder="Rua / Avenida" required />
+                <input asp-for="Rua" id="Rua" class="form-input-custom" maxlength="60" placeholder="Rua / Avenida" required />
                 <span asp-validation-for="Rua" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
             <div class="form-group-custom c-5">
                 <label asp-for="Bairro" class="label-custom">Bairro</label>
-                <input asp-for="Bairro" class="form-input-custom" maxlength="60" placeholder="Bairro" required />
+                <input asp-for="Bairro" id="Bairro" class="form-input-custom" maxlength="60" placeholder="Bairro" required />
                 <span asp-validation-for="Bairro" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group-custom c-1">
                 <label asp-for="Identificador" class="label-custom">Identificador</label>
-                <input asp-for="Identificador" class="form-input-custom" maxlength="30" placeholder="Nº / Lote" />
+                <input asp-for="Identificador" id="Identificador" class="form-input-custom" maxlength="30" placeholder="Nº / Lote" />
                 <span asp-validation-for="Identificador" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
             <div class="form-group-custom c-4">
                 <label asp-for="Cidade" class="label-custom">Cidade</label>
-                <input asp-for="Cidade" class="form-input-custom" maxlength="30" placeholder="Cidade" required />
+                <input asp-for="Cidade" id="Cidade" class="form-input-custom" maxlength="30" placeholder="Cidade" required />
                 <span asp-validation-for="Cidade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
             <div class="form-group-custom c-2">
                 <label asp-for="Estado" class="label-custom">Estado</label>
-                <select asp-for="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" required>
+                <select asp-for="Estado" id="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" required>
                     <option value="">Selecionar</option>
                 </select>
                 <span asp-validation-for="Estado" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
@@ -332,46 +368,213 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        let dtAlergias = null;
+        let listaAlergias = [];
+
+        function toggleAlergiaBlock() {
+            const chk = document.getElementById('switchAlergia');
+            const txt = document.getElementById('txtAlergia');
+            const block = document.getElementById('sectionAlergiaInput');
+            const hiddenInput = document.getElementById('AlergiaMedicamentoHidden');
+
+            if (!chk || !block) return;
+
+            if (chk.checked) {
+                txt.innerText = "Sim";
+                block.style.display = "block";
+                hiddenInput.value = "1";
+                setTimeout(() => {
+                    $('#inputMedicamentoAlergia').select2({
+                        placeholder: "Selecione",
+                        allowClear: true,
+                        width: '100%'
+                    });
+                    if (dtAlergias) {
+                        dtAlergias.columns.adjust().draw();
+                    }
+                }, 50);
+            } else {
+                txt.innerText = "Não";
+                block.style.display = "none";
+                hiddenInput.value = "0";
+            }
+        }
+
+        function toggleDeficienciaBlock() {
+            const chk = document.getElementById('switchDeficiencia');
+            const txt = document.getElementById('txtDeficiencia');
+            const block = document.getElementById('sectionDeficienciaInput');
+            const hiddenInput = document.getElementById('PossuiDeficienciaHidden');
+
+            if (!chk || !block) return;
+
+            if (chk.checked) {
+                txt.innerText = "Sim";
+                block.style.display = "block";
+                hiddenInput.value = "1";
+            } else {
+                txt.innerText = "Não";
+                block.style.display = "none";
+                hiddenInput.value = "0";
+            }
+        }
+
+        function actualizarNomeFoto(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('nomeArquivoFoto').innerText = input.files[0].name;
+            }
+        }
+
+        function verificarTipoAlergia(tipo) {
+            const errTipo = document.getElementById('alergia-tipo-error');
+            const errMed = document.getElementById('alergia-error');
+            if (errTipo) errTipo.innerText = '';
+            if (errMed) errMed.innerText = '';
+
+            const selectTipo = document.getElementById('inputTipoAlergia');
+            const tipoTexto = selectTipo.options[selectTipo.selectedIndex]?.text.toUpperCase();
+            const selectMed = $('#inputMedicamentoAlergia');
+
+            if (tipo === '0' || tipoTexto === 'MEDICAMENTO') {
+                selectMed.prop('disabled', false);
+            } else {
+                selectMed.val('').trigger('change');
+                selectMed.prop('disabled', true);
+            }
+        }
+
+        function adicionarAlergia() {
+            const selectTipo = document.getElementById('inputTipoAlergia');
+            const selectMed = $('#inputMedicamentoAlergia');
+            const inputDesc = document.getElementById('inputDescricaoAlergia');
+
+            const errTipo = document.getElementById('alergia-tipo-error');
+            const errMed = document.getElementById('alergia-error');
+            if (errTipo) errTipo.innerText = '';
+            if (errMed) errMed.innerText = '';
+
+            const tipoValor = selectTipo.value;
+            const tipoTexto = selectTipo.options[selectTipo.selectedIndex]?.text;
+
+            if (!tipoValor) {
+                if (errTipo) errTipo.innerText = 'Selecione o tipo.';
+                return;
+            }
+
+            const ehMedicamento = (tipoValor === '0' || tipoTexto.toUpperCase() === 'MEDICAMENTO');
+            let idMedicamento = null;
+            let nomeMedicamento = '-';
+
+            if (ehMedicamento) {
+                idMedicamento = selectMed.val();
+                const optionData = selectMed.select2('data')[0];
+                nomeMedicamento = optionData ? optionData.text : '';
+
+                if (!idMedicamento) {
+                    if (errMed) errMed.innerText = 'Selecione o medicamento.';
+                    return;
+                }
+
+                if (listaAlergias.some(a => a.idMedicamento === idMedicamento)) {
+                    if (errMed) errMed.innerText = 'Medicamento já adicionado.';
+                    return;
+                }
+
+                selectMed.find(`option[value='${idMedicamento}']`).prop('disabled', true);
+                selectMed.val('').trigger('change');
+            }
+
+            const descricao = inputDesc ? inputDesc.value.trim() : '';
+
+            listaAlergias.push({
+                tipoEnum: tipoTexto.toUpperCase(),
+                tipoTexto: tipoTexto,
+                idMedicamento: idMedicamento,
+                medicamento: nomeMedicamento,
+                descricao: descricao
+            });
+
+            if (inputDesc) inputDesc.value = '';
+            selectTipo.value = '';
+            verificarTipoAlergia('');
+
+            atualizarDataTableAlergias();
+        }
+
+        function removerAlergia(index) {
+            const itemRemovido = listaAlergias[index];
+
+            if (itemRemovido.idMedicamento) {
+                const select = $('#inputMedicamentoAlergia');
+                select.find(`option[value='${itemRemovido.idMedicamento}']`).prop('disabled', false);
+                select.trigger('change');
+            }
+
+            listaAlergias.splice(index, 1);
+            atualizarDataTableAlergias();
+        }
+
+        function atualizarDataTableAlergias() {
+            if (!dtAlergias) return;
+
+            dtAlergias.clear();
+
+            const hiddenContainer = document.getElementById('hiddenAlergiasContainer');
+            if (hiddenContainer) hiddenContainer.innerHTML = '';
+
+            listaAlergias.forEach((item, index) => {
+                const btnExcluir = `
+                            <button type="button" class="btn btn-sm text-danger p-0" style="border:none; background:transparent; font-size: 1.25rem; line-height: 1;" onclick="removerAlergia(${index})">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        `;
+
+                dtAlergias.row.add([
+                    item.tipoTexto,
+                    item.medicamento,
+                    item.descricao || '-',
+                    btnExcluir
+                ]);
+
+                if (hiddenContainer) {
+                    hiddenContainer.innerHTML += `
+                                <input type="hidden" name="Alergias[${index}].Tipo" value="${item.tipoEnum}" />
+                                <input type="hidden" name="Alergias[${index}].IdMedicamento" value="${item.idMedicamento || ''}" />
+                                <input type="hidden" name="Alergias[${index}].Descricao" value="${item.descricao}" />
+                            `;
+                }
+            });
+
+            dtAlergias.draw();
+        }
+
+        $(document).ready(function() {
+            dtAlergias = $('#tabelaAlergias').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                "lengthMenu": [5, 10, 15],
+                "pageLength": 5,
+                "searching": false,
+                "info": false,
+                "dom": 'rt<"bottom d-flex justify-content-between align-items-center p-3 mt-2"lp><"clear">',
+                "columnDefs": [
+                    { "width": "20%", "targets": 0, "className": "font-bold" },
+                    { "width": "30%", "targets": 1 },
+                    { "width": "40%", "targets": 2 },
+                    { "width": "10%", "targets": 3, "className": "text-center", "orderable": false }
+                ]
+            });
+
+            $('#inputMedicamentoAlergia').select2({
+                placeholder: "Selecione",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
 }
-
-<script>
-    function toggleAlergiaBlock() {
-        var chk = document.getElementById('switchAlergia');
-        var txt = document.getElementById('txtAlergia');
-        var block = document.getElementById('sectionAlergiaInput');
-        var hiddenInput = document.getElementById('AlergiaMedicamentoHidden');
-
-        if (chk.checked) {
-            txt.innerText = "Sim";
-            block.style.display = "block";
-            hiddenInput.value = "1";
-        } else {
-            txt.innerText = "Não";
-            block.style.display = "none";
-            hiddenInput.value = "0";
-        }
-    }
-
-    function toggleDeficienciaBlock() {
-        var chk = document.getElementById('switchDeficiencia');
-        var txt = document.getElementById('txtDeficiencia');
-        var block = document.getElementById('sectionDeficienciaInput');
-        var hiddenInput = document.getElementById('PossuiDeficienciaHidden');
-
-        if (chk.checked) {
-            txt.innerText = "Sim";
-            block.style.display = "block";
-            hiddenInput.value = "1";
-        } else {
-            txt.innerText = "Não";
-            block.style.display = "none";
-            hiddenInput.value = "0";
-        }
-    }
-
-    function actualizarNomeFoto(input) {
-        if (input.files && input.files[0]) {
-            document.getElementById('nomeArquivoFoto').innerText = input.files[0].name;
-        }
-    }
-</script>

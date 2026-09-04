@@ -1,12 +1,12 @@
 using AutoMapper;
 using Core;
-using Core.Dto;
 using Core.Dto.Paciente;
 using Core.Helper;
 using Core.Helpers;
 using Core.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Util;
 
 
@@ -17,16 +17,19 @@ namespace MedicaWeb.Controllers
     {
         private readonly IPacienteService pacienteService;
         private readonly IVinculoService vinculoService;
+        private readonly IMedicamentoService medicamentoService;
         private readonly IMapper mapper;
 
         public PacienteController(
             IPacienteService pacienteService,
             IVinculoService vinculoService,
+            IMedicamentoService medicamentoService,
             IMapper mapper
         )
         {
             this.pacienteService = pacienteService;
             this.vinculoService = vinculoService;
+            this.medicamentoService = medicamentoService;
             this.mapper = mapper;
         }
 
@@ -44,8 +47,11 @@ namespace MedicaWeb.Controllers
             return View(pacienteDetailsDto);
         }
 
-        public IActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
+            var medicamentos = await medicamentoService.GetAll(User.GetId());
+            ViewBag.Medicamentos = new SelectList(medicamentos, "Id", "Nome");
             return View(new PacienteDetailsDto());
         }
 
@@ -53,6 +59,7 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PacienteDetailsDto pacienteDetailsDto)
         {
+
             var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
             var vinculo = new Vinculo
             {

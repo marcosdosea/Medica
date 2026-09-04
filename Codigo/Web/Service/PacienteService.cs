@@ -18,11 +18,18 @@ namespace Service
             this.context = context;
         }
 
+        /// <summary>
+        /// Cria um novo paciente com seu vínculo e alergias
+        /// </summary>
+        /// <param name="paciente">O paciente</param>
+        /// <param name="vinculo">Vínculo associando ao cuidador</param>
+        /// <returns>Id do novo paciente cadastrado</returns>
         public async Task<uint> Create(Paciente paciente, Vinculo vinculo)
         {
             paciente.Vinculos.Add(vinculo);
             await context.Pacientes.AddAsync(paciente);
             await context.SaveChangesAsync();
+
             return paciente.Id;
         }
 

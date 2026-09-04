@@ -2,14 +2,14 @@
 {
     public interface IMedicamentoService
     {
-        Medicamento? Get(uint id);
+        Task<Medicamento?> Get(uint id);
 
-        uint Create(Medicamento medicamento);
+        Task<uint> Create(Medicamento medicamento);
 
-        void Edit(Medicamento medicamento);
+        Task Edit(Medicamento medicamento);
 
-        void Delete(uint id);
+        Task Delete(uint id);
 
-        IEnumerable<Medicamento> GetAll();
+        Task<IEnumerable<Medicamento>> GetAll(uint idCuidador);
     }
 }

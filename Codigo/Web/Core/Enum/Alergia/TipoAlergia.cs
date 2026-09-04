@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Core.Enum.Alergia
+namespace Core.Enum.TipoAlergia
 {
     public enum TipoAlergia
     {
-        [Display(Name = "Medicamentosa")]
+        [Display(Name = "Medicamento")]
         MEDICAMENTO,
 
         [Display(Name = "Alimentar")]
@@ -13,7 +13,7 @@ namespace Core.Enum.Alergia
         [Display(Name = "Respiratória")]
         RESPIRATORIA,
 
-        [Display(Name = "Por Contato")]
+        [Display(Name = "Contato")]
         CONTATO,
 
         [Display(Name = "Outros")]

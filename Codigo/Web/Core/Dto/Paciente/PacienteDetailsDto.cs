@@ -1,5 +1,5 @@
-using Core.Enum.Alergia;
 using Core.Enum.Paciente;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Core.Dto.Paciente
@@ -66,7 +66,7 @@ namespace Core.Dto.Paciente
 
         public string? NomeTelefoneResponsavel { get; set; }
 
-        public byte[]? Foto { get; set; }
+        public IFormFile? Foto { get; set; }
 
         public string? Ativo { get; set; }
 
@@ -79,6 +79,9 @@ namespace Core.Dto.Paciente
 
         public List<PacienteAlergiaDto> Alergias { get; set; } = [];
 
+        public string? Deficiencia { get; set; }
+
+
         public class PacienteDeficienciaDto
         {
             public string Descricao { get; set; } = null!;
@@ -86,15 +89,10 @@ namespace Core.Dto.Paciente
 
         public class PacienteAlergiaDto
         {
-            public int Id { get; set; }
-
-            public string Descricao { get; set; } = null!;
-
-            public TipoAlergia Tipo { get; set; }
-
-            public int? IdMedicamento { get; set; }
-
+            public uint? IdMedicamento { get; set; }
             public string? MedicamentoNome { get; set; }
+            public string Tipo { get; set; } = null!;
+            public string? Descricao { get; set; }
         }
 
         public class VinculoDto
