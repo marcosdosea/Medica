@@ -4,20 +4,20 @@ using Core.Helper;
 using Core.Helpers;
 using Core.Service;
 using MedicaWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicaWeb.Controllers
 {
+    [Authorize(Roles = "Cuidador")]
     public class MedicamentoController : Controller
     {
         private readonly IMedicamentoService medicamentoService;
-        private readonly IPacienteService pacienteService;
         private readonly IMapper mapper;
 
-        public MedicamentoController(IMedicamentoService medicamentoService, IPacienteService pacienteService, IMapper mapper)
+        public MedicamentoController(IMedicamentoService medicamentoService, IMapper mapper)
         {
             this.medicamentoService = medicamentoService;
-            this.pacienteService = pacienteService;
             this.mapper = mapper;
         }
 

@@ -10,268 +10,325 @@
     <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<div class="header-inline mb-4">
+    <a asp-action="Index" class="btn-voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Cadastro de paciente</h2>
+</div>
 
-<div class="cadastro-page-container">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
 
-    <div class="cadastro-header">
-        <a asp-action="Index"><i class="bi bi-arrow-left"></i></a>
-        <h2>Cadastro de paciente</h2>
+    <input type="hidden" asp-for="AlergiaMedicamento" id="AlergiaMedicamentoHidden" value="0" />
+    <input type="hidden" asp-for="PossuiDeficiencia" id="PossuiDeficienciaHidden" value="0" />
+
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-person-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Sobre</span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group-custom c-9">
+                <label asp-for="Nome" class="label-custom">Nome</label>
+                <input asp-for="Nome" class="form-input-custom" maxlength="60" placeholder="Nome completo" required />
+                <span asp-validation-for="Nome" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+            <div class="form-group-custom c-3">
+                <label asp-for="DataNascimento" class="label-custom">Data de nascimento</label>
+                <div style="position: relative;">
+                    <input asp-for="DataNascimento" type="date" class="form-input-custom" required />
+                </div>
+                <span asp-validation-for="DataNascimento" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group-custom c-4">
+                <label asp-for="Cpf" class="label-custom">CPF</label>
+                <input asp-for="Cpf"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="11"
+                       pattern="\d{11}"
+                       title="Digite os 11 números do CPF"
+                       placeholder="00000000000"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                       required />
+                <span asp-validation-for="Cpf" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+            <div class="form-group-custom c-8">
+                <label asp-for="CartaoSus" class="label-custom">Cartão SUS</label>
+                <input asp-for="CartaoSus"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="15"
+                       title="Digite até 15 dígitos do Cartão SUS"
+                       placeholder="000000000000000"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                <span asp-validation-for="CartaoSus" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="switch-container c-3">
+                <label class="label-custom d-block">Alergia a medicamentos?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 p-0">
+                    <input class="form-check-input float-none m-0" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()">
+                    <label class="form-check-label switch-label-text m-0" for="switchAlergia" id="txtAlergia">Não</label>
+                </div>
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label asp-for="TipoSanguineo" class="label-custom">Tipo sanguíneo</label>
+                <select asp-for="TipoSanguineo" class="form-input-custom"
+                        asp-items="Html.GetEnumSelectList<TipoSanguineo>()" required>
+                    <option value="">Selecionar</option>
+                </select>
+                <span asp-validation-for="TipoSanguineo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label asp-for="Peso" class="label-custom">Peso (kg)</label>
+                <input asp-for="Peso" type="number" step="0.01" min="0" max="500" class="form-input-custom" placeholder="70.5" />
+                <span asp-validation-for="Peso" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label asp-for="Altura" class="label-custom">Altura (m)</label>
+                <input asp-for="Altura" type="number" step="0.01" min="0" max="3" class="form-input-custom" placeholder="1.75" />
+                <span asp-validation-for="Altura" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+
+            <div class="form-group-custom c-3">
+                <label asp-for="Sexo" class="label-custom">Sexo</label>
+                <select asp-for="Sexo" class="form-input-custom" asp-items="Html.GetEnumSelectList<Sexo>()" required>
+                    <option value="">Selecionar</option>
+                </select>
+                <span asp-validation-for="Sexo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="switch-container c-3">
+                <label class="label-custom d-block">Possui alguma deficiência?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 p-0">
+                    <input class="form-check-input float-none m-0" type="checkbox" id="switchDeficiencia" onchange="toggleDeficienciaBlock()">
+                    <label class="form-check-label switch-label-text m-0" for="switchDeficiencia" id="txtDeficiencia">Não</label>
+                </div>
+            </div>
+
+            <div class="form-group-custom c-2">
+                <label asp-for="Vinculo.Parentesco" class="label-custom">Parentesco</label>
+                <select asp-for="Vinculo.Parentesco" class="form-input-custom" asp-items="Html.GetEnumSelectList<Parentesco>()" required>
+                    <option value="" disabled selected hidden>Selecionar</option>
+                </select>
+                <span asp-validation-for="Vinculo.Parentesco" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+
+            <div class="form-group-custom c-4">
+                <label asp-for="Apelido" class="label-custom">Apelido</label>
+                <input asp-for="Apelido" class="form-input-custom" maxlength="60" placeholder="Apelido" />
+                <span asp-validation-for="Apelido" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+
+            <div class="form-group-custom c-3">
+                <label asp-for="Escolaridade" class="label-custom">Escolaridade</label>
+                <select asp-for="Escolaridade" class="form-input-custom" asp-items="Html.GetEnumSelectList<Escolaridade>()" required>
+                    <option value="">Selecionar</option>
+                </select>
+                <span asp-validation-for="Escolaridade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+        </div>
+
+        <div class="form-row" style="margin-top: 15px;">
+            <div class="form-group-custom c-2">
+                <label class="label-custom">Foto</label>
+                <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
+                    <span id="nomeArquivoFoto">imagem.png</span>
+                    <i class="bi bi-arrow-up-circle-fill"></i>
+                </button>
+                <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="actualizarNomeFoto(this)" />
+            </div>
+        </div>
     </div>
 
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
-
-        <input type="hidden" asp-for="AlergiaMedicamento" id="AlergiaMedicamentoHidden" value="0" />
-        <input type="hidden" asp-for="PossuiDeficiencia" id="PossuiDeficienciaHidden" value="1" />
-
-        <div class="form-section">
-            <div class="section-title">
-                <i class="bi bi-person-fill"></i> Sobre
+    <div class="form-section" id="sectionAlergiaInput" style="display: none;">
+        <div class="dynamic-block d-inline-flex align-items-center gap-2">
+            <label class="label-custom mb-0">Alergias a medicamentos</label>
+            <i class="bi bi-plus-circle-fill"></i>
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-3">
+                <label class="label-custom">Medicamento</label>
+                <select class="form-input-custom">
+                    <option value="Losartana">Losartana</option>
+                </select>
             </div>
-
-            <div class="form-row">
-                <div class="form-group-custom c-9">
-                    <label asp-for="Nome">Nome</label>
-                    <input asp-for="Nome" class="form-input-custom" required />
-                    <span asp-validation-for="Nome" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-3">
-                    <label asp-for="DataNascimento">Data de nascimento</label>
-                    <div style="position: relative;">
-                        <input asp-for="DataNascimento" type="date" class="form-input-custom" required />
-                    </div>
-                    <span asp-validation-for="DataNascimento" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
+            <div class="form-group-custom c-5">
+                <label class="label-custom">Descrição</label>
+                <input type="text" class="form-input-custom" maxlength="100" placeholder="Descrição da alergia" />
             </div>
+        </div>
+    </div>
 
-            <div class="form-row">
-                <div class="form-group-custom c-4">
-                    <label asp-for="Cpf">CPF</label>
-                    <input asp-for="Cpf" class="form-input-custom" placeholder="000.000.000-00" required />
-                    <span asp-validation-for="Cpf" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-8">
-                    <label asp-for="CartaoSus">Cartão SUS</label>
-                    <input asp-for="CartaoSus" class="form-input-custom" />
-                    <span asp-validation-for="CartaoSus" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
+    <div class="form-section" id="sectionDeficienciaInput" style="display: none;">
+        <div class="dynamic-block d-inline-flex align-items-center gap-2">
+            <label class="label-custom mb-0">Deficiências</label>
+            <i class="bi bi-plus-circle-fill"></i>
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-5">
+                <label class="label-custom">Descrição</label>
+                <input type="text" class="form-input-custom" maxlength="100" placeholder="Descrição da deficiência" />
             </div>
+        </div>
+    </div>
 
-            <div class="form-row">
-                <div class="switch-container c-3">
-                    <label>Alergia a medicamentos?</label>
-                    <div class="switch-wrapper">
-                        <div class="form-check form-switch p-0 m-0">
-                            <input class="form-check-input" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()">
-                        </div>
-                        <span class="switch-label-text" id="txtAlergia">Não</span>
-                    </div>
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label asp-for="TipoSanguineo">Tipo sanguíneo</label>
-                    <select asp-for="TipoSanguineo" class="form-input-custom"
-                            asp-items="Html.GetEnumSelectList<TipoSanguineo>()" required>
-                        <option value="">Selecionar</option>
-                    </select>
-                    <span asp-validation-for="TipoSanguineo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label asp-for="Peso">Peso</label>
-                    <input asp-for="Peso" type="text" class="form-input-custom" placeholder="--" />
-                    <span asp-validation-for="Peso" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label asp-for="Altura">Altura</label>
-                    <input asp-for="Altura" type="text" class="form-input-custom" placeholder="--" />
-                    <span asp-validation-for="Altura" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-
-                <div class="form-group-custom c-3">
-                    <label asp-for="Sexo">Sexo</label>
-                    <select asp-for="Sexo" class="form-input-custom" asp-items="Html.GetEnumSelectList<Sexo>()" required>
-                        <option value="">Selecionar</option>
-                    </select>
-                    <span asp-validation-for="Sexo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-geo-alt-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Endereço</span>
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-2">
+                <label asp-for="Cep" class="label-custom">Cep</label>
+                <input asp-for="Cep" 
+                       id="Cep"
+                       class="form-input-custom" 
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="8" 
+                       pattern="\d{8}"
+                       title="Digite os 8 números do CEP"
+                       placeholder="00000000"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); document.getElementById('cep-error').innerText = '';"
+                       onblur="buscarCep(this.value)"
+                       required />
+                <span asp-validation-for="Cep" id="cep-error" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-
-            <div class="form-row">
-                <div class="switch-container c-3">
-                    <label>Possui alguma deficiência?</label>
-                    <div class="switch-wrapper">
-                        <div class="form-check form-switch p-0 m-0">
-                            <input class="form-check-input" type="checkbox" id="switchDeficiencia" checked onchange="toggleDeficienciaBlock()">
-                        </div>
-                        <span class="switch-label-text" id="txtDeficiencia">Sim</span>
-                    </div>
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label>Parentesco</label>
-                    <input type="text" class="form-input-custom" />
-                </div>
-
-                <div class="form-group-custom c-4">
-                    <label asp-for="Apelido">Apelido</label>
-                    <input asp-for="Apelido" class="form-input-custom" />
-                    <span asp-validation-for="Apelido" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-
-                <div class="form-group-custom c-3">
-                    <label asp-for="Escolaridade">Escolaridade</label>
-                    @* CORRIGIDO: Adicionado asp-for="Escolaridade" *@
-                    <select asp-for="Escolaridade" class="form-input-custom" asp-items="Html.GetEnumSelectList<Escolaridade>()" required>
-                        <option value="">Selecionar</option>
-                    </select>
-                    <span asp-validation-for="Escolaridade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
+            <div class="form-group-custom c-5">
+                <label asp-for="Rua" class="label-custom">Rua</label>
+                <input asp-for="Rua" class="form-input-custom" maxlength="60" placeholder="Rua / Avenida" required />
+                <span asp-validation-for="Rua" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
+            <div class="form-group-custom c-5">
+                <label asp-for="Bairro" class="label-custom">Bairro</label>
+                <input asp-for="Bairro" class="form-input-custom" maxlength="60" placeholder="Bairro" required />
+                <span asp-validation-for="Bairro" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-1">
+                <label asp-for="Identificador" class="label-custom">Identificador</label>
+                <input asp-for="Identificador" class="form-input-custom" maxlength="30" placeholder="Nº / Lote" />
+                <span asp-validation-for="Identificador" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+            <div class="form-group-custom c-4">
+                <label asp-for="Cidade" class="label-custom">Cidade</label>
+                <input asp-for="Cidade" class="form-input-custom" maxlength="30" placeholder="Cidade" required />
+                <span asp-validation-for="Cidade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+            <div class="form-group-custom c-2">
+                <label asp-for="Estado" class="label-custom">Estado</label>
+                <select asp-for="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" required>
+                    <option value="">Selecionar</option>
+                </select>
+                <span asp-validation-for="Estado" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+            <div class="form-group-custom c-5">
+                <label asp-for="Complemento" class="label-custom">Complemento</label>
+                <input asp-for="Complemento" class="form-input-custom" maxlength="60" placeholder="Apto, Bloco, etc." />
+                <span asp-validation-for="Complemento" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+        </div>
+    </div>
 
-            <div class="form-row" style="margin-top: 15px;">
-                <div class="form-group-custom c-12">
-                    <label>Foto</label>
-                    <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
-                        <span id="nomeArquivoFoto">Imagem.png</span>
-                        <i class="bi bi-arrow-up-circle-fill"></i>
-                    </button>
-                    <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="actualizarNomeFoto(this)" />
-                </div>
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-phone-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Contato</span>
+        </div>
+        <div class="form-row">
+            <div class="form-group-custom c-1">
+                <label asp-for="Ddd" class="label-custom">DDD</label>
+                <input asp-for="Ddd"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="2"
+                       pattern="\d{2}"
+                       title="Digite apenas 2 dígitos para o DDD"
+                       placeholder="79"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                       required />
+                <span asp-validation-for="Ddd" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+            <div class="form-group-custom c-3">
+                <label asp-for="Telefone" class="label-custom">Telefone</label>
+                <input asp-for="Telefone"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="9"
+                       pattern="\d{8,9}"
+                       title="Digite apenas números (8 ou 9 dígitos)"
+                       placeholder="999999999"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                       required />
+                <span asp-validation-for="Telefone" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
         </div>
 
-        <div class="form-section" id="sectionAlergiaInput" style="display: none;">
-            <div class="dynamic-block">
-                <span>Alergias a medicamentos</span> <i class="bi bi-plus-circle-fill"></i>
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-3">
-                    <label>Medicamento</label>
-                    <select class="form-input-custom">
-                        <option value="Losartana">Losartana</option>
-                    </select>
-                </div>
-                <div class="form-group-custom c-5">
-                    <label>Descrição</label>
-                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
-                </div>
-            </div>
+        <div style="color: #5c677d; font-size: 13px; font-weight: 600; margin: 15px 0 10px 0;">
+            <i class="bi bi-chevron-down"></i> Contato do responsável
         </div>
 
-        <div class="form-section" id="sectionDeficienciaInput">
-            <div class="dynamic-block">
-                <span>Deficiências</span> <i class="bi bi-plus-circle-fill"></i>
+        <div class="form-row">
+            <div class="form-group-custom c-1">
+                <label asp-for="DddResponsavel" class="label-custom">DDD</label>
+                <input asp-for="DddResponsavel"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="2"
+                       pattern="\d{2}"
+                       title="Digite apenas 2 dígitos para o DDD"
+                       placeholder="79"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                <span asp-validation-for="DddResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-row">
-                <div class="form-group-custom c-5">
-                    <label>Descrição</label>
-                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
-                </div>
+
+            <div class="form-group-custom c-3">
+                <label asp-for="TelefoneResponsavel" class="label-custom">Telefone</label>
+                <input asp-for="TelefoneResponsavel"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="9"
+                       pattern="\d{8,9}"
+                       title="Digite apenas números (8 ou 9 dígitos)"
+                       placeholder="999999999"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                <span asp-validation-for="TelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+            </div>
+
+            <div class="form-group-custom c-6">
+                <label asp-for="NomeTelefoneResponsavel" class="label-custom">Responsável</label>
+                <input asp-for="NomeTelefoneResponsavel" class="form-input-custom" maxlength="60" placeholder="Nome do responsável" />
+                <span asp-validation-for="NomeTelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
         </div>
+    </div>
 
-        <div class="form-section">
-            <div class="section-title">
-                <i class="bi bi-geo-alt-fill"></i> Endereço
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-2">
-                    <label asp-for="Cep">Cep</label>
-                    <input asp-for="Cep" class="form-input-custom" required />
-                    <span asp-validation-for="Cep" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-5">
-                    <label asp-for="Rua">Rua</label>
-                    <input asp-for="Rua" class="form-input-custom" required />
-                    <span asp-validation-for="Rua" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-5">
-                    <label asp-for="Bairro">Bairro</label>
-                    <input asp-for="Bairro" class="form-input-custom" required />
-                    <span asp-validation-for="Bairro" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-1">
-                    <label asp-for="Identificador">Identificador</label>
-                    <input asp-for="Identificador" class="form-input-custom" required />
-                    <span asp-validation-for="Identificador" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-4">
-                    <label asp-for="Cidade">Cidade</label>
-                    <input asp-for="Cidade" class="form-input-custom" required />
-                    <span asp-validation-for="Cidade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
+    <div class="actions-container">
+        <a asp-action="Index" class="btn-med btn-med-danger" style="text-decoration: none;">Cancelar</a>
+        <button type="submit" class="btn-med btn-med-primary">Salvar</button>
+    </div>
 
-                <div class="form-group-custom c-3">
-                    <label asp-for="Bairro">Bairro</label>
-                    <input asp-for="Bairro" class="form-input-custom" required />
-                    <span asp-validation-for="Bairro" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-2">
-                    <label asp-for="Estado">Estado</label>
-                    <select asp-for="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" required>
-                        <option value="">Selecionar</option>
-                    </select>
-                    <span asp-validation-for="Estado" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-5">
-                    <label asp-for="Complemento">Complemento</label>
-                    <input asp-for="Complemento" class="form-input-custom" required />
-                    <span asp-validation-for="Complemento" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <div class="section-title">
-                <i class="bi bi-phone-fill"></i> Contato
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-1">
-                    <label asp-for="Ddd">DDD</label>
-                    <input asp-for="Ddd" class="form-input-custom" required />
-                    <span asp-validation-for="Ddd" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-3">
-                    <label asp-for="Telefone">Telefone</label>
-                    <input asp-for="Telefone" class="form-input-custom" required />
-                    <span asp-validation-for="Telefone" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-            </div>
-
-            <div style="color: #5c677d; font-size: 13px; font-weight: 600; margin: 15px 0 10px 0;">
-                <i class="bi bi-chevron-down"></i> Contato do responsável
-            </div>
-
-            <div class="form-row">
-                <div class="form-group-custom c-1">
-                    <label asp-for="DddResponsavel">DDD</label>
-                    <input asp-for="DddResponsavel" class="form-input-custom" />
-                    <span asp-validation-for="DddResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-3">
-                    <label asp-for="TelefoneResponsavel">Telefone</label>
-                    <input asp-for="TelefoneResponsavel" class="form-input-custom" />
-                    <span asp-validation-for="TelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-6">
-                    <label asp-for="NomeTelefoneResponsavel">Responsável</label>
-                    <input asp-for="NomeTelefoneResponsavel" class="form-input-custom" />
-                    <span asp-validation-for="NomeTelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-buttons">
-            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
-            <button type="submit" class="btn-salvar-azul">Salvar</button>
-        </div>
-
-    </form>
-</div>
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -284,14 +341,14 @@
         var block = document.getElementById('sectionAlergiaInput');
         var hiddenInput = document.getElementById('AlergiaMedicamentoHidden');
 
-        if(chk.checked) {
+        if (chk.checked) {
             txt.innerText = "Sim";
             block.style.display = "block";
-            hiddenInput.value = "1"; // Envia 1 (Sim) para o C#
+            hiddenInput.value = "1";
         } else {
             txt.innerText = "Não";
             block.style.display = "none";
-            hiddenInput.value = "0"; // Envia 0 (Não) para o C#
+            hiddenInput.value = "0";
         }
     }
 
@@ -301,14 +358,14 @@
         var block = document.getElementById('sectionDeficienciaInput');
         var hiddenInput = document.getElementById('PossuiDeficienciaHidden');
 
-        if(chk.checked) {
+        if (chk.checked) {
             txt.innerText = "Sim";
             block.style.display = "block";
-            hiddenInput.value = "1"; // Envia 1 (Sim) para o C#
+            hiddenInput.value = "1";
         } else {
             txt.innerText = "Não";
             block.style.display = "none";
-            hiddenInput.value = "0"; // Envia 0 (Não) para o C#
+            hiddenInput.value = "0";
         }
     }
 

@@ -42,7 +42,8 @@ namespace MedicaWeb
                 options.Lockout.AllowedForNewUsers = true;
             })
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<IdentityContext>();
+            .AddEntityFrameworkStores<IdentityContext>()
+            .AddSignInManager<ApplicationSignInManager>();
 
             builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
                 options.TokenLifespan = TimeSpan.FromHours(2)
@@ -63,6 +64,7 @@ namespace MedicaWeb
             builder.Services.AddScoped<IMedicamentoService, MedicamentoService>();
             builder.Services.AddScoped<IPlanejamentoService, PlanejamentoService>();
             builder.Services.AddScoped<ICuidadorService, CuidadorService>();
+            builder.Services.AddTransient<IVinculoService, VinculoService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

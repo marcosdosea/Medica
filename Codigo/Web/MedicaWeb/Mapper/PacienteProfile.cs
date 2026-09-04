@@ -19,8 +19,6 @@ namespace MedicaWeb.Mapper
                             .ForMember(dest => dest.Alergias, opt => opt.MapFrom(src => src.Alergia))
                             .ForMember(dest => dest.Deficiencias, opt => opt.MapFrom(src => src.Deficiencia));
 
-            CreateMap<Deficiencium, PacienteDeficienciaDto>();
-
             CreateMap<Alergium, PacienteAlergiaDto>()
                 .ForMember(dest => dest.MedicamentoNome,
                            opt => opt.MapFrom(src => src.IdMedicamentoNavigation != null ? src.IdMedicamentoNavigation.Nome : null));

@@ -19,8 +19,6 @@ public partial class MedicaContext : DbContext
 
     public virtual DbSet<Cuidador> Cuidadors { get; set; }
 
-    public virtual DbSet<Deficiencium> Deficiencia { get; set; }
-
     public virtual DbSet<Dispositivopaciente> Dispositivopacientes { get; set; }
 
     public virtual DbSet<Execucao> Execucaos { get; set; }
@@ -34,7 +32,6 @@ public partial class MedicaContext : DbContext
     public virtual DbSet<Vinculo> Vinculos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySQL("server=127.0.0.1;port=3306;user=root;password=123456;database=Medica");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -93,26 +90,6 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.Nome)
                 .HasMaxLength(60)
                 .HasColumnName("nome");
-        });
-
-        modelBuilder.Entity<Deficiencium>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("deficiencia");
-
-            entity.HasIndex(e => e.IdPaciente, "fk_Deficiencia_Paciente1_idx");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Descricao)
-                .HasMaxLength(200)
-                .HasColumnName("descricao");
-            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
-
-            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Deficiencia)
-                .HasForeignKey(d => d.IdPaciente)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("fk_Deficiencia_Paciente1");
         });
 
         modelBuilder.Entity<Dispositivopaciente>(entity =>
@@ -257,6 +234,9 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.DddResponsavel)
                 .HasMaxLength(2)
                 .HasColumnName("dddResponsavel");
+            entity.Property(e => e.Deficiencia)
+                .HasMaxLength(200)
+                .HasColumnName("deficiencia");
             entity.Property(e => e.Escolaridade)
                 .HasColumnType("enum('ANALFABETO','FUNDAMENTAL_INCOMPLETO','FUNDAMENTAL_COMPLETO','MEDIO_INCOMPLETO','MEDIO_COMPLETO','SUPERIOR_INCOMPLETO','SUPERIOR_COMPLETO','POS_GRADUACAO','MESTRADO','DOUTORADO')")
                 .HasColumnName("escolaridade");

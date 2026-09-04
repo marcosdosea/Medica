@@ -63,11 +63,11 @@ public partial class Paciente
 
     public byte[]? Foto { get; set; }
 
+    public string? Deficiencia { get; set; }
+
     public string Ativo { get; set; } = null!;
 
     public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
-
-    public virtual ICollection<Deficiencium> Deficiencia { get; set; } = new List<Deficiencium>();
 
     public virtual ICollection<Dispositivopaciente> Dispositivopacientes { get; set; } = new List<Dispositivopaciente>();
 

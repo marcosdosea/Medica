@@ -5,25 +5,34 @@ using Core.Dto.Paciente;
 using Core.Helper;
 using Core.Helpers;
 using Core.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Util;
 
 
 namespace MedicaWeb.Controllers
 {
+    [Authorize(Roles = "Cuidador")]
     public class PacienteController : Controller
     {
         private readonly IPacienteService pacienteService;
+        private readonly IVinculoService vinculoService;
         private readonly IMapper mapper;
 
-        public PacienteController(IPacienteService pacienteService, IMapper mapper)
+        public PacienteController(
+            IPacienteService pacienteService,
+            IVinculoService vinculoService,
+            IMapper mapper
+        )
         {
             this.pacienteService = pacienteService;
+            this.vinculoService = vinculoService;
             this.mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
         {
-            var pacientes = await pacienteService.GetAll();
+            var pacientes = await pacienteService.GetAll(User.GetId());
             var pacienteDtos = mapper.Map<IEnumerable<PacienteDto>>(pacientes);
             return View(pacienteDtos);
         }
@@ -45,7 +54,13 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Create(PacienteDetailsDto pacienteDetailsDto)
         {
             var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
-            await pacienteService.Create(pacienteModel);
+            var vinculo = new Vinculo
+            {
+                IdCuidador = User.GetId(),
+                Parentesco = pacienteDetailsDto.Vinculo.Parentesco.ToString()
+            };
+
+            await pacienteService.Create(pacienteModel, vinculo);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
             return RedirectToAction(nameof(Index));
         }
@@ -59,10 +74,10 @@ namespace MedicaWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(uint id, PacienteDetailsDto dto)
+        public async Task<IActionResult> Edit(uint id, PacienteDetailsDto pacienteDetailsDto)
         {
-            dto.Id = id;
-            var pacienteModel = mapper.Map<Paciente>(dto);
+            pacienteDetailsDto.Id = id;
+            var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
             await pacienteService.Edit(pacienteModel);
             return RedirectToAction(nameof(Index));
         }
@@ -71,6 +86,7 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(uint id)
         {
+            await vinculoService.DeleteByPaciente(id);
             await pacienteService.Delete(id);
             return RedirectToAction(nameof(Index));
         }

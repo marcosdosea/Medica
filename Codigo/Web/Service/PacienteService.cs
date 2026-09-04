@@ -18,11 +18,11 @@ namespace Service
             this.context = context;
         }
 
-        public async Task<uint> Create(Paciente paciente)
+        public async Task<uint> Create(Paciente paciente, Vinculo vinculo)
         {
+            paciente.Vinculos.Add(vinculo);
             await context.Pacientes.AddAsync(paciente);
             await context.SaveChangesAsync();
-
             return paciente.Id;
         }
 
@@ -65,15 +65,17 @@ namespace Service
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Paciente>> GetAll()
+        public async Task<IEnumerable<Paciente>> GetAll(uint idCuidador)
         {
-            var query = context.Pacientes.AsNoTracking();
-            return await query.OrderBy(p => p.Nome).ToListAsync();
+            return await context.Pacientes
+                .AsNoTracking()
+                .Where(p => p.Vinculos.Any(v => v.IdCuidador == idCuidador))
+                .OrderBy(p => p.Nome)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<PacienteMobileDto>> GetMobileAsync()
         {
-            // 1. Busca os dados brutos do banco de dados primeiro (SQL puro)
             var pacientesDoBanco = await context.Pacientes
                 .Select(p => new
                 {

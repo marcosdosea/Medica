@@ -2,7 +2,7 @@ using AutoMapper;
 using Core.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using Util;
 
 namespace MedicaWeb.Controllers
 {
@@ -22,7 +22,8 @@ namespace MedicaWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var pacientes = await pacienteService.GetAll();
+
+            var pacientes = await pacienteService.GetAll(User.GetId());
             var pacienteDtos = mapper.Map<IEnumerable<Core.Dto.Paciente.PacienteDto>>(pacientes); 
             return View(pacienteDtos);
         }

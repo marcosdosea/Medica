@@ -7,11 +7,12 @@ using Core.Service;
 using MedicaWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Util;
 
 namespace MedicaWeb.Controllers
 {
     [Authorize(Roles = "Cuidador")]
-    public class PlanejamentoController : BaseController
+    public class PlanejamentoController : Controller
     {
         private readonly IPlanejamentoService planejamentoService;
         private readonly IMapper mapper;
@@ -25,7 +26,7 @@ namespace MedicaWeb.Controllers
         // GET: PlanejamentoController
         public async Task<IActionResult> Index()
         {
-            var idCuidador = GetIdUserLogado();
+            var idCuidador = User.GetId();
             var planejamentos = await planejamentoService.GetAll(idCuidador);
             var planejamentoDtos = mapper.Map<IEnumerable<PlanejamentoDto>>(planejamentos);
             return View(planejamentoDtos);
