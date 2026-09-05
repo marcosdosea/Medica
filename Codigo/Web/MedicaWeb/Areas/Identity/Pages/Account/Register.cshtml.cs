@@ -3,6 +3,8 @@
 #nullable disable
 
 using Core;
+using Core.Helper;
+using Core.Helpers;
 using Core.Service;
 using MedicaWeb.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication;
@@ -139,7 +141,7 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
                     };
 
                     await _cuidadorService.Create(cuidador);
-
+                    NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.RegistroSucesso);
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

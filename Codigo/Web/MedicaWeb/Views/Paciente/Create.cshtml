@@ -29,13 +29,13 @@
             <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Sobre</span>
         </div>
 
-        <div class="form-row">
-            <div class="form-group-custom c-9">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-9 form-group-custom">
                 <label asp-for="Nome" class="label-custom">Nome</label>
                 <input asp-for="Nome" class="form-input-custom" maxlength="60" placeholder="Nome completo" required />
                 <span asp-validation-for="Nome" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-3">
+            <div class="col-12 col-md-3 form-group-custom">
                 <label asp-for="DataNascimento" class="label-custom">Data de nascimento</label>
                 <div style="position: relative;">
                     <input asp-for="DataNascimento" type="date" class="form-input-custom" required />
@@ -44,8 +44,8 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group-custom c-4">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-4 form-group-custom">
                 <label asp-for="Cpf" class="label-custom">CPF</label>
                 <input asp-for="Cpf"
                        class="form-input-custom"
@@ -59,7 +59,7 @@
                        required />
                 <span asp-validation-for="Cpf" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-8">
+            <div class="col-12 col-md-8 form-group-custom">
                 <label asp-for="CartaoSus" class="label-custom">Cartão SUS</label>
                 <input asp-for="CartaoSus"
                        class="form-input-custom"
@@ -73,55 +73,54 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="switch-container c-3">
-                <label class="label-custom d-block">Alergia a medicamentos?</label>
-                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 p-0">
+        <div class="row g-3 mb-3 align-items-end">
+            <div class="col-12 col-md-4 col-xl-2">
+                <label class="label-custom d-block text-truncate" title="Alergia a medicamentos?">Alergia a medicamentos?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 switch-field-container">
                     <input class="form-check-input float-none m-0" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()">
                     <label class="form-check-label switch-label-text m-0" for="switchAlergia" id="txtAlergia">Não</label>
                 </div>
             </div>
 
-            <div class="form-group-custom c-2">
+            <div class="col-6 col-md-4 col-xl-3">
                 <label asp-for="TipoSanguineo" class="label-custom">Tipo sanguíneo</label>
-                <select asp-for="TipoSanguineo" class="form-input-custom"
-                        asp-items="Html.GetEnumSelectList<TipoSanguineo>()" required>
+                <select asp-for="TipoSanguineo" class="form-input-custom" asp-items="Html.GetEnumSelectList<TipoSanguineo>()">
                     <option value="">Selecionar</option>
                 </select>
                 <span asp-validation-for="TipoSanguineo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
-            <div class="form-group-custom c-2">
+            <div class="col-6 col-md-4 col-xl-2">
                 <label asp-for="Peso" class="label-custom">Peso (kg)</label>
-                <input asp-for="Peso" type="number" step="0.01" min="0" max="500" class="form-input-custom" placeholder="" />
+                <input asp-for="Peso" type="number" step="0.01" min="0" max="500" class="form-input-custom" placeholder="75,5" />
                 <span asp-validation-for="Peso" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
-            <div class="form-group-custom c-2">
+            <div class="col-6 col-md-6 col-xl-2">
                 <label asp-for="Altura" class="label-custom">Altura (m)</label>
-                <input asp-for="Altura" type="number" step="0.01" min="0" max="3" class="form-input-custom" placeholder="" />
+                <input asp-for="Altura" type="number" step="0.01" min="0" max="3" class="form-input-custom" placeholder="1,72" />
                 <span asp-validation-for="Altura" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
-            <div class="form-group-custom c-3">
+            <div class="col-6 col-md-6 col-xl-3">
                 <label asp-for="Sexo" class="label-custom">Sexo</label>
                 <select asp-for="Sexo" class="form-input-custom" asp-items="Html.GetEnumSelectList<Sexo>()" required>
-                    <option value="">Selecionar</option>
+                    <option value="" disabled selected hidden>Selecionar</option>
                 </select>
                 <span asp-validation-for="Sexo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="switch-container c-3">
-                <label class="label-custom d-block">Possui alguma deficiência?</label>
-                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 p-0">
+        <div class="row g-3 mb-3 align-items-end">
+            <div class="col-12 col-md-4 col-xl-2">
+                <label class="label-custom d-block text-truncate" title="Possui alguma deficiência?">Possui deficiência?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 switch-field-container">
                     <input class="form-check-input float-none m-0" type="checkbox" id="switchDeficiencia" onchange="toggleDeficienciaBlock()">
                     <label class="form-check-label switch-label-text m-0" for="switchDeficiencia" id="txtDeficiencia">Não</label>
                 </div>
             </div>
 
-            <div class="form-group-custom c-2">
+            <div class="col-6 col-md-4 col-xl-3">
                 <label asp-for="Vinculo.Parentesco" class="label-custom">Parentesco</label>
                 <select asp-for="Vinculo.Parentesco" class="form-input-custom" asp-items="Html.GetEnumSelectList<Parentesco>()" required>
                     <option value="" disabled selected hidden>Selecionar</option>
@@ -129,68 +128,76 @@
                 <span asp-validation-for="Vinculo.Parentesco" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
-            <div class="form-group-custom c-4">
+            <div class="col-6 col-md-4 col-xl-4">
                 <label asp-for="Apelido" class="label-custom">Apelido</label>
                 <input asp-for="Apelido" class="form-input-custom" maxlength="60" placeholder="Apelido" />
                 <span asp-validation-for="Apelido" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
-            <div class="form-group-custom c-3">
+            <div class="col-12 col-md-12 col-xl-3">
                 <label asp-for="Escolaridade" class="label-custom">Escolaridade</label>
                 <select asp-for="Escolaridade" class="form-input-custom" asp-items="Html.GetEnumSelectList<Escolaridade>()" required>
-                    <option value="">Selecionar</option>
+                    <option value="" disabled selected hidden>Selecionar</option>
                 </select>
                 <span asp-validation-for="Escolaridade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
         </div>
 
-        <div class="form-row" style="margin-top: 15px;">
-            <div class="form-group-custom c-2">
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-sm-6 col-md-4 col-xl-2">
                 <label class="label-custom">Foto</label>
                 <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
-                    <span id="nomeArquivoFoto">imagem.png</span>
-                    <i class="bi bi-arrow-up-circle-fill"></i>
+                    <span id="nomeArquivoFoto" class="text-truncate">imagem.png</span>
+                    <i class="bi bi-arrow-up-circle-fill flex-shrink-0"></i>
                 </button>
                 <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="actualizarNomeFoto(this)" />
             </div>
         </div>
     </div>
 
-    <div class="form-section" id="sectionAlergiaInput" style="display: none;">
+<div class="form-section" id="sectionAlergiaInput" style="display: none;">
         <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 15px;">
             <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Alergias</span>
         </div>
 
-        <div class="form-row mb-3">
-            <div class="form-group-custom c-3">
+        <div class="row g-3 mb-2 align-items-start">
+            <div class="col-12 col-md-3 form-group-custom">
                 <label class="label-custom">Tipo de alergia</label>
                 <select class="form-input-custom" id="inputTipoAlergia" asp-items="Html.GetEnumSelectList<Core.Enum.TipoAlergia.TipoAlergia>()" onchange="verificarTipoAlergia(this.value)">
                     <option value="" disabled selected hidden>Selecionar</option>
                 </select>
-                <span id="alergia-tipo-error" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                <div class="error-msg-container">
+                    <span id="alergia-tipo-error" class="text-danger" style="font-size: 13px;"></span>
+                </div>
             </div>
 
-            <div class="form-group-custom c-3" id="colunaMedicamentoAlergia">
+            <div class="col-12 col-md-3 form-group-custom" id="colunaMedicamentoAlergia">
                 <label class="label-custom">Medicamento</label>
                 <select class="form-input-custom" id="inputMedicamentoAlergia" asp-items="ViewBag.Medicamentos" disabled>
                     <option value="">Selecione</option>
                 </select>
-                <span id="alergia-error" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
+                <div class="error-msg-container">
+                    <span id="alergia-error" class="text-danger" style="font-size: 13px;"></span>
+                </div>
             </div>
 
-            <div class="form-group-custom c-4" id="colunaDescricaoAlergia">
+            <div class="col-12 col-md-4 form-group-custom" id="colunaDescricaoAlergia">
                 <label class="label-custom">Descrição</label>
-                <textarea id="inputDescricaoAlergia" class="form-input-custom" rows="2" maxlength="100" style="resize: vertical; min-height: 42px;"></textarea>
+                <textarea id="inputDescricaoAlergia" class="form-input-custom" rows="3" maxlength="100" style="resize: vertical; min-height: 64px;"></textarea>
+                <div class="error-msg-container">
+                    <span id="alergia-desc-error" class="text-danger" style="font-size: 13px;"></span>
+                </div>
             </div>
 
-            <div class="form-group-custom c-2" style="align-self: flex-end; margin-bottom: 5px;">
-                <button type="button" class="btn-novo" style="border: none; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; height: 42px;" onclick="adicionarAlergia()">
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom d-none d-md-block" style="visibility: hidden;">Ação</label>
+                <button type="button" class="btn-novo w-100" style="border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 43px;" onclick="adicionarAlergia()">
                     Adicionar
                 </button>
             </div>
         </div>
 
-        <div class="calendario-container mt-3" style="padding: 0; margin-bottom: 25px;">
+        <div class="calendario-container mt-3 table-responsive" style="padding: 0; margin-bottom: 25px;">
             <table id="tabelaAlergias" class="custom-table" style="width: 100%;">
                 <thead>
                     <tr>
@@ -212,8 +219,8 @@
         <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px;">
             <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Deficiência</span>
         </div>
-        <div class="form-row">
-            <div class="form-group-custom c-6">
+        <div class="row g-3">
+            <div class="col-12 col-md-6 form-group-custom">
                 <label class="label-custom">Descrição</label>
                 <textarea asp-for="Deficiencia" class="form-input-custom" rows="3" maxlength="100" style="resize: vertical; min-height: 64px;"></textarea>
             </div>
@@ -225,8 +232,8 @@
             <i class="bi bi-geo-alt-fill" style="color: var(--text-muted);"></i>
             <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Endereço</span>
         </div>
-        <div class="form-row">
-            <div class="form-group-custom c-2">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-2 form-group-custom">
                 <label asp-for="Cep" class="label-custom">Cep</label>
                 <input asp-for="Cep"
                        id="Cep"
@@ -238,43 +245,47 @@
                        title="Digite os 8 números do CEP"
                        placeholder="00000000"
                        oninput="this.value = this.value.replace(/\D/g, '');
-                const err = document.getElementById('cep-error');
-                if(err) err.innerText = '';
-                if(this.value.length === 8) buscarCep(this.value);"
+                                const err = document.getElementById('cep-error');
+                                if(err) err.innerText = '';
+                                if(this.value.length === 8) buscarCep(this.value);"
                        onblur="if(this.value.length === 8) buscarCep(this.value);"
                        required />
                 <span asp-validation-for="Cep" id="cep-error" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-5">
+            <div class="col-12 col-md-5 form-group-custom">
                 <label asp-for="Rua" class="label-custom">Rua</label>
                 <input asp-for="Rua" id="Rua" class="form-input-custom" maxlength="60" placeholder="Rua / Avenida" required />
                 <span asp-validation-for="Rua" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-5">
+            <div class="col-12 col-md-5 form-group-custom">
                 <label asp-for="Bairro" class="label-custom">Bairro</label>
                 <input asp-for="Bairro" id="Bairro" class="form-input-custom" maxlength="60" placeholder="Bairro" required />
                 <span asp-validation-for="Bairro" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group-custom c-1">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-3 col-lg-1 form-group-custom">
                 <label asp-for="Identificador" class="label-custom">Identificador</label>
                 <input asp-for="Identificador" id="Identificador" class="form-input-custom" maxlength="30" placeholder="Nº / Lote" />
                 <span asp-validation-for="Identificador" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-4">
+            <div class="col-12 col-sm-9 col-lg-4 form-group-custom">
                 <label asp-for="Cidade" class="label-custom">Cidade</label>
                 <input asp-for="Cidade" id="Cidade" class="form-input-custom" maxlength="30" placeholder="Cidade" required />
                 <span asp-validation-for="Cidade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-2">
+            <div class="col-12 col-sm-4 col-lg-2 form-group-custom">
                 <label asp-for="Estado" class="label-custom">Estado</label>
-                <select asp-for="Estado" id="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" required>
-                    <option value="">Selecionar</option>
+                <select asp-for="Estado" id="Estado" class="form-input-custom" required>
+                    <option value="" disabled selected hidden>Selecionar</option>
+                    @foreach (var item in Html.GetEnumSelectList<EstadoBr>())
+                    {
+                        <option value="@item.Text">@item.Text</option>
+                    }
                 </select>
                 <span asp-validation-for="Estado" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-5">
+            <div class="col-12 col-sm-8 col-lg-5 form-group-custom">
                 <label asp-for="Complemento" class="label-custom">Complemento</label>
                 <input asp-for="Complemento" class="form-input-custom" maxlength="60" placeholder="Apto, Bloco, etc." />
                 <span asp-validation-for="Complemento" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
@@ -287,8 +298,8 @@
             <i class="bi bi-phone-fill" style="color: var(--text-muted);"></i>
             <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Contato</span>
         </div>
-        <div class="form-row">
-            <div class="form-group-custom c-1">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-4 col-md-2 col-lg-1 form-group-custom">
                 <label asp-for="Ddd" class="label-custom">DDD</label>
                 <input asp-for="Ddd"
                        class="form-input-custom"
@@ -302,7 +313,7 @@
                        required />
                 <span asp-validation-for="Ddd" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
-            <div class="form-group-custom c-3">
+            <div class="col-12 col-sm-8 col-md-5 col-lg-3 form-group-custom">
                 <label asp-for="Telefone" class="label-custom">Telefone</label>
                 <input asp-for="Telefone"
                        class="form-input-custom"
@@ -322,8 +333,8 @@
             <i class="bi bi-chevron-down"></i> Contato do responsável
         </div>
 
-        <div class="form-row">
-            <div class="form-group-custom c-1">
+        <div class="row g-3">
+            <div class="col-12 col-sm-4 col-md-2 col-lg-1 form-group-custom">
                 <label asp-for="DddResponsavel" class="label-custom">DDD</label>
                 <input asp-for="DddResponsavel"
                        class="form-input-custom"
@@ -337,7 +348,7 @@
                 <span asp-validation-for="DddResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
-            <div class="form-group-custom c-3">
+            <div class="col-12 col-sm-8 col-md-4 col-lg-3 form-group-custom">
                 <label asp-for="TelefoneResponsavel" class="label-custom">Telefone</label>
                 <input asp-for="TelefoneResponsavel"
                        class="form-input-custom"
@@ -351,7 +362,7 @@
                 <span asp-validation-for="TelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>
 
-            <div class="form-group-custom c-6">
+            <div class="col-12 col-md-6 col-lg-6 form-group-custom">
                 <label asp-for="NomeTelefoneResponsavel" class="label-custom">Responsável</label>
                 <input asp-for="NomeTelefoneResponsavel" class="form-input-custom" maxlength="60" placeholder="Nome do responsável" />
                 <span asp-validation-for="NomeTelefoneResponsavel" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
@@ -359,8 +370,8 @@
         </div>
     </div>
 
-    <div class="actions-container">
-        <a asp-action="Index" class="btn-med btn-med-danger" style="text-decoration: none;">Cancelar</a>
+    <div class="actions-container d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+        <a asp-action="Index" class="btn-med btn-med-danger text-center" style="text-decoration: none;">Cancelar</a>
         <button type="submit" class="btn-med btn-med-primary">Salvar</button>
     </div>
 
@@ -432,8 +443,10 @@
         function verificarTipoAlergia(tipo) {
             const errTipo = document.getElementById('alergia-tipo-error');
             const errMed = document.getElementById('alergia-error');
+            const errDesc = document.getElementById('alergia-desc-error');
             if (errTipo) errTipo.innerText = '';
             if (errMed) errMed.innerText = '';
+            if (errDesc) errDesc.innerText = '';
 
             const selectTipo = document.getElementById('inputTipoAlergia');
             const tipoTexto = selectTipo.options[selectTipo.selectedIndex]?.text.toUpperCase();
@@ -454,18 +467,23 @@
 
             const errTipo = document.getElementById('alergia-tipo-error');
             const errMed = document.getElementById('alergia-error');
+            const errDesc = document.getElementById('alergia-desc-error');
             if (errTipo) errTipo.innerText = '';
             if (errMed) errMed.innerText = '';
+            if (errDesc) errDesc.innerText = '';
 
             const tipoValor = selectTipo.value;
             const tipoTexto = selectTipo.options[selectTipo.selectedIndex]?.text;
+            const descricao = inputDesc ? inputDesc.value.trim() : '';
+
+            let hasError = false;
 
             if (!tipoValor) {
-                if (errTipo) errTipo.innerText = 'Selecione o tipo.';
-                return;
+                if (errTipo) errTipo.innerText = 'Campo obrigatório.';
+                hasError = true;
             }
 
-            const ehMedicamento = (tipoValor === '0' || tipoTexto.toUpperCase() === 'MEDICAMENTO');
+            const ehMedicamento = (tipoValor === '0' || (tipoTexto && tipoTexto.toUpperCase() === 'MEDICAMENTO'));
             let idMedicamento = null;
             let nomeMedicamento = '-';
 
@@ -476,19 +494,24 @@
 
                 if (!idMedicamento) {
                     if (errMed) errMed.innerText = 'Selecione o medicamento.';
-                    return;
-                }
-
-                if (listaAlergias.some(a => a.idMedicamento === idMedicamento)) {
+                    hasError = true;
+                } else if (listaAlergias.some(a => a.idMedicamento === idMedicamento)) {
                     if (errMed) errMed.innerText = 'Medicamento já adicionado.';
-                    return;
+                    hasError = true;
                 }
+            }
 
+            if (!descricao) {
+                if (errDesc) errDesc.innerText = 'Campo obrigatório.';
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            if (ehMedicamento && idMedicamento) {
                 selectMed.find(`option[value='${idMedicamento}']`).prop('disabled', true);
                 selectMed.val('').trigger('change');
             }
-
-            const descricao = inputDesc ? inputDesc.value.trim() : '';
 
             listaAlergias.push({
                 tipoEnum: tipoTexto.toUpperCase(),
@@ -528,10 +551,10 @@
 
             listaAlergias.forEach((item, index) => {
                 const btnExcluir = `
-                            <button type="button" class="btn btn-sm text-danger p-0" style="border:none; background:transparent; font-size: 1.25rem; line-height: 1;" onclick="removerAlergia(${index})">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                        `;
+                    <button type="button" class="btn btn-sm text-danger p-0" style="border:none; background:transparent; font-size: 1.25rem; line-height: 1;" onclick="removerAlergia(${index})">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                `;
 
                 dtAlergias.row.add([
                     item.tipoTexto,
@@ -542,10 +565,10 @@
 
                 if (hiddenContainer) {
                     hiddenContainer.innerHTML += `
-                                <input type="hidden" name="Alergias[${index}].Tipo" value="${item.tipoEnum}" />
-                                <input type="hidden" name="Alergias[${index}].IdMedicamento" value="${item.idMedicamento || ''}" />
-                                <input type="hidden" name="Alergias[${index}].Descricao" value="${item.descricao}" />
-                            `;
+                        <input type="hidden" name="Alergias[${index}].Tipo" value="${item.tipoEnum}" />
+                        <input type="hidden" name="Alergias[${index}].IdMedicamento" value="${item.idMedicamento || ''}" />
+                        <input type="hidden" name="Alergias[${index}].Descricao" value="${item.descricao}" />
+                    `;
                 }
             });
 
@@ -574,6 +597,13 @@
                 placeholder: "Selecione",
                 allowClear: true,
                 width: '100%'
+            });
+
+            $('#Estado').select2({
+                placeholder: "Selecionar",
+                allowClear: false,
+                width: '100%',
+                minimumResultsForSearch: Infinity
             });
         });
     </script>

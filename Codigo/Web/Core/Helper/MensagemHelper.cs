@@ -7,5 +7,7 @@
         public static string EdicaoSucesso => "Alterações salvas com sucesso!";
         public static string DelecaoSucesso => "Registro removido com sucesso!";
         public static string ErroInesperado => "Ocorreu um erro interno ao processar a solicitação.";
+
+        public static string RegistroSucesso => "Cuidador registrado com sucesso.";
     }
 }

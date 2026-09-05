@@ -64,7 +64,7 @@ namespace MedicaWeb.Controllers
             var vinculo = new Vinculo
             {
                 IdCuidador = User.GetId(),
-                Parentesco = pacienteDetailsDto.Vinculo.Parentesco.ToString()
+                Parentesco = pacienteDetailsDto.Vinculo.Parentesco.ToString()!
             };
 
             await pacienteService.Create(pacienteModel, vinculo);

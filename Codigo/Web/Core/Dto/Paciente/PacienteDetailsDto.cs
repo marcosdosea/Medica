@@ -16,7 +16,6 @@ namespace Core.Dto.Paciente
 
         public string? CartaoSus { get; set; }
 
-        [Required(ErrorMessage = "Campo obrigatório.")]
         public TipoSanguineo? TipoSanguineo { get; set; }
 
         public float? Peso { get; set; }
@@ -31,7 +30,7 @@ namespace Core.Dto.Paciente
         public sbyte AlergiaMedicamento { get; set; }
 
         [Required(ErrorMessage = "Campo obrigatório.")]
-        public string Escolaridade { get; set; } = null!;
+        public Escolaridade? Escolaridade { get; set; }
 
         public sbyte PossuiDeficiencia { get; set; }
 
@@ -68,6 +67,12 @@ namespace Core.Dto.Paciente
 
         public IFormFile? Foto { get; set; }
 
+        public byte[]? FotoBytes { get; set; }
+
+        public string? FotoBase64 => FotoBytes != null && FotoBytes.Length > 0
+                        ? $"data:image/png;base64,{Convert.ToBase64String(FotoBytes)}"
+                        : null;
+
         public string? Ativo { get; set; }
 
         [Required(ErrorMessage = "Campo obrigatório.")]
@@ -92,7 +97,7 @@ namespace Core.Dto.Paciente
             public uint? IdMedicamento { get; set; }
             public string? MedicamentoNome { get; set; }
             public string Tipo { get; set; } = null!;
-            public string? Descricao { get; set; }
+            public string Descricao { get; set; } = null!;
         }
 
         public class VinculoDto
@@ -100,7 +105,7 @@ namespace Core.Dto.Paciente
             public int IdCuidador { get; set; }
 
             [Required(ErrorMessage = "Campo obrigatório.")]
-            public Parentesco Parentesco { get; set; }
+            public Parentesco? Parentesco { get; set; }
         }
     }
 }

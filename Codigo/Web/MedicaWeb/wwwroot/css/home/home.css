@@ -31,7 +31,9 @@
     outline: none;
 }
 
-    .topbar-title:hover, .topbar-title:active, .topbar-title:focus {
+    .topbar-title:hover,
+    .topbar-title:active,
+    .topbar-title:focus {
         color: var(--primary);
         text-decoration: none;
     }
@@ -64,11 +66,10 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     color: var(--text-main);
     z-index: 1200;
 }
-
 
 .sidebar.collapsed {
     width: 80px;
@@ -124,7 +125,8 @@
         justify-content: center;
     }
 
-    .nav-item:hover, .nav-item.active {
+    .nav-item:hover,
+    .nav-item.active {
         background: #F6F6F6;
         color: #000000;
     }
@@ -164,7 +166,7 @@
         .theme-switch button.active {
             background: var(--bg-card);
             color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
 .main-wrapper {
@@ -206,6 +208,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -246,12 +251,23 @@
     transform: scale(1.1);
 }
 
+.paciente-info {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
 .paciente-nome {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: var(--text-main);
-    margin: 5px 0;
+    margin: 5px 0 0 0;
     line-height: 1.2;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
 
 .paciente-apelido {
@@ -260,7 +276,29 @@
     font-family: 'Courier New', Courier, monospace;
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin: 4px 0 0 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
+
+.sem-pacientes-box {
+    background-color: var(--bg-card);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: 15px;
+}
+
+    .sem-pacientes-box p {
+        margin: 10px 0 0 0;
+        font-size: 16px;
+        font-weight: 500;
+    }
 
 .content-footer {
     padding: 16px 32px;
@@ -269,14 +307,14 @@
     border-top: 1px solid var(--border);
 }
 
-
 @media (max-width: 768px) {
     .btn-floating-toggle {
         display: flex;
         top: 20px;
     }
 
-    .main-wrapper, .main-wrapper.expanded {
+    .main-wrapper,
+    .main-wrapper.expanded {
         margin-left: 80px;
         width: calc(100% - 80px);
     }

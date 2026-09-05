@@ -17,12 +17,11 @@ namespace Service
         {
             if (execucao.HoraConfirmacao == null)
             {
-                //execucao.Status = "FALHA"; 
+                execucao.Status = "FALHA"; 
             }
             else
             {
-                //execucao.Status = "SUCESSO";
-
+                execucao.Status = "SUCESSO";
                 var planejamento = await context.Planejamentos
                     .Include(p => p.IdMedicamentoNavigation)
                     .FirstOrDefaultAsync(p => p.Id == execucao.IdPlanejamento);
@@ -41,9 +40,7 @@ namespace Service
             }
 
             await context.Execucaos.AddAsync(execucao);
-
             await context.SaveChangesAsync();
-
             return execucao.Id;
         }
 

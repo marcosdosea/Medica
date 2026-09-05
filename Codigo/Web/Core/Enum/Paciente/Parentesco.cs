@@ -16,10 +16,10 @@ namespace Core.Enum.Paciente
         [Display(Name = "Cônjuge")]
         CONJUGE,
 
-        [Display(Name = "Irmão/Irmã")]
+        [Display(Name = "Irmão(ã)")]
         IRMAO,
 
-        [Display(Name = "Avô/Avó")]
+        [Display(Name = "Avô(ó)")]
         AVO,
 
         [Display(Name = "Tio(a)")]

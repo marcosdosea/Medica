@@ -44,21 +44,13 @@ async function buscarCep(valor) {
         const ruaInput = document.getElementById('Rua');
         const bairroInput = document.getElementById('Bairro');
         const cidadeInput = document.getElementById('Cidade');
-        const estadoSelect = document.getElementById('Estado');
 
         if (ruaInput) ruaInput.value = dados.logradouro || '';
         if (bairroInput) bairroInput.value = dados.bairro || '';
         if (cidadeInput) cidadeInput.value = dados.localidade || '';
-
-        if (dados.uf && estadoSelect) {
+        if (dados.uf) {
             const ufViaCep = dados.uf.toUpperCase();
-            for (let i = 0; i < estadoSelect.options.length; i++) {
-                const opt = estadoSelect.options[i];
-                if (opt.text.toUpperCase() === ufViaCep || opt.value.toUpperCase() === ufViaCep) {
-                    estadoSelect.selectedIndex = i;
-                    break;
-                }
-            }
+            $('#Estado').val(ufViaCep).trigger('change');
         }
 
         const identificadorInput = document.getElementById('Identificador');

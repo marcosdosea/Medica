@@ -1,230 +1,278 @@
 ﻿@using Core.Dto.Paciente
+@using Core.Enum.Paciente
 @model PacienteDetailsDto
 
 @{
     ViewData["Title"] = "Detalhes do Paciente";
 }
 
-<div class="content-container">
-    <div class="header-inline mb-4">
+@section Styles {
+    <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+}
+
+<div class="header-inline mb-4 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
         <a asp-action="Index" class="btn-voltar">
             <i class="fas fa-arrow-left"></i>
         </a>
-        <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Detalhes do paciente</h2>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-user" style="color: var(--text-muted); font-size: 20px;"></i>
-                <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Sobre</span>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-9 col-md-8 col-12 form-group-custom">
-                    <label class="label-custom">Nome</label>
-                    <div class="form-control-static">@Model.Nome</div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-12 form-group-custom">
-                    <label class="label-custom">Data de nascimento</label>
-                    <div class="form-control-static">@(Model.DataNascimento.HasValue ? Model.DataNascimento.Value.ToString("dd/MM/yyyy") : "--")</div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-4 col-12 form-group-custom">
-                    <label class="label-custom">CPF</label>
-                    <div class="form-control-static">@Model.Cpf</div>
-                </div>
-                <div class="col-md-8 col-12 form-group-custom">
-                    <label class="label-custom">Cartão SUS</label>
-                    <div class="form-control-static">@(string.IsNullOrEmpty(Model.CartaoSus) ? "--" : Model.CartaoSus)</div>
-                </div>
-            </div>
-
-            <div class="row align-items-end">
-                <div class="col-xl-3 col-lg-6 col-md-12 col-12 form-group-custom">
-                    <label class="label-custom">Alergia a medicamentos?</label>
-                    <div class="form-control-static">@(Model.AlergiaMedicamento == 1 ? "Sim" : "Não")</div>
-                </div>
-                <div class="col-xl-2 col-lg-6 col-md-12 col-12 form-group-custom">
-                    <label class="label-custom">Tipo sanguíneo</label>
-                    <div class="form-control-static">@(Model.TipoSanguineo?.ToString() ?? "--")</div>
-                </div>
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 form-group-custom">
-                    <label class="label-custom">Peso</label>
-                    <div class="form-control-static">@(Model.Peso > 0 ? Model.Peso.ToString() + " kg" : "--")</div>
-                </div>
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 form-group-custom">
-                    <label class="label-custom">Altura</label>
-                    <div class="form-control-static">@(Model.Altura > 0 ? Model.Altura.ToString() + " m" : "--")</div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-4 col-12 form-group-custom">
-                    <label class="label-custom">Sexo</label>
-                    <div class="form-control-static">@(Model.Sexo == "M" ? "Masculino" : Model.Sexo == "F" ? "Feminino" : "--")</div>
-                </div>
-            </div>
-
-            <div class="row align-items-end">
-                <div class="col-xl-3 col-lg-6 col-md-12 col-12 form-group-custom">
-                    <label class="label-custom">Possui deficiência?</label>
-                    <div class="form-control-static">@(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")</div>
-                </div>
-                <div class="col-xl-2 col-lg-6 col-md-6 col-12 form-group-custom">
-                    <label class="label-custom">Parentesco</label>
-                    <div class="form-control-static">--</div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6 col-12 form-group-custom">
-                    <label class="label-custom">Apelido</label>
-                    <div class="form-control-static">@(string.IsNullOrEmpty(Model.Apelido) ? "--" : Model.Apelido)</div>
-                </div>
-                <div class="col-xl-4 col-lg-6 col-md-12 col-12 form-group-custom">
-                    <label class="label-custom">Escolaridade</label>
-                    <div class="form-control-static" style="white-space: nowrap;">
-                        @(Model.Escolaridade == "SuperiorIncompleto" ? "Superior Incompleto" :
-                          Model.Escolaridade == "SuperiorCompleto" ? "Superior Completo" :
-                          Model.Escolaridade == "MedioCompleto" ? "Médio Completo" : Model.Escolaridade?.ToString() ?? "--")
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if (Model.AlergiaMedicamento == 1 && Model.Alergias != null && Model.Alergias.Any())
-    {
-        <div class="row mb-0 mt-2">
-            <div class="col-12">
-                <div class="secao-header" style="border:none; margin-top:10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                    <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">
-                        <i class="fas fa-chevron-down" style="font-size: 14px; margin-right: 4px; color: var(--text-muted); vertical-align: middle;"></i> Alergias - @Model.Alergias.Count.ToString()
-                    </span>
-                </div>
-
-                <div class="row">
-                    @for (int i = 0; i < Model.Alergias.Count; i++)
-                    {
-                        var alergia = Model.Alergias[i];
-
-                        <div class="col-12 mb-4">
-                            <div class="row align-items-end">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-6 col-12 form-group-custom">
-                                    <label class="label-custom">Tipo</label>
-                                    <div class="form-control-static" style="white-space: nowrap;">@alergia.Tipo.ToString()</div>
-                                </div>
-
-                                @if (!string.IsNullOrEmpty(alergia.MedicamentoNome))
-                                {
-                                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6 col-12 form-group-custom">
-                                        <label class="label-custom">Medicamento</label>
-                                        <div class="form-control-static" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@alergia.MedicamentoNome</div>
-                                    </div>
-                                }
-                            </div>
-
-                            <div class="row">
-                                <div class="col-12 form-group-custom">
-                                    <label class="label-custom">Descrição</label>
-                                    <div class="form-control-static text-wrap" style="min-height: 120px; align-items: flex-start; padding-top: 14px; display: flex; width: 100%; word-break: break-word;">
-                                        @alergia.Descricao
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if (i < Model.Alergias.Count - 1)
-                            {
-                                <hr style="border-color: var(--border); margin-top: 5px; margin-bottom: 5px;" />
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    }
-
-    @if (Model.PossuiDeficiencia == 1 && Model.Deficiencias != null && Model.Deficiencias.Any())
-    {
-        <div class="row mb-3 mt-0">
-            <div class="col-12">
-                <div class="secao-header" style="border:none; margin-top:5px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                    <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">
-                        <i class="fas fa-chevron-down" style="font-size: 14px; margin-right: 4px; color: var(--text-muted); vertical-align: middle;"></i> Deficiências - @Model.Deficiencias.Count.ToString()
-                    </span>
-                </div>
-
-                <div class="row">
-                    @for (int i = 0; i < Model.Deficiencias.Count; i++)
-                    {
-                        var deficiencia = Model.Deficiencias[i];
-
-                        <div class="col-12 mb-4">
-                            <div class="row">
-                                <div class="col-12 form-group-custom">
-                                    <label class="label-custom">Descrição</label>
-                                    <div class="form-control-static text-wrap" style="min-height: 120px; align-items: flex-start; padding-top: 14px; display: flex; width: 100%; word-break: break-word;">
-                                        @deficiencia.Descricao
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if (i < Model.Deficiencias.Count - 1)
-                            {
-                                <hr style="border-color: var(--border); margin-top: 5px; margin-bottom: 5px;" />
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    }
-
-    <div class="row mt-3">
-        <div class="col-12">
-            <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-map-marker-alt" style="color: var(--text-muted); font-size: 20px;"></i>
-                <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Endereço</span>
-            </div>
-
-            <div class="row align-items-end">
-                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-12 col-12 form-group-custom">
-                    <label class="label-custom">CEP</label>
-                    <div class="form-control-static">@Model.Cep</div>
-                </div>
-                <div class="col-xl-5 col-lg-5 col-md-8 col-sm-12 col-12 form-group-custom">
-                    <label class="label-custom">Rua</label>
-                    <div class="form-control-static">@Model.Rua</div>
-                </div>
-                <div class="col-xl-5 col-lg-4 col-md-12 col-sm-12 col-12 form-group-custom">
-                    <label class="label-custom">Bairro</label>
-                    <div class="form-control-static">@Model.Bairro</div>
-                </div>
-            </div>
-
-            <div class="row align-items-end">
-                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-12 col-12 form-group-custom">
-                    <label class="label-custom">Identificador</label>
-                    <div class="form-control-static">@Model.Identificador</div>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-5 col-sm-8 col-12 form-group-custom">
-                    <label class="label-custom">Cidade</label>
-                    <div class="form-control-static">@Model.Cidade</div>
-                </div>
-                <div class="col-xl-2 col-lg-1 col-md-3 col-sm-4 col-12 form-group-custom">
-                    <label class="label-custom">Estado</label>
-                    <div class="form-control-static">@Model.Estado</div>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 form-group-custom">
-                    <label class="label-custom">Complemento</label>
-                    <div class="form-control-static">@(string.IsNullOrEmpty(Model.Complemento) ? "--" : Model.Complemento)</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="actions-container">
-        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: inline; margin: 0;">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="btn-med btn-med-danger"">Excluir</button>
-        </form>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
+        <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Detalhes do Paciente</h2>
     </div>
 </div>
+
+<form>
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-person-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Sobre</span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-9 form-group-custom">
+                <label asp-for="Nome" class="label-custom">Nome</label>
+                <input asp-for="Nome" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-md-3 form-group-custom">
+                <label asp-for="DataNascimento" class="label-custom">Data de nascimento</label>
+                <input value="@(Model.DataNascimento?.ToString("yyyy-MM-dd"))" type="date" class="form-input-custom" readonly />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-4 form-group-custom">
+                <label asp-for="Cpf" class="label-custom">CPF</label>
+                <input asp-for="Cpf" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-md-8 form-group-custom">
+                <label asp-for="CartaoSus" class="label-custom">Cartão SUS</label>
+                <input value="@(string.IsNullOrWhiteSpace(Model.CartaoSus) ? "-" : Model.CartaoSus)" class="form-input-custom" readonly />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3 align-items-end">
+            <div class="col-12 col-md-4 col-xl-2">
+                <label class="label-custom d-block text-truncate">Alergia a medicamentos?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 switch-field-container">
+                    <input class="form-check-input float-none m-0" type="checkbox" disabled @(Model.Alergias != null && Model.Alergias.Any() ? "checked" : "") />
+                    <label class="form-check-label switch-label-text m-0">@(Model.Alergias != null && Model.Alergias.Any() ? "Sim" : "Não")</label>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-3">
+                <label class="label-custom">Tipo sanguíneo</label>
+                <input value="@Html.DisplayFor(model => model.TipoSanguineo)" class="form-input-custom" readonly />
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-2">
+                <label class="label-custom">Peso (kg)</label>
+                <input value="@(Model.Peso.HasValue ? Model.Peso.Value.ToString("N2") : "-")" class="form-input-custom" readonly />
+            </div>
+
+            <div class="col-6 col-md-6 col-xl-2">
+                <label class="label-custom">Altura (m)</label>
+                <input value="@(Model.Altura.HasValue ? Model.Altura.Value.ToString("N2") : "-")" class="form-input-custom" readonly />
+            </div>
+
+            <div class="col-6 col-md-6 col-xl-3">
+                <label class="label-custom">Sexo</label>
+                <input asp-for="Sexo" class="form-input-custom" readonly />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3 align-items-end">
+            <div class="col-12 col-md-4 col-xl-2">
+                <label class="label-custom d-block text-truncate">Possui deficiência?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 switch-field-container">
+                    <input class="form-check-input float-none m-0" type="checkbox" disabled @(Model.PossuiDeficiencia == 1 ? "checked" : "") />
+                    <label class="form-check-label switch-label-text m-0">@(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")</label>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-3">
+                <label class="label-custom">Parentesco</label>
+                <input value="@Html.DisplayFor(model => model.Vinculo.Parentesco)" class="form-input-custom" readonly />
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-4">
+                <label class="label-custom">Apelido</label>
+                <input value="@(string.IsNullOrWhiteSpace(Model.Apelido) ? "-" : Model.Apelido)" class="form-input-custom" readonly />
+            </div>
+
+            <div class="col-12 col-md-12 col-xl-3">
+                <label class="label-custom">Escolaridade</label>
+                <input value="@Html.DisplayFor(model => model.Escolaridade)" class="form-input-custom" readonly />
+            </div>
+        </div>
+
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+                <label class="label-custom">Foto</label>
+                <div class="d-flex align-items-center gap-2">
+                    @if (!string.IsNullOrEmpty(Model.FotoBase64))
+                    {
+                        <img src="@Model.FotoBase64" alt="Foto do paciente" style="width: 43px; height: 43px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border, #ced4da);" />
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="width: 43px; height: 43px; border-radius: 6px; border: 1px solid var(--border, #ced4da);">
+                            <i class="bi bi-person-fill" style="font-size: 20px;"></i>
+                        </div>
+                    }
+                    <span class="text-truncate text-muted" style="font-size: 14px;">@(string.IsNullOrEmpty(Model.FotoBase64) ? "Sem foto" : "Foto cadastrada")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Alergias != null && Model.Alergias.Any())
+    {
+        <div class="form-section">
+            <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 15px;">
+                <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Alergias</span>
+            </div>
+
+            <div class="calendario-container mt-2 table-responsive" style="padding: 0; margin-bottom: 15px;">
+                <table id="tabelaAlergiasDetails" class="custom-table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Medicamento</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var alergia in Model.Alergias)
+                        {
+                            <tr>
+                                <td class="fw-bold">@alergia.Tipo</td>
+                                <td>@(string.IsNullOrWhiteSpace(alergia.MedicamentoNome) ? "-" : alergia.MedicamentoNome)</td>
+                                <td>@(string.IsNullOrWhiteSpace(alergia.Descricao) ? "-" : alergia.Descricao)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if (Model.PossuiDeficiencia == 1 && (!string.IsNullOrWhiteSpace(Model.Deficiencia) || (Model.Deficiencias != null && Model.Deficiencias.Any())))
+    {
+        <div class="form-section">
+            <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px;">
+                <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Deficiência</span>
+            </div>
+            <div class="row g-3">
+                <div class="col-12 col-md-6 form-group-custom">
+                    <label class="label-custom">Descrição</label>
+                    <textarea class="form-input-custom" rows="3" readonly style="resize: none; min-height: 64px;">@Model.Deficiencia</textarea>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-geo-alt-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Endereço</span>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-2 form-group-custom">
+                <label asp-for="Cep" class="label-custom">Cep</label>
+                <input asp-for="Cep" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-md-5 form-group-custom">
+                <label asp-for="Rua" class="label-custom">Rua</label>
+                <input asp-for="Rua" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-md-5 form-group-custom">
+                <label asp-for="Bairro" class="label-custom">Bairro</label>
+                <input asp-for="Bairro" class="form-input-custom" readonly />
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-3 col-lg-1 form-group-custom">
+                <label asp-for="Identificador" class="label-custom">Identificador</label>
+                <input value="@(string.IsNullOrWhiteSpace(Model.Identificador) ? "-" : Model.Identificador)" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-sm-9 col-lg-4 form-group-custom">
+                <label asp-for="Cidade" class="label-custom">Cidade</label>
+                <input asp-for="Cidade" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-sm-4 col-lg-2 form-group-custom">
+                <label asp-for="Estado" class="label-custom">Estado</label>
+                <input asp-for="Estado" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-sm-8 col-lg-5 form-group-custom">
+                <label asp-for="Complemento" class="label-custom">Complemento</label>
+                <input value="@(string.IsNullOrWhiteSpace(Model.Complemento) ? "-" : Model.Complemento)" class="form-input-custom" readonly />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-phone-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Contato</span>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-4 col-md-2 col-lg-1 form-group-custom">
+                <label asp-for="Ddd" class="label-custom">DDD</label>
+                <input asp-for="Ddd" class="form-input-custom" readonly />
+            </div>
+            <div class="col-12 col-sm-8 col-md-5 col-lg-3 form-group-custom">
+                <label asp-for="Telefone" class="label-custom">Telefone</label>
+                <input asp-for="Telefone" class="form-input-custom" readonly />
+            </div>
+        </div>
+
+        <div style="color: #5c677d; font-size: 13px; font-weight: 600; margin: 15px 0 10px 0;">
+            <i class="bi bi-chevron-down"></i> Contato do responsável
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-sm-4 col-md-2 col-lg-1 form-group-custom">
+                <label class="label-custom">DDD</label>
+                <input value="@(string.IsNullOrWhiteSpace(Model.DddResponsavel) ? "-" : Model.DddResponsavel)" class="form-input-custom" readonly />
+            </div>
+
+            <div class="col-12 col-sm-8 col-md-4 col-lg-3 form-group-custom">
+                <label class="label-custom">Telefone</label>
+                <input value="@(string.IsNullOrWhiteSpace(Model.TelefoneResponsavel) ? "-" : Model.TelefoneResponsavel)" class="form-input-custom" readonly />
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-6 form-group-custom">
+                <label class="label-custom">Responsável</label>
+                <input value="@(string.IsNullOrWhiteSpace(Model.NomeTelefoneResponsavel) ? "-" : Model.NomeTelefoneResponsavel)" class="form-input-custom" readonly />
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-container d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+        <a asp-action="Index" class="btn-med btn-med-danger text-center" style="text-decoration: none;">Voltar</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary text-center" style="text-decoration: none;">Editar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            if ($('#tabelaAlergiasDetails').length) {
+                $('#tabelaAlergiasDetails').DataTable({
+                    "language": {
+                        "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                    },
+                    "lengthMenu": [5, 10, 15],
+                    "pageLength": 5,
+                    "searching": false,
+                    "info": false,
+                    "dom": 'rt<"bottom d-flex justify-content-between align-items-center p-3 mt-2"lp><"clear">',
+                    "columnDefs": [
+                        { "width": "25%", "targets": 0, "className": "font-bold" },
+                        { "width": "35%", "targets": 1 },
+                        { "width": "40%", "targets": 2 }
+                    ]
+                });
+            }
+        });
+    </script>
+}

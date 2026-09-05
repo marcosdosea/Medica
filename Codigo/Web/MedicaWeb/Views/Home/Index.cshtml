@@ -1,44 +1,73 @@
 ﻿@using Core.Dto.Paciente
 @model IEnumerable<PacienteDto>
 
+@functions {
+    public static string FormatarPrimeiroEUltimoNome(string? nomeCompleto)
+    {
+        if (string.IsNullOrWhiteSpace(nomeCompleto))
+            return "-";
+
+        var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (partes.Length <= 1)
+            return partes[0];
+
+        return $"{partes[0]} {partes[^1]}";
+    }
+}
+
 <div class="home-wrapper">
     <section class="pacientes-topo">
         <div class="header-com-botao">
             <h2 class="titulo-sessao">Pacientes</h2>
         </div>
 
-        <div class="cards-grid">
-            @foreach (var paciente in Model)
-            {
-                <div class="paciente-card">
-                    <div class="foto-wrapper">
-                        @if (paciente.Foto != null && paciente.Foto.Length > 0)
-                        {
-                            var base64 = Convert.ToBase64String(paciente.Foto);
-                            <img src="data:image/png;base64,@base64" alt="@paciente.Nome" />
-                        }
-                        else
-                        {
-                            <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
-                        }
+        @if (Model != null && Model.Any())
+        {
+            <div class="cards-grid">
+                @foreach (var paciente in Model)
+                {
+                    var nomeExibicao = FormatarPrimeiroEUltimoNome(paciente.Nome);
+
+                    <div class="paciente-card">
+                        <div class="foto-wrapper">
+                            @if (paciente.Foto != null && paciente.Foto.Length > 0)
+                            {
+                                var base64 = Convert.ToBase64String(paciente.Foto);
+                                <img src="data:image/png;base64,@base64" alt="@nomeExibicao" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
+                            }
+                        </div>
+                        <div class="paciente-info">
+                            <h3 class="paciente-nome" title="@paciente.Nome">@nomeExibicao</h3>
+                        </div>
                     </div>
-                    <div class="paciente-info">
-                        <h3 class="paciente-nome">@paciente.Nome</h3>
-                        <p class="paciente-apelido">@paciente.Apelido</p>
-                    </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="sem-pacientes-box">
+                <i class="bi bi-people" style="font-size: 42px; color: var(--text-muted);"></i>
+                <p>Nenhum paciente cadastrado.</p>
+            </div>
+        }
     </section>
 
-    <div class="calendario-container">
-        <div id='calendar'></div>
+    @if (Model != null && Model.Any())
+    {
+        <div class="calendario-container">
+            <div id='calendar'></div>
 
-        <div class="caption-container">
-            <span class="legenda-item"><span class="caption confirmado"></span> Confirmado</span>
-            <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
-            <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
-            <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>
+            <div class="caption-container">
+                <span class="legenda-item"><span class="caption confirmado"></span> Confirmado</span>
+                <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
+                <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
+                <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>
+            </div>
         </div>
-    </div>
+    }
 </div>
