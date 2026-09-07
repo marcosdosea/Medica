@@ -31,9 +31,9 @@ namespace MedicaWeb.Controllers
         }
 
         // GET: MedicamentoController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var medicamento = medicamentoService.Get((uint)id);
+            var medicamento = await medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
             return View(medicamentoModel);
         }
@@ -47,24 +47,26 @@ namespace MedicaWeb.Controllers
         // POST: MedicamentoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(MedicamentoViewModel medicamentoModel)
+        public async Task<IActionResult> Create(MedicamentoViewModel medicamentoModel)
         {
-            medicamentoModel.IdCuidador = 1;
+            medicamentoModel.IdCuidador = User.GetId();
+
             var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
             if (fotoMedicamento != null && fotoMedicamento.Length > 0)
             {
                 using var ms = new MemoryStream();
-                fotoMedicamento.CopyTo(ms);
+                await fotoMedicamento.CopyToAsync(ms);
                 medicamentoModel.Foto = ms.ToArray();
             }
+
             if (ModelState.IsValid)
             {
                 var medicamento = mapper.Map<Medicamento>(medicamentoModel);
-                medicamentoService.Create(medicamento);
-
+                await medicamentoService.Create(medicamento);
+                NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
+                return RedirectToAction(nameof(Index));
             }
-            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
-            return RedirectToAction(nameof(Index));
+            return View(medicamentoModel);
         }
 
         // GET: MedicamentoController/Edit/5

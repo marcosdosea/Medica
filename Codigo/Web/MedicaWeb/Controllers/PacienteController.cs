@@ -86,6 +86,7 @@ namespace MedicaWeb.Controllers
             pacienteDetailsDto.Id = id;
             var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
             await pacienteService.Edit(pacienteModel);
+            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
             return RedirectToAction(nameof(Index));
         }
 

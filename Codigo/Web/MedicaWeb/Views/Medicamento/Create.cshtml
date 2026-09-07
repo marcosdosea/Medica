@@ -17,25 +17,25 @@
                 <div class="row">
                     <div class="col-md-12 form-group-custom">
                         <label class="label-custom">Nome</label>
-                        <input asp-for="Nome" class="form-control-custom" placeholder="Digite o nome..." />
+                        <input asp-for="Nome" class="form-control-custom" placeholder="" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 form-group-custom">
                         <label class="label-custom">Apelido</label>
-                        <input asp-for="Apelido" class="form-control-custom" placeholder="Digite o apelido..." />
+                        <input asp-for="Apelido" class="form-control-custom" placeholder="" />
                     </div>
                     <div class="col-md-6 form-group-custom">
                         <label class="label-custom">Forma farmacêutica</label>
                         <select asp-for="FormaFarmaceutica"
                                 asp-items="Html.GetEnumSelectList<Core.Enum.Medicamento.FormaFarmaceutica>()"
                                 class="form-control-custom select-custom">
-                            <option value="" disabled selected hidden>Selecione...</option>
+                            <option value="" disabled selected hidden>Selecione</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group-custom">
                         <label class="label-custom">Quantidade</label>
-                        <input asp-for="Quantidade" type="number" min="1" class="form-control-custom" placeholder="0" />
+                        <input asp-for="Quantidade" type="number" min="1" class="form-control-custom" placeholder="" />
                     </div>
                 </div>
             </div>

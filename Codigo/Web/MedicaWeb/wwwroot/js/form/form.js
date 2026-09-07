@@ -24,40 +24,64 @@ function toggleText(checkbox) {
     }
 }
 
-async function buscarCep(valor) {
-    const cep = valor.replace(/\D/g, '');
+function buscarCep(cep) {
+    const cepLimpo = cep.replace(/\D/g, '');
     const spanErro = document.getElementById('cep-error');
 
     if (spanErro) spanErro.innerText = '';
 
-    if (cep.length !== 8) return;
+    if (cepLimpo.length !== 8) return;
 
-    try {
-        const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const dados = await resposta.json();
+    fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+        .then(response => {
+            if (!response.ok) throw new Error('Falha na requisição');
+            return response.json();
+        })
+        .then(dados => {
+            if (dados.erro) {
+                if (spanErro) spanErro.innerText = 'CEP não encontrado.';
+                return;
+            }
 
-        if (dados.erro) {
-            if (spanErro) spanErro.innerText = 'CEP não encontrado.';
-            return;
-        }
+            if (spanErro) spanErro.innerText = '';
 
-        const ruaInput = document.getElementById('Rua');
-        const bairroInput = document.getElementById('Bairro');
-        const cidadeInput = document.getElementById('Cidade');
+            $('#Rua').val(dados.logradouro).valid();
+            $('#Bairro').val(dados.bairro).valid();
+            $('#Cidade').val(dados.localidade).valid();
+            $('#Estado').val(dados.uf).trigger('change');
+            $('#Estado').valid();
+            $('#Identificador').focus();
+        })
+        .catch(err => {
+            console.error(err);
+            if (spanErro) spanErro.innerText = 'Erro ao consultar o CEP.';
+        });
+}
 
-        if (ruaInput) ruaInput.value = dados.logradouro || '';
-        if (bairroInput) bairroInput.value = dados.bairro || '';
-        if (cidadeInput) cidadeInput.value = dados.localidade || '';
-        if (dados.uf) {
-            const ufViaCep = dados.uf.toUpperCase();
-            $('#Estado').val(ufViaCep).trigger('change');
-        }
+class DialogConfirmacao {
 
-        const identificadorInput = document.getElementById('Identificador');
-        if (identificadorInput) {
-            identificadorInput.focus();
-        }
-    } catch {
-        if (spanErro) spanErro.innerText = 'CEP não encontrado.';
+    static exibir({
+        url,
+        titulo = "Confirmar Exclusão",
+        mensagem = "Deseja realmente excluir este registro?",
+        textoBotao = "Excluir",
+        classeBotao = "btn-danger"
+    }) {
+        console.log('aaaaaaaaaaaaaaaaaaaaaaaa');
+        const modalElement = document.getElementById('modalConfirmacao');
+        if (!modalElement) return;
+
+        document.getElementById('modalConfirmacaoLabel').innerHTML = `<i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> ${titulo}`;
+        document.getElementById('modalConfirmacaoMensagem').innerText = mensagem;
+
+        const form = document.getElementById('modalConfirmacaoForm');
+        form.action = url;
+
+        const btnAcao = document.getElementById('modalConfirmacaoBtnAcao');
+        btnAcao.innerText = textoBotao;
+        btnAcao.className = `btn ${classeBotao}`;
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        modal.show();
     }
 }

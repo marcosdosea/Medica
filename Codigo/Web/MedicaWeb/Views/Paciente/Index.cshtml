@@ -17,6 +17,7 @@
                 <th>Nome</th>
                 <th>CPF</th>
                 <th>Sexo</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -24,10 +25,19 @@
             {
                 @foreach (var item in Model)
                 {
+                    var sexoFormatado = string.Equals(item.Sexo, "M")
+                        ? "Masculino"
+                        : "Feminino";
+
+                    var statusFormatado = string.Equals(item.Ativo, "S")
+                        ? "Ativo"
+                        : "Inativo";
+
                     <tr onclick="location.href='@Url.Action("Details", "Paciente", new { id = item.Id })'" style="cursor:pointer;">
                         <td class="font-bold">@item.Nome</td>
-                        <td>@item.Cpf</td>
-                        <td>@item.Sexo</td>
+                        <td>@(ulong.TryParse(item.Cpf, out var numCpf) ? numCpf.ToString(@"000\.000\.000\-00") : item.Cpf)</td>
+                        <td>@sexoFormatado</td>
+                        <td>@statusFormatado</td>
                     </tr>
                 }
             }
@@ -37,7 +47,7 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#tabelaPacientes').DataTable({
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
@@ -47,9 +57,10 @@
                 "info": false,
                 "dom": 'rt<"bottom"lp><"clear">',
                 "columnDefs": [
-                    { "width": "50%", "targets": 0 },
-                    { "width": "30%", "targets": 1 },
-                    { "width": "20%", "targets": 2 }
+                    { "width": "40%", "targets": 0 },
+                    { "width": "25%", "targets": 1 },
+                    { "width": "20%", "targets": 2 },
+                    { "width": "15%", "targets": 3 }
                 ]
             });
         });

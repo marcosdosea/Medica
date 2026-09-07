@@ -23,7 +23,7 @@ namespace Core.Dto.Paciente
         public float? Altura { get; set; }
 
         [Required(ErrorMessage = "Campo obrigatório.")]
-        public string Sexo { get; set; } = null!;
+        public Sexo? Sexo { get; set; }
 
         public string? Apelido { get; set; }
 

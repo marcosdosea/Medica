@@ -10,3 +10,10 @@
 
     input.value = cpf;
 }
+
+$('form').on('submit', function () {
+    const inputCpf = document.getElementById('Cpf');
+    if (inputCpf) {
+        inputCpf.value = inputCpf.value.replace(/\D/g, '');
+    }
+});

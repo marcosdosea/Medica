@@ -8,291 +8,620 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<div class="cadastro-page-container">
-
-    <div class="cadastro-header">
-        <a asp-action="Index"><i class="bi bi-arrow-left"></i></a>
-        <h2>Editar Paciente</h2>
-    </div>
-
-    <form asp-action="Edit" method="post" enctype="multipart/form-data">
-
-        <input type="hidden" asp-for="Id" />
-
-        <div class="form-section">
-            <div class="section-title">
-                <i class="bi bi-person-fill"></i> Sobre
-            </div>
-
-            <div class="form-row">
-                <div class="form-group-custom c-9">
-                    <label asp-for="Nome">Nome</label>
-                    <input asp-for="Nome" class="form-input-custom" required />
-                </div>
-                <div class="form-group-custom c-3">
-                    <label asp-for="DataNascimento">Data de nascimento</label>
-                    <div style="position: relative;">
-                        <input asp-for="DataNascimento" type="date" class="form-input-custom" required />
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group-custom c-4">
-                    <label asp-for="Cpf">CPF</label>
-                    <input asp-for="Cpf" class="form-input-custom" placeholder="000.000.000-00" required />
-                </div>
-                <div class="form-group-custom c-8">
-                    <label asp-for="CartaoSus">Cartão SUS</label>
-                    <input asp-for="CartaoSus" class="form-input-custom" />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="switch-container c-3">
-                    <label>Alergia a medicamentos?</label>
-                    <div class="switch-wrapper">
-                        <div class="form-check form-switch p-0 m-0">
-                            <input class="form-check-input" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()" checked="@(Model.AlergiaMedicamento == 1)">
-                        </div>
-                        <span class="switch-label-text" id="txtAlergia">@(Model.AlergiaMedicamento == 1 ? "Sim" : "Não")</span>
-                    </div>
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label asp-for="TipoSanguineo">Tipo sanguíneo</label>
-                    @* Se o TipoSanguineo no DTO for string, mude a linha abaixo para preencher via strings textuais se necessário *@
-                    <select asp-for="TipoSanguineo" class="form-input-custom"
-                            asp-items="Html.GetEnumSelectList<TipoSanguineo>()" required>
-                        <option value="">Selecionar</option>
-                    </select>
-                    <span asp-validation-for="TipoSanguineo" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label asp-for="Peso">Peso</label>
-                    <input asp-for="Peso" class="form-input-custom" placeholder="--" />
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label asp-for="Altura">Altura</label>
-                    <input asp-for="Altura" class="form-input-custom" placeholder="--" />
-                </div>
-
-                <div class="form-group-custom c-3">
-                    <label asp-for="Sexo">Sexo</label>
-                    <select asp-for="Sexo" class="form-input-custom" required>
-                        <option value=""></option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                        @* Caso seu DTO retorne o número do Enum em vez de 'M'/'F', descomente abaixo: *@
-                        @* <option value="0">Masculino</option> *@
-                        @* <option value="1">Feminino</option> *@
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="switch-container c-3">
-                    <label>Possui alguma deficiência?</label>
-                    <div class="switch-wrapper">
-                        <div class="form-check form-switch p-0 m-0">
-                            <input class="form-check-input" type="checkbox" id="switchDeficiencia" onchange="toggleDeficienciaBlock()" checked="@(Model.PossuiDeficiencia == 1)">
-                        </div>
-                        <span class="switch-label-text" id="txtDeficiencia">@(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")</span>
-                    </div>
-                </div>
-
-                <div class="form-group-custom c-2">
-                    <label>Parentesco</label>
-                    <input type="text" class="form-input-custom" />
-                </div>
-
-                <div class="form-group-custom c-4">
-                    <label asp-for="Apelido">Apelido</label>
-                    <input asp-for="Apelido" class="form-input-custom" />
-                </div>
-
-                <div class="form-group-custom c-3">
-                    <label asp-for="Escolaridade">Escolaridade</label>
-                    <select asp-for="Escolaridade" class="form-input-custom" asp-items="Html.GetEnumSelectList<Escolaridade>()" required>
-                        <option value="">Selecionar</option>
-                    </select>
-                    <span asp-validation-for="Escolaridade" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-            </div>
-
-            <div class="form-row" style="margin-top: 15px;">
-                <div class="form-group-custom c-12">
-                    <label>Foto</label>
-                    <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
-                        <span id="nomeArquivoFoto">@(Model.Foto != null ? "Foto_Atual.png" : "Alterar Imagem.png")</span>
-                        <i class="bi bi-arrow-up-circle-fill"></i>
-                    </button>
-                    <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="atualizarNomeFoto(this)" />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <div class="section-title">
-                <i class="bi bi-geo-alt-fill"></i> Endereço
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-2">
-                    <label asp-for="Cep">CEP</label>
-                    <input asp-for="Cep" class="form-input-custom" />
-                </div>
-                <div class="form-group-custom c-5">
-                    <label asp-for="Rua">Rua</label>
-                    <input asp-for="Rua" class="form-input-custom" />
-                </div>
-                <div class="form-group-custom c-5">
-                    <label asp-for="Bairro">Bairro</label>
-                    <input asp-for="Bairro" class="form-input-custom" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-1">
-                    <label asp-for="Identificador">Identificador</label>
-                    <input asp-for="Identificador" class="form-input-custom" />
-                </div>
-                <div class="form-group-custom c-4">
-                    <label asp-for="Cidade">Cidade</label>
-                    <input asp-for="Cidade" class="form-input-custom" />
-                </div>
-                @* CORREÇÃO: Adicionado o caractere '<' que faltava na abertura da div do Estado *@
-                <div class="form-group-custom c-2">
-                    <label asp-for="Estado">Estado</label>
-                    <select asp-for="Estado" class="form-input-custom" asp-items="Html.GetEnumSelectList<EstadoBr>()" required>
-                        <option value="">Selecionar</option>
-                    </select>
-                    <span asp-validation-for="Estado" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
-                </div>
-                <div class="form-group-custom c-5">
-                    <label asp-for="Complemento">Complemento</label>
-                    <input asp-for="Complemento" class="form-input-custom" />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section" id="sectionAlergiaInput" style="display: none;">
-            <div class="dynamic-block">
-                <span>Alergias a medicamentos</span>
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-3">
-                    <label>Medicamento</label>
-                    <select class="form-input-custom">
-                        <option value="Losartana">Losartana</option>
-                    </select>
-                </div>
-                <div class="form-group-custom c-5">
-                    <label>Descrição</label>
-                    <input type="text" class="form-input-custom" value="Dado vindo do vínculo de alergias." />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section" id="sectionDeficienciaInput" style="display: none;">
-            <div class="dynamic-block">
-                <span>Deficiências</span>
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-5">
-                    <label>Descrição</label>
-                    <input type="text" class="form-input-custom" value="Não consegue levantar o braço esquerdo." />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <div class="section-title">
-                <i class="bi bi-phone-fill"></i> Contato
-            </div>
-            <div class="form-row">
-                <div class="form-group-custom c-1">
-                    <label asp-for="Ddd">DDD</label>
-                    <input asp-for="Ddd" class="form-input-custom" />
-                </div>
-                <div class="form-group-custom c-3">
-                    <label asp-for="Telefone">Telefone</label>
-                    <input asp-for="Telefone" class="form-input-custom" />
-                </div>
-            </div>
-
-            <div style="color: #5c677d; font-size: 13px; font-weight: 600; margin: 15px 0 10px 0;">
-                <i class="bi bi-chevron-down"></i> Contato do responsável
-            </div>
-
-            <div class="form-row">
-                <div class="form-group-custom c-1">
-                    <label asp-for="DddResponsavel">DDD</label>
-                    <input asp-for="DddResponsavel" class="form-input-custom" />
-                </div>
-                <div class="form-group-custom c-3">
-                    <label asp-for="TelefoneResponsavel">Telefone</label>
-                    <input asp-for="TelefoneResponsavel" class="form-input-custom" />
-                </div>
-                <div class="form-group-custom c-6">
-                    <label asp-for="NomeTelefoneResponsavel">Responsável</label>
-                    <input asp-for="NomeTelefoneResponsavel" class="form-input-custom" />
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-buttons">
-            <a asp-action="Index" class="btn-cancelar">Cancelar</a>
-            <button type="submit" class="btn-salvar-azul">Atualizar</button>
-        </div>
-    </form>
+<div class="header-inline mb-4">
+    <a asp-action="Index" class="btn-voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Editar paciente</h2>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        toggleAlergiaBlock();
-        toggleDeficienciaBlock();
-    });
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="AlergiaMedicamento" id="AlergiaMedicamentoHidden" />
+    <input type="hidden" asp-for="PossuiDeficiencia" id="PossuiDeficienciaHidden" />
 
-    function toggleAlergiaBlock() {
-        var chk = document.getElementById('switchAlergia');
-        var txt = document.getElementById('txtAlergia');
-        var block = document.getElementById('sectionAlergiaInput');
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-person-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Sobre</span>
+        </div>
 
-        if(block) {
-            if(chk.checked) {
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-9 form-group-custom">
+                <label asp-for="Nome" class="label-custom">Nome</label>
+                <input asp-for="Nome" class="form-input-custom" maxlength="60" placeholder="Nome completo" required />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-md-3 form-group-custom">
+                <label asp-for="DataNascimento" class="label-custom">Data de nascimento</label>
+                <div style="position: relative;">
+                    <input asp-for="DataNascimento" type="date" class="form-input-custom" value="@(Model.DataNascimento?.ToString("yyyy-MM-dd"))" required />
+                </div>
+                <span asp-validation-for="DataNascimento" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-4 form-group-custom">
+                <label asp-for="Cpf" class="label-custom">CPF</label>
+                <input asp-for="Cpf"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="11"
+                       pattern="\d{11}"
+                       title="Digite os 11 números do CPF"
+                       placeholder="00000000000"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                       required />
+                <span asp-validation-for="Cpf" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-md-8 form-group-custom">
+                <label asp-for="CartaoSus" class="label-custom">Cartão SUS</label>
+                <input asp-for="CartaoSus"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="15"
+                       title="Digite até 15 dígitos do Cartão SUS"
+                       placeholder="000000000000000"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                <span asp-validation-for="CartaoSus" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3 align-items-end">
+            <div class="col-12 col-md-4 col-xl-2">
+                <label class="label-custom d-block text-truncate" title="Alergia a medicamentos?">Alergia a medicamentos?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 switch-field-container">
+                    <input class="form-check-input float-none m-0" type="checkbox" id="switchAlergia" onchange="toggleAlergiaBlock()" @(Model.AlergiaMedicamento == 1 ? "checked" : "")>
+                    <label class="form-check-label switch-label-text m-0" for="switchAlergia" id="txtAlergia">@(Model.AlergiaMedicamento == 1 ? "Sim" : "Não")</label>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-3">
+                <label asp-for="TipoSanguineo" class="label-custom">Tipo sanguíneo</label>
+                <select asp-for="TipoSanguineo" class="form-input-custom" asp-items="Html.GetEnumSelectList<TipoSanguineo>()">
+                    <option value="">Selecionar</option>
+                </select>
+                <span asp-validation-for="TipoSanguineo" class="text-danger"></span>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-2">
+                <label asp-for="Peso" class="label-custom">Peso (kg)</label>
+                <input asp-for="Peso" type="number" step="0.01" min="0" max="500" class="form-input-custom" placeholder="75,5" />
+                <span asp-validation-for="Peso" class="text-danger"></span>
+            </div>
+
+            <div class="col-6 col-md-6 col-xl-2">
+                <label asp-for="Altura" class="label-custom">Altura (m)</label>
+                <input asp-for="Altura" type="number" step="0.01" min="0" max="3" class="form-input-custom" placeholder="1,72" />
+                <span asp-validation-for="Altura" class="text-danger"></span>
+            </div>
+
+            <div class="col-6 col-md-6 col-xl-3">
+                <label asp-for="Sexo" class="label-custom">Sexo</label>
+                <select asp-for="Sexo" class="form-input-custom" asp-items="Html.GetEnumSelectList<Sexo>()" required>
+                    <option value="" disabled hidden>Selecionar</option>
+                </select>
+                <span asp-validation-for="Sexo" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3 align-items-end">
+            <div class="col-12 col-md-4 col-xl-2">
+                <label class="label-custom d-block text-truncate" title="Possui alguma deficiência?">Possui deficiência?</label>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 m-0 switch-field-container">
+                    <input class="form-check-input float-none m-0" type="checkbox" id="switchDeficiencia" onchange="toggleDeficienciaBlock()" @(Model.PossuiDeficiencia == 1 ? "checked" : "")>
+                    <label class="form-check-label switch-label-text m-0" for="switchDeficiencia" id="txtDeficiencia">@(Model.PossuiDeficiencia == 1 ? "Sim" : "Não")</label>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-3">
+                <label asp-for="Vinculo.Parentesco" class="label-custom">Parentesco</label>
+                <select asp-for="Vinculo.Parentesco" class="form-input-custom" asp-items="Html.GetEnumSelectList<Parentesco>()" required>
+                    <option value="" disabled hidden>Selecionar</option>
+                </select>
+                <span asp-validation-for="Vinculo.Parentesco" class="text-danger"></span>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-4">
+                <label asp-for="Apelido" class="label-custom">Apelido</label>
+                <input asp-for="Apelido" class="form-input-custom" maxlength="60" placeholder="Apelido" />
+                <span asp-validation-for="Apelido" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-md-12 col-xl-3">
+                <label asp-for="Escolaridade" class="label-custom">Escolaridade</label>
+                <select asp-for="Escolaridade" class="form-input-custom" asp-items="Html.GetEnumSelectList<Escolaridade>()" required>
+                    <option value="" disabled hidden>Selecionar</option>
+                </select>
+                <span asp-validation-for="Escolaridade" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+                <label class="label-custom">Foto</label>
+                <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
+                    <span id="nomeArquivoFoto" class="text-truncate">@(string.IsNullOrEmpty(Model.FotoBase64) ? "imagem.png" : "Foto cadastrada")</span>
+                    <i class="bi bi-arrow-up-circle-fill flex-shrink-0"></i>
+                </button>
+                <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="actualizarNomeFoto(this)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section" id="sectionAlergiaInput" style="@(Model.AlergiaMedicamento == 1 ? "display: block;" : "display: none;")">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 15px;">
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Alergias</span>
+        </div>
+
+        <div class="row g-3 mb-2 align-items-start">
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Tipo de alergia</label>
+                <select class="form-input-custom" id="inputTipoAlergia" asp-items="Html.GetEnumSelectList<Core.Enum.TipoAlergia.TipoAlergia>()" onchange="verificarTipoAlergia(this.value)">
+                    <option value="" disabled selected hidden>Selecionar</option>
+                </select>
+                <div class="error-msg-container">
+                    <span id="alergia-tipo-error" class="text-danger" style="font-size: 13px;"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-3 form-group-custom" id="colunaMedicamentoAlergia">
+                <label class="label-custom">Medicamento</label>
+                <select class="form-input-custom" id="inputMedicamentoAlergia" asp-items="ViewBag.Medicamentos" disabled>
+                    <option value="">Selecione</option>
+                </select>
+                <div class="error-msg-container">
+                    <span id="alergia-error" class="text-danger" style="font-size: 13px;"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4 form-group-custom" id="colunaDescricaoAlergia">
+                <label class="label-custom">Descrição</label>
+                <textarea id="inputDescricaoAlergia" class="form-input-custom" rows="3" maxlength="100" style="resize: vertical; min-height: 64px;"></textarea>
+                <div class="error-msg-container">
+                    <span id="alergia-desc-error" class="text-danger" style="font-size: 13px;"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom d-none d-md-block" style="visibility: hidden;">Ação</label>
+                <button type="button" class="btn-novo w-100" style="border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 43px;" onclick="adicionarAlergia()">
+                    Adicionar
+                </button>
+            </div>
+        </div>
+
+        <div class="calendario-container mt-3 table-responsive" style="padding: 0; margin-bottom: 25px;">
+            <table id="tabelaAlergias" class="custom-table" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Medicamento</th>
+                        <th>Descrição</th>
+                        <th style="text-align: center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="hiddenAlergiasContainer"></div>
+    </div>
+
+    <div class="form-section" id="sectionDeficienciaInput" style="@(Model.PossuiDeficiencia == 1 ? "display: block;" : "display: none;")">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px;">
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 18px;">Deficiência</span>
+        </div>
+        <div class="row g-3">
+            <div class="col-12 col-md-6 form-group-custom">
+                <label class="label-custom">Descrição</label>
+                <textarea asp-for="Deficiencia" class="form-input-custom" rows="3" maxlength="100" style="resize: vertical; min-height: 64px;"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-geo-alt-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Endereço</span>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-2 form-group-custom">
+                <label asp-for="Cep" class="label-custom">Cep</label>
+                <input asp-for="Cep"
+                       id="Cep"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="8"
+                       pattern="\d{8}"
+                       title="Digite os 8 números do CEP"
+                       placeholder="00000000"
+                       oninput="this.value = this.value.replace(/\D/g, '');
+                const err = document.getElementById('cep-error');
+                if(err) err.innerText = '';
+                if(this.value.length === 8) buscarCep(this.value);"
+                       onblur="if(this.value.length === 8) buscarCep(this.value);"
+                       required />
+                <span asp-validation-for="Cep" id="cep-error" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-md-5 form-group-custom">
+                <label asp-for="Rua" class="label-custom">Rua</label>
+                <input asp-for="Rua" id="Rua" class="form-input-custom" maxlength="60" placeholder="Rua / Avenida" required />
+                <span asp-validation-for="Rua" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-md-5 form-group-custom">
+                <label asp-for="Bairro" class="label-custom">Bairro</label>
+                <input asp-for="Bairro" id="Bairro" class="form-input-custom" maxlength="60" placeholder="Bairro" required />
+                <span asp-validation-for="Bairro" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-3 col-lg-1 form-group-custom">
+                <label asp-for="Identificador" class="label-custom">Identificador</label>
+                <input asp-for="Identificador" id="Identificador" class="form-input-custom" maxlength="30" placeholder="Nº / Lote" />
+                <span asp-validation-for="Identificador" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-sm-9 col-lg-4 form-group-custom">
+                <label asp-for="Cidade" class="label-custom">Cidade</label>
+                <input asp-for="Cidade" id="Cidade" class="form-input-custom" maxlength="30" placeholder="Cidade" required />
+                <span asp-validation-for="Cidade" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-sm-4 col-lg-2 form-group-custom">
+                <label asp-for="Estado" class="label-custom">Estado</label>
+                <select asp-for="Estado" id="Estado" class="form-input-custom" required>
+                    <option value="" disabled hidden>Selecionar</option>
+                    @foreach (var item in Html.GetEnumSelectList<EstadoBr>())
+                    {
+                        <option value="@item.Text">@item.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-sm-8 col-lg-5 form-group-custom">
+                <label asp-for="Complemento" class="label-custom">Complemento</label>
+                <input asp-for="Complemento" class="form-input-custom" maxlength="60" placeholder="Apto, Bloco, etc." />
+                <span asp-validation-for="Complemento" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-phone-fill" style="color: var(--text-muted);"></i>
+            <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Contato</span>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-4 col-md-2 col-lg-1 form-group-custom">
+                <label asp-for="Ddd" class="label-custom">DDD</label>
+                <input asp-for="Ddd"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="2"
+                       pattern="\d{2}"
+                       title="Digite apenas 2 dígitos para o DDD"
+                       placeholder="79"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                       required />
+                <span asp-validation-for="Ddd" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-sm-8 col-md-5 col-lg-3 form-group-custom">
+                <label asp-for="Telefone" class="label-custom">Telefone</label>
+                <input asp-for="Telefone"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="9"
+                       pattern="\d{8,9}"
+                       title="Digite apenas números (8 ou 9 dígitos)"
+                       placeholder="999999999"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                       required />
+                <span asp-validation-for="Telefone" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div style="color: #5c677d; font-size: 13px; font-weight: 600; margin: 15px 0 10px 0;">
+            <i class="bi bi-chevron-down"></i> Contato do responsável
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-sm-4 col-md-2 col-lg-1 form-group-custom">
+                <label asp-for="DddResponsavel" class="label-custom">DDD</label>
+                <input asp-for="DddResponsavel"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="2"
+                       pattern="\d{2}"
+                       title="Digite apenas 2 dígitos para o DDD"
+                       placeholder="79"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                <span asp-validation-for="DddResponsavel" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-sm-8 col-md-4 col-lg-3 form-group-custom">
+                <label asp-for="TelefoneResponsavel" class="label-custom">Telefone</label>
+                <input asp-for="TelefoneResponsavel"
+                       class="form-input-custom"
+                       type="tel"
+                       inputmode="numeric"
+                       maxlength="9"
+                       pattern="\d{8,9}"
+                       title="Digite apenas números (8 ou 9 dígitos)"
+                       placeholder="999999999"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                <span asp-validation-for="TelefoneResponsavel" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-6 form-group-custom">
+                <label asp-for="NomeTelefoneResponsavel" class="label-custom">Responsável</label>
+                <input asp-for="NomeTelefoneResponsavel" class="form-input-custom" maxlength="60" placeholder="Nome do responsável" />
+                <span asp-validation-for="NomeTelefoneResponsavel" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-container d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+        <a asp-action="Index" class="btn-med btn-med-danger text-center" style="text-decoration: none;">Cancelar</a>
+        <button type="submit" class="btn-med btn-med-primary">Atualizar</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        let dtAlergias = null;
+        let listaAlergias = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Alergias.Select(a => new
+                    {
+                        tipoEnum = a.Tipo,
+                        tipoTexto = a.Tipo,
+                        idMedicamento = a.IdMedicamento?.ToString(),
+                        medicamento = a.MedicamentoNome ?? "-",
+                        descricao = a.Descricao
+                })));
+
+        function toggleAlergiaBlock() {
+            const chk = document.getElementById('switchAlergia');
+            const txt = document.getElementById('txtAlergia');
+            const block = document.getElementById('sectionAlergiaInput');
+            const hiddenInput = document.getElementById('AlergiaMedicamentoHidden');
+
+            if (!chk || !block) return;
+
+            if (chk.checked) {
                 txt.innerText = "Sim";
                 block.style.display = "block";
+                hiddenInput.value = "1";
+                setTimeout(() => {
+                    $('#inputMedicamentoAlergia').select2({
+                        placeholder: "Selecione",
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#colunaMedicamentoAlergia')
+                    });
+                    if (dtAlergias) {
+                        dtAlergias.columns.adjust().draw();
+                    }
+                }, 50);
             } else {
                 txt.innerText = "Não";
                 block.style.display = "none";
+                hiddenInput.value = "0";
             }
         }
-    }
 
-    function toggleDeficienciaBlock() {
-        var chk = document.getElementById('switchDeficiencia');
-        var txt = document.getElementById('txtDeficiencia');
-        var block = document.getElementById('sectionDeficienciaInput');
+        function toggleDeficienciaBlock() {
+            const chk = document.getElementById('switchDeficiencia');
+            const txt = document.getElementById('txtDeficiencia');
+            const block = document.getElementById('sectionDeficienciaInput');
+            const hiddenInput = document.getElementById('PossuiDeficienciaHidden');
 
-        if(block) {
-            if(chk.checked) {
+            if (!chk || !block) return;
+
+            if (chk.checked) {
                 txt.innerText = "Sim";
                 block.style.display = "block";
+                hiddenInput.value = "1";
             } else {
                 txt.innerText = "Não";
                 block.style.display = "none";
+                hiddenInput.value = "0";
             }
         }
-    }
 
-    function actualizarNomeFoto(input) {
-        if (input.files && input.files[0]) {
-            document.getElementById('nomeArquivoFoto').innerText = input.files[0].name;
+        function actualizarNomeFoto(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('nomeArquivoFoto').innerText = input.files[0].name;
+            }
         }
-    }
-</script>
+
+        function verificarTipoAlergia(tipo) {
+            const errTipo = document.getElementById('alergia-tipo-error');
+            const errMed = document.getElementById('alergia-error');
+            const errDesc = document.getElementById('alergia-desc-error');
+            if (errTipo) errTipo.innerText = '';
+            if (errMed) errMed.innerText = '';
+            if (errDesc) errDesc.innerText = '';
+
+            const selectTipo = document.getElementById('inputTipoAlergia');
+            const tipoTexto = selectTipo.options[selectTipo.selectedIndex]?.text.toUpperCase();
+            const selectMed = $('#inputMedicamentoAlergia');
+
+            if (tipo === '0' || tipoTexto === 'MEDICAMENTO') {
+                selectMed.prop('disabled', false);
+            } else {
+                selectMed.val('').trigger('change');
+                selectMed.prop('disabled', true);
+            }
+        }
+
+        function adicionarAlergia() {
+            const selectTipo = document.getElementById('inputTipoAlergia');
+            const selectMed = $('#inputMedicamentoAlergia');
+            const inputDesc = document.getElementById('inputDescricaoAlergia');
+
+            const errTipo = document.getElementById('alergia-tipo-error');
+            const errMed = document.getElementById('alergia-error');
+            const errDesc = document.getElementById('alergia-desc-error');
+            if (errTipo) errTipo.innerText = '';
+            if (errMed) errMed.innerText = '';
+            if (errDesc) errDesc.innerText = '';
+
+            const tipoValor = selectTipo.value;
+            const tipoTexto = selectTipo.options[selectTipo.selectedIndex]?.text;
+            const descricao = inputDesc ? inputDesc.value.trim() : '';
+
+            let hasError = false;
+
+            if (!tipoValor) {
+                if (errTipo) errTipo.innerText = 'Campo obrigatório.';
+                hasError = true;
+            }
+
+            const ehMedicamento = (tipoValor === '0' || (tipoTexto && tipoTexto.toUpperCase() === 'MEDICAMENTO'));
+            let idMedicamento = null;
+            let nomeMedicamento = '-';
+
+            if (ehMedicamento) {
+                idMedicamento = selectMed.val();
+                const optionData = selectMed.select2('data')[0];
+                nomeMedicamento = optionData ? optionData.text : '';
+
+                if (!idMedicamento) {
+                    if (errMed) errMed.innerText = 'Selecione o medicamento.';
+                    hasError = true;
+                } else if (listaAlergias.some(a => a.idMedicamento === idMedicamento)) {
+                    if (errMed) errMed.innerText = 'Medicamento já adicionado.';
+                    hasError = true;
+                }
+            }
+
+            if (!descricao) {
+                if (errDesc) errDesc.innerText = 'Campo obrigatório.';
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            if (ehMedicamento && idMedicamento) {
+                selectMed.find(`option[value='${idMedicamento}']`).prop('disabled', true);
+                selectMed.val('').trigger('change');
+            }
+
+            listaAlergias.push({
+                tipoEnum: tipoTexto.toUpperCase(),
+                tipoTexto: tipoTexto,
+                idMedicamento: idMedicamento,
+                medicamento: nomeMedicamento,
+                descricao: descricao
+            });
+
+            if (inputDesc) inputDesc.value = '';
+            selectTipo.value = '';
+            verificarTipoAlergia('');
+
+            atualizarDataTableAlergias();
+        }
+
+        function removerAlergia(index) {
+            const itemRemovido = listaAlergias[index];
+
+            if (itemRemovido.idMedicamento) {
+                const select = $('#inputMedicamentoAlergia');
+                select.find(`option[value='${itemRemovido.idMedicamento}']`).prop('disabled', false);
+                select.trigger('change');
+            }
+
+            listaAlergias.splice(index, 1);
+            atualizarDataTableAlergias();
+        }
+
+        function atualizarDataTableAlergias() {
+            if (!dtAlergias) return;
+
+            dtAlergias.clear();
+
+            const hiddenContainer = document.getElementById('hiddenAlergiasContainer');
+            if (hiddenContainer) hiddenContainer.innerHTML = '';
+
+            listaAlergias.forEach((item, index) => {
+                const btnExcluir = `
+                            <button type="button" class="btn btn-sm text-danger p-0" style="border:none; background:transparent; font-size: 1.25rem; line-height: 1;" onclick="removerAlergia(${index})">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        `;
+
+                dtAlergias.row.add([
+                    item.tipoTexto,
+                    item.medicamento,
+                    item.descricao || '-',
+                    btnExcluir
+                ]);
+
+                if (hiddenContainer) {
+                    hiddenContainer.innerHTML += `
+                                <input type="hidden" name="Alergias[${index}].Tipo" value="${item.tipoEnum}" />
+                                <input type="hidden" name="Alergias[${index}].IdMedicamento" value="${item.idMedicamento || ''}" />
+                                <input type="hidden" name="Alergias[${index}].Descricao" value="${item.descricao}" />
+                            `;
+                }
+            });
+
+            dtAlergias.draw();
+        }
+
+        $(document).ready(function() {
+            dtAlergias = $('#tabelaAlergias').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                "lengthMenu": [5, 10, 15],
+                "pageLength": 5,
+                "searching": false,
+                "info": false,
+                "dom": 'rt<"bottom d-flex justify-content-between align-items-center p-3 mt-2"lp><"clear">',
+                "columnDefs": [
+                    { "width": "20%", "targets": 0, "className": "font-bold" },
+                    { "width": "30%", "targets": 1 },
+                    { "width": "40%", "targets": 2 },
+                    { "width": "10%", "targets": 3, "className": "text-center", "orderable": false }
+                ]
+            });
+
+            $('#inputMedicamentoAlergia').select2({
+                placeholder: "Selecione",
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#colunaMedicamentoAlergia')
+            });
+
+            $('#Estado').select2({
+                placeholder: "Selecionar",
+                allowClear: false,
+                width: '100%',
+                minimumResultsForSearch: Infinity
+            });
+
+            if (listaAlergias && listaAlergias.length > 0) {
+                listaAlergias.forEach(item => {
+                    if (item.idMedicamento) {
+                        $('#inputMedicamentoAlergia').find(`option[value='${item.idMedicamento}']`).prop('disabled', true);
+                    }
+                });
+                $('#inputMedicamentoAlergia').trigger('change');
+                atualizarDataTableAlergias();
+            }
+        });
+    </script>
+}

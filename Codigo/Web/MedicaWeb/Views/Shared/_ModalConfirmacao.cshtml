@@ -1,0 +1,22 @@
+﻿<div class="modal fade" id="modalConfirmacao" tabindex="-1" aria-labelledby="modalConfirmacaoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title font-bold" id="modalConfirmacaoLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> Confirmar Exclusão
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p id="modalConfirmacaoMensagem" class="mb-0 text-secondary">Deseja realmente prosseguir com esta ação?</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="modalConfirmacaoForm" method="post" class="d-inline m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" id="modalConfirmacaoBtnAcao" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

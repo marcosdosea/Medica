@@ -48,14 +48,13 @@
             <div class="col-12 col-md-4 form-group-custom">
                 <label asp-for="Cpf" class="label-custom">CPF</label>
                 <input asp-for="Cpf"
+                       id="Cpf"
                        class="form-input-custom"
                        type="tel"
                        inputmode="numeric"
-                       maxlength="11"
-                       pattern="\d{11}"
-                       title="Digite os 11 números do CPF"
-                       placeholder="00000000000"
-                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                       maxlength="14"
+                       placeholder="000.000.000-00"
+                       oninput="mascaraCpf(this)"
                        required />
                 <span asp-validation-for="Cpf" class="text-danger" style="font-size: 13px; display: block; margin-top: 5px;"></span>
             </div>

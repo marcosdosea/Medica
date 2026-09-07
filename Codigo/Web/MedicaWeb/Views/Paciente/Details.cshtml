@@ -41,7 +41,10 @@
         <div class="row g-3 mb-3">
             <div class="col-12 col-md-4 form-group-custom">
                 <label asp-for="Cpf" class="label-custom">CPF</label>
-                <input asp-for="Cpf" class="form-input-custom" readonly />
+                <input asp-for="Cpf"
+                       class="form-input-custom"
+                       value="@(ulong.TryParse(Model.Cpf, out var numCpf) ? numCpf.ToString(@"000\.000\.000\-00") : Model.Cpf)"
+                       readonly />
             </div>
             <div class="col-12 col-md-8 form-group-custom">
                 <label asp-for="CartaoSus" class="label-custom">Cartão SUS</label>
@@ -74,8 +77,11 @@
             </div>
 
             <div class="col-6 col-md-6 col-xl-3">
-                <label class="label-custom">Sexo</label>
-                <input asp-for="Sexo" class="form-input-custom" readonly />
+                <label asp-for="Sexo" class="label-custom"></label>
+                <input asp-for="Sexo"
+                       class="form-input-custom"
+                       value="@(Model.Sexo == Core.Enum.Paciente.Sexo.M ? "Masculino" : "Feminino")"
+                       readonly />
             </div>
         </div>
 
@@ -248,10 +254,20 @@
     </div>
 
     <div class="actions-container d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
-        <a asp-action="Index" class="btn-med btn-med-danger text-center" style="text-decoration: none;">Voltar</a>
+        <button type="button"
+                class="btn-med btn-med-danger text-center"
+                onclick="DialogConfirmacao.exibir({
+            url: '@Url.Action("Delete", "Paciente", new { id = Model.Id })',
+            mensagem: 'Deseja realmente excluir o paciente @Model.Nome?',
+            textoBotao: 'Excluir'
+            })">
+            Excluir
+        </button>
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary text-center" style="text-decoration: none;">Editar</a>
     </div>
 </form>
+
+<partial name="_ModalConfirmacao" />
 
 @section Scripts {
     <script>
