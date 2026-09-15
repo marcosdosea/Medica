@@ -20,11 +20,17 @@ namespace Service
 
         public async Task<uint> Create(Paciente paciente, Vinculo vinculo)
         {
-            paciente.Vinculos.Add(vinculo);
-            await context.Pacientes.AddAsync(paciente);
-            await context.SaveChangesAsync();
-
-            return paciente.Id;
+            try
+            {
+                paciente.Vinculos.Add(vinculo);
+                await context.Pacientes.AddAsync(paciente);
+                await context.SaveChangesAsync();
+                return paciente.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException("Erro ao cadastrar o paciente.", ex);
+            }
         }
 
         public async Task Edit(Paciente paciente)

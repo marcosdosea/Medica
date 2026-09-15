@@ -59,17 +59,21 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PacienteDetailsDto pacienteDetailsDto)
         {
-
-            var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
-            var vinculo = new Vinculo
+            if (ModelState.IsValid)
             {
-                IdCuidador = User.GetId(),
-                Parentesco = pacienteDetailsDto.Vinculo.Parentesco.ToString()!
-            };
-
-            await pacienteService.Create(pacienteModel, vinculo);
-            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
-            return RedirectToAction(nameof(Index));
+                var pacienteModel = mapper.Map<Paciente>(pacienteDetailsDto);
+                var vinculo = new Vinculo
+                {
+                    IdCuidador = User.GetId(),
+                    Parentesco = pacienteDetailsDto.Vinculo.Parentesco.ToString()!
+                };
+                await pacienteService.Create(pacienteModel, vinculo);
+                NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
+                return RedirectToAction(nameof(Index));
+            }
+            var medicamentos = await medicamentoService.GetAll(User.GetId());
+            ViewBag.Medicamentos = new SelectList(medicamentos, "Id", "Nome");
+            return View(pacienteDetailsDto);
         }
 
         public async Task<IActionResult> Edit(uint id)

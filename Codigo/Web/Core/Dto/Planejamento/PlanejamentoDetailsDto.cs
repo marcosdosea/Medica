@@ -24,6 +24,8 @@
 
         public TimeSpan Hora { get; set; }
 
+        public TimeSpan IntervaloExecucao { get; set; }
+
         public int Dosagem { get; set; }
 
         public Enum.Planejamento.UnidadeDosagem Unidade { get; set; }

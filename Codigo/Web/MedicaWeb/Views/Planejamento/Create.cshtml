@@ -1,78 +1,229 @@
 @model MedicaWeb.Models.PlanejamentoViewModel
+@using System.Text.Json
+@using Core.Dto.Paciente
+@using Core.Dto.Planejamento
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Cadastro de planejamento";
+    var pacientes = ViewBag.Pacientes as IEnumerable<PacienteDto> ?? Enumerable.Empty<PacienteDto>();
 }
 
-<h1>Create</h1>
+@functions {
+    public static string FormatarPrimeiroEUltimoNome(string? nomeCompleto)
+    {
+        if (string.IsNullOrWhiteSpace(nomeCompleto))
+            return "-";
 
-<h4>PlanejamentoViewModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return partes.Length <= 1 ? partes[0] : $"{partes[0]} {partes[^1]}";
+    }
+}
 
-            <div class="form-group">
-                <label asp-for="IdPaciente" class="control-label"></label>
-                <input asp-for="IdPaciente" class="form-control" />
-                <span asp-validation-for="IdPaciente" class="text-danger"></span>
-            </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/form/formPlanejamento.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+}
 
-            <div class="form-group">
-                <label asp-for="IdMedicamento" class="control-label"></label>
-                <input asp-for="IdMedicamento" class="form-control" />
-                <span asp-validation-for="IdMedicamento" class="text-danger"></span>
-            </div>
+<div class="header-inline mb-4 d-flex align-items-center gap-3">
+    <a asp-action="Index" class="btn-voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Cadastro de planejamento</h2>
+</div>
 
-            <div class="form-group">
-                <label asp-for="DataInicio" class="control-label"></label>
-                <input asp-for="DataInicio" class="form-control" />
-                <span asp-validation-for="DataInicio" class="text-danger"></span>
-            </div>
+<form asp-action="Create" method="post" id="formPlanejamento">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="IdPaciente" id="IdPaciente" value="@(Model?.IdPaciente ?? 0)" />
+    <input type="hidden" id="DiaSemana" />
+    <input type="hidden" id="ContinuoHidden" />
+    <div id="hiddenPlanejamentosContainer"></div>
 
-            <div class="form-group">
-                <label asp-for="DataFim" class="control-label"></label>
-                <input asp-for="DataFim" class="form-control" />
-                <span asp-validation-for="DataFim" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="DiaSemana" class="control-label"></label>
-                <input asp-for="DiaSemana" class="form-control" />
-                <span asp-validation-for="DiaSemana" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Hora" class="control-label"></label>
-                <input asp-for="Hora" class="form-control" />
-                <span asp-validation-for="Hora" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Dosagem" class="control-label"></label>
-                <input asp-for="Dosagem" class="form-control" />
-                <span asp-validation-for="Dosagem" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Unidade" class="control-label"></label>
-                <input asp-for="Unidade" class="form-control" />
-                <span asp-validation-for="Unidade" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Ativo" class="control-label"></label>
-                <input asp-for="Ativo" class="form-control" />
-                <span asp-validation-for="Ativo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-person-fill" style="color: var(--text-muted); font-size: 20px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;">Pacientes</span>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    @if (pacientes.Any())
+    {
+        <div class="cards-grid mb-3">
+            @foreach (var paciente in pacientes)
+            {
+                var isSelected = Model?.IdPaciente == paciente.Id;
+                var nomeExibicao = FormatarPrimeiroEUltimoNome(paciente.Nome);
+
+                <div class="paciente-card-wrapper">
+                    <div class="paciente-card @(isSelected ? "active" : "")"
+                         id="box-paciente-@paciente.Id"
+                         onclick="FormPlanejamento.alternarPaciente('@paciente.Id', '@nomeExibicao')">
+                        <div class="foto-wrapper">
+                            @if (paciente.Foto != null && paciente.Foto.Length > 0)
+                            {
+                                var base64 = Convert.ToBase64String(paciente.Foto);
+                                <img src="data:image/png;base64,@base64" alt="@nomeExibicao" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
+                            }
+                        </div>
+                        <div class="paciente-info">
+                            <h3 class="paciente-nome" title="@paciente.Nome">@nomeExibicao</h3>
+                            @if (!string.IsNullOrWhiteSpace(paciente.Apelido))
+                            {
+                                <span class="paciente-apelido" title="@paciente.Apelido">@paciente.Apelido</span>
+                            }
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            class="btn-card-toggle @(isSelected ? "selected" : "")"
+                            id="btn-paciente-@paciente.Id"
+                            onclick="FormPlanejamento.alternarPaciente('@paciente.Id', '@nomeExibicao')">
+                        @(isSelected ? "Desmarcar" : "Selecionar")
+                    </button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="sem-pacientes-box mb-4">
+            <i class="bi bi-people" style="font-size: 42px; color: var(--text-muted);"></i>
+            <p>Nenhum paciente cadastrado.</p>
+        </div>
+    }
+
+    <span asp-validation-for="IdPaciente" class="text-danger d-block mb-4" style="font-size: 13px;"></span>
+
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-calendar3" style="color: var(--text-muted); font-size: 18px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;">Novo planejamento</span>
+    </div>
+
+    <div class="form-section mb-4">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Medicamento</label>
+                <select class="form-input-custom" asp-items="ViewBag.Medicamentos" id="inputMedicamento">
+                    <option value="">Medicamento</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Data de início</label>
+                <input type="date" class="form-input-custom" id="inputDataInicio" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Data de fim</label>
+                <input type="date" class="form-input-custom" id="inputDataFim" />
+            </div>
+
+            <div class="col-12 col-md-3 d-flex flex-column justify-content-center">
+                <label class="label-custom">Planejamento contínuo?</label>
+                <div class="form-check form-switch d-flex align-items-center gap-2 m-0">
+                    <input class="form-check-input" type="checkbox" id="switchContinuo">
+                    <label class="form-check-label switch-label-text" id="txtContinuo" for="switchContinuo">Não</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Hora de início</label>
+                <input type="time" class="form-input-custom" id="inputHora" />
+            </div>
+
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Intervalo</label>
+                <input type="time" class="form-input-custom" id="inputIntervalo" />
+            </div>
+
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Dosagem</label>
+                <input type="number" min="1" class="form-input-custom" id="inputDosagem" placeholder="1" />
+            </div>
+
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Unidade</label>
+                <select class="form-input-custom" id="inputUnidade">
+                    <option value="" disabled selected hidden>Selecionar</option>
+                    <option value="ML">Mililitro (mL)</option>
+                    <option value="MG">Miligrama (mg)</option>
+                    <option value="G">Gramas (g)</option>
+                    <option value="UI">Unidades (UI)</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label class="label-custom d-block">Dias da semana</label>
+                <div class="dias-semana-container">
+                    <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="SEG"> Seg</label>
+                    <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="TER"> Ter</label>
+                    <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="QUA"> QUA</label>
+                    <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="QUI"> QUI</label>
+                    <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="SEX"> SEX</label>
+                    <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="SAB"> SAB</label>
+                    <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="DOM"> DOM</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <button type="button" id="btnAdicionarPreview" class="btn-adicionar-cinza" disabled>
+                Adicionar
+            </button>
+        </div>
+    </div>
+
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; justify-content: space-between;">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-calendar-check" style="color: var(--text-muted); font-size: 18px;"></i>
+            <span style="font-weight: 700; color: #495057; font-size: 18px;" id="tituloSecaoTabela">
+                Planejamentos atuais
+            </span>
+        </div>
+        <div class="form-check d-flex align-items-center gap-2">
+            <input class="form-check-input" type="checkbox" id="chkFiltrarAdicionados">
+            <label class="form-check-label" for="chkFiltrarAdicionados" style="font-size: 13px; color: #6c757d; cursor: pointer;">
+                Filtrar adicionados
+            </label>
+        </div>
+    </div>
+
+    <div class="calendario-container mt-3 table-responsive" style="padding: 0; margin-bottom: 25px;">
+        <table id="tabelaPlanejamentos" class="custom-table" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Medicamento</th>
+                    <th>Data de início</th>
+                    <th>Data de fim</th>
+                    <th>Hora</th>
+                    <th>Dias da Semana</th>
+                    <th>Dosagem</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions-container actions-container-planejamento d-flex flex-column flex-sm-row justify-content-end gap-2">
+        <a asp-action="Index" class="btn-med btn-med-danger text-center" style="text-decoration: none;">Cancelar</a>
+        <button type="submit" id="btnSalvarForm" class="btn-med btn-med-primary" disabled>Salvar</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="~/js/form/formPlanejamento.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            const dadosPlanejamentos = @Html.Raw(JsonSerializer.Serialize(ViewBag.PlanejamentosExistentes as IEnumerable<PlanejamentoItemDto> ?? Enumerable.Empty<PlanejamentoItemDto>()))
+            FormPlanejamento.init(dadosPlanejamentos)
+        });
+    </script>
+}

@@ -1,132 +1,143 @@
 @model Core.Dto.Planejamento.PlanejamentoDetailsDto
 
-<div class="content-container">
-    <div class="header-inline mb-4">
-        <a asp-action="Index" class="btn-voltar">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Detalhes do planejamento</h2>
+@{
+    ViewData["Title"] = "Detalhes do planejamento";
+    var isContinuo = Model.DataFim.Year > 9000;
+}
+
+@functions {
+    public static string FormatarPrimeiroEUltimoNome(string? nomeCompleto)
+    {
+        if (string.IsNullOrWhiteSpace(nomeCompleto))
+            return "-";
+
+        var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return partes.Length <= 1 ? partes[0] : $"{partes[0]} {partes[^1]}";
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/form/form.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/form/formPlanejamento.css" asp-append-version="true" />
+}
+
+<div class="header-inline mb-4 d-flex align-items-center gap-3">
+    <a asp-action="Index" class="btn-voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Detalhes do planejamento</h2>
+</div>
+
+<div id="detailsPlanejamentoContainer">
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-person-fill" style="color: var(--text-muted); font-size: 20px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;">Pacientes</span>
     </div>
 
-    <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-user" style="color: var(--text-muted);"></i>
-        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Paciente</span>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-8 form-group-custom">
-            <label class="label-custom">Nome</label>
-            <div class="form-control-static">@Model.NomePaciente</div>
-        </div>
-        <div class="col-md-4 form-group-custom">
-            <label class="label-custom">CPF</label>
-            <div class="form-control-static">@Model.CpfPaciente</div>
-        </div>
-    </div>
-
-    <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-pills" style="color: var(--text-muted);"></i>
-        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Medicamento</span>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-6 form-group-custom">
-            <label class="label-custom">Nome</label>
-            <div class="form-control-static">@Model.NomeMedicamento</div>
-        </div>
-        <div class="col-md-6 form-group-custom">
-            <label class="label-custom">Apelido</label>
-            <div class="form-control-static">@(Model.ApelidoMedicamento ?? "--")</div>
-        </div>
-    </div>
-
-    <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-calendar-alt" style="color: var(--text-muted);"></i>
-        <span style="font-weight: 700; color: var(--text-muted); font-size: 20px;">Planejamento</span>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6 form-group-custom">
-            <label class="label-custom">Data de Início</label>
-            <div class="form-control-static">@Model.DataInicio.ToString("dd/MM/yyyy")</div>
-        </div>
-        <div class="col-md-6 form-group-custom">
-            <label class="label-custom">Data de Fim</label>
-            <div class="form-control-static">@Model.DataFim.ToString("dd/MM/yyyy")</div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-2 col-sm-4 form-group-custom">
-            <label class="label-custom">Hora</label>
-            <div class="form-control-static text-center">@Model.Hora.ToString(@"hh\:mm")</div>
-        </div>
-        <div class="col-md-2 col-sm-4 form-group-custom">
-            <label class="label-custom">Dosagem</label>
-            <div class="form-control-static text-center">@Model.Dosagem</div>
-        </div>
-        <div class="col-md-2 col-sm-4 form-group-custom">
-            <label class="label-custom">Unidade de Dosagem</label>
-            <div class="form-control-static text-center">@Model.Unidade</div>
-        </div>
-    </div>
-
-    <div class="row mb-5">
-        <div class="col-lg-6">
-            <label class="label-custom mb-3" style="display: block; font-size: 15px;">Dias da semana</label>
-            <div class="row g-3">
-                <div class="col-6">
-                    <div class="form-check fs-6">
-                        <input class="form-check-input form-check-static" type="checkbox" id="dom" disabled @(Model.DiaSemana[0] != 'X' ? "checked" : "") />
-                        <label class="form-check-label text-dark form-check-label-static" for="dom">Domingo</label>
-                    </div>
+    <div class="cards-grid mb-4">
+        <div class="paciente-card-wrapper">
+            <div class="paciente-card" style="cursor: default;">
+                <div class="foto-wrapper">
+                    <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
                 </div>
-                <div class="col-6">
-                    <div class="form-check fs-6">
-                        <input class="form-check-input form-check-static" type="checkbox" id="seg" disabled @(Model.DiaSemana[1] != 'X' ? "checked" : "") />
-                        <label class="form-check-label text-dark form-check-label-static" for="seg">Segunda</label>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-check fs-6">
-                        <input class="form-check-input form-check-static" type="checkbox" id="ter" disabled @(Model.DiaSemana[2] != 'X' ? "checked" : "") />
-                        <label class="form-check-label text-dark form-check-label-static" for="ter">Terça</label>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-check fs-6">
-                        <input class="form-check-input form-check-static" type="checkbox" id="qua" disabled @(Model.DiaSemana[3] != 'X' ? "checked" : "") />
-                        <label class="form-check-label text-dark form-check-label-static" for="qua">Quarta</label>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-check fs-6">
-                        <input class="form-check-input form-check-static" type="checkbox" id="qui" disabled @(Model.DiaSemana[4] != 'X' ? "checked" : "") />
-                        <label class="form-check-label text-dark form-check-label-static" for="qui">Quinta</label>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-check fs-6">
-                        <input class="form-check-input form-check-static" type="checkbox" id="sex" disabled @(Model.DiaSemana[5] != 'X' ? "checked" : "") />
-                        <label class="form-check-label text-dark form-check-label-static" for="sex">Sexta</label>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-check fs-6">
-                        <input class="form-check-input form-check-static" type="checkbox" id="sab" disabled @(Model.DiaSemana[6] != 'X' ? "checked" : "") />
-                        <label class="form-check-label text-dark form-check-label-static" for="sab">Sábado</label>
-                    </div>
+                <div class="paciente-info">
+                    <h3 class="paciente-nome" title="@Model.NomePaciente">@FormatarPrimeiroEUltimoNome(Model.NomePaciente)</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="calendario-container mb-5">
-        <div class="table-header">
-            <h2 class="titulo-sessao" style="display: flex; align-items: center; gap: 10px;">
-                Histórico de Execuções
-            </h2>
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-calendar3" style="color: var(--text-muted); font-size: 18px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;">Dados do planejamento</span>
+    </div>
+
+    <div class="form-section mb-4">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Medicamento</label>
+                <div class="details-static-input font-bold">@Model.NomeMedicamento</div>
+            </div>
+
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Apelido do medicamento</label>
+                <div class="details-static-input">@(string.IsNullOrWhiteSpace(Model.ApelidoMedicamento) ? "--" : Model.ApelidoMedicamento)</div>
+            </div>
+
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Data de início</label>
+                <div class="details-static-input">@Model.DataInicio.ToString("dd/MM/yyyy")</div>
+            </div>
+
+            <div class="col-12 col-md-3 form-group-custom">
+                <label class="label-custom">Data de fim</label>
+                <div class="details-static-input">@(isContinuo ? "Contínuo" : Model.DataFim.ToString("dd/MM/yyyy"))</div>
+            </div>
         </div>
 
-        <table id="tabelaExecucoes" class="custom-table w-100">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Hora de início</label>
+                <div class="details-static-input text-center">@Model.Hora.ToString(@"hh\:mm")</div>
+            </div>
+
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Intervalo</label>
+                <div class="details-static-input text-center">
+                    @($"{(int)Model.IntervaloExecucao.TotalHours:D2}:{Model.IntervaloExecucao.Minutes:D2}")
+                </div>
+            </div>
+
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Dosagem</label>
+                <div class="details-static-input text-center">@Model.Dosagem</div>
+            </div>
+
+            <div class="col-12 col-md-2 form-group-custom">
+                <label class="label-custom">Unidade</label>
+                <div class="details-static-input">@Html.DisplayFor(model => model.Unidade)</div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label class="label-custom d-block">Dias da semana</label>
+                <div class="dias-semana-container">
+                    <label class="dia-checkbox-label disabled">
+                        <input type="checkbox" class="chk-dia" disabled @(Model.DiaSemana.Length == 7 && Model.DiaSemana[1] != 'X' ? "checked" : "")> Seg
+                    </label>
+                    <label class="dia-checkbox-label disabled">
+                        <input type="checkbox" class="chk-dia" disabled @(Model.DiaSemana.Length == 7 && Model.DiaSemana[2] != 'X' ? "checked" : "")> Ter
+                    </label>
+                    <label class="dia-checkbox-label disabled">
+                        <input type="checkbox" class="chk-dia" disabled @(Model.DiaSemana.Length == 7 && Model.DiaSemana[3] != 'X' ? "checked" : "")> Qua
+                    </label>
+                    <label class="dia-checkbox-label disabled">
+                        <input type="checkbox" class="chk-dia" disabled @(Model.DiaSemana.Length == 7 && Model.DiaSemana[4] != 'X' ? "checked" : "")> Qui
+                    </label>
+                    <label class="dia-checkbox-label disabled">
+                        <input type="checkbox" class="chk-dia" disabled @(Model.DiaSemana.Length == 7 && Model.DiaSemana[5] != 'X' ? "checked" : "")> Sex
+                    </label>
+                    <label class="dia-checkbox-label disabled">
+                        <input type="checkbox" class="chk-dia" disabled @(Model.DiaSemana.Length == 7 && Model.DiaSemana[6] != 'X' ? "checked" : "")> Sab
+                    </label>
+                    <label class="dia-checkbox-label disabled">
+                        <input type="checkbox" class="chk-dia" disabled @(Model.DiaSemana.Length == 7 && Model.DiaSemana[0] != 'X' ? "checked" : "")> Dom
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-clock-history" style="color: var(--text-muted); font-size: 18px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;">
+            Histórico de Execuções
+        </span>
+    </div>
+
+    <div class="calendario-container mt-3 table-responsive" style="padding: 0; margin-bottom: 25px;">
+        <table id="tabelaExecucoes" class="custom-table" style="width: 100%;">
             <thead>
                 <tr>
                     <th>Data</th>
@@ -135,26 +146,23 @@
                 </tr>
             </thead>
             <tbody>
-                @if (Model.Execucoes != null)
-                {   
-                    @if (Model.Execucoes.Any())
+                @if (Model.Execucoes != null && Model.Execucoes.Any())
+                {
+                    foreach (var execucao in Model.Execucoes)
                     {
-                        foreach (var execucao in Model.Execucoes)
-                        {
-                            <tr>
-                                <td>@execucao.DataConfirmacao</td>
-                                <td>@(string.IsNullOrWhiteSpace(execucao.HoraConfirmacao) ? "--" : execucao.HoraConfirmacao)</td>
-                                <td>@Html.DisplayFor(modelItem => execucao.Status)</td>
-                            </tr>
-                        }
+                        <tr>
+                            <td class="font-bold">@execucao.DataConfirmacao</td>
+                            <td>@(string.IsNullOrWhiteSpace(execucao.HoraConfirmacao) ? "--" : execucao.HoraConfirmacao)</td>
+                            <td>@Html.DisplayFor(modelItem => execucao.Status)</td>
+                        </tr>
                     }
                 }
             </tbody>
         </table>
     </div>
 
-    <div class="actions-container">
-        <form method="post" style="display: inline; margin: 0;">
+    <div class="actions-container actions-container-planejamento d-flex flex-column flex-sm-row justify-content-end align-items-center gap-2">
+        <form method="post" style="display: inline-flex; margin: 0;">
             @Html.AntiForgeryToken()
 
             @if (Model.Status != Core.Enum.Planejamento.Status.INTERROMPIDO)
@@ -165,18 +173,20 @@
                 }
                 else
                 {
-                    <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-success">Ativar</button>
+                    <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Ativar</button>
                 }
             }
             else
             {
-                <span class="badge bg-secondary text-white px-3 py-3 fs-6" style="font-weight: 600;">Planejamento Interrompido</span>
+                <span class="badge bg-secondary text-white px-3 py-2 fs-6 d-inline-flex align-items-center" style="font-weight: 600; height: 42px;">
+                    Planejamento Interrompido
+                </span>
             }
         </form>
 
         @if (Model.Status != Core.Enum.Planejamento.Status.INTERROMPIDO)
         {
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Editar</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
         }
     </div>
 </div>
@@ -186,16 +196,18 @@
         $(document).ready(function () {
             $('#tabelaExecucoes').DataTable({
                 "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
+                    "emptyTable": "Nenhuma execução registrada para este planejamento"
                 },
-                "pageLength": 10,
+                "lengthMenu": [5, 10, 15],
+                "pageLength": 5,
                 "searching": false,
                 "info": false,
-                "dom": 'rt<"bottom"lp><"clear">',
+                "dom": 'rt<"bottom d-flex justify-content-between align-items-center p-3 mt-2"lp><"clear">',
                 "columnDefs": [
-                    { "width": "40%", "targets": 0 },
-                    { "width": "40%", "targets": 1 },
-                    { "width": "20%", "targets": 2 }
+                    { "width": "35%", "targets": 0 },
+                    { "width": "35%", "targets": 1 },
+                    { "width": "30%", "targets": 2 }
                 ]
             });
         });

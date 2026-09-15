@@ -14,17 +14,19 @@ namespace Service
             this.context = context;
         }
 
-
         /// <summary>
-        /// Criar um novo planejamento na base de dados
+        /// Criar uma lista de novos planejamentos na base de dados em lote
         /// </summary>
-        /// <param name="planejamento">Dados do planejamento</param>
-        /// <returns>Id do novo planejamento</returns>
-        public async Task<uint> Create(Planejamento planejamento)
+        /// <param name="planejamentos">Coleção de planejamentos a serem persistidos</param>
+        /// <returns>True se gravou com sucesso</returns>
+        public async Task<bool> Create(IEnumerable<Planejamento> planejamentos)
         {
-            await context.Planejamentos.AddAsync(planejamento);
+            if (planejamentos == null || !planejamentos.Any())
+                return false;
+
+            await context.Planejamentos.AddRangeAsync(planejamentos);
             await context.SaveChangesAsync();
-            return (uint)planejamento.Id;
+            return true;
         }
 
         /// <summary>
@@ -64,23 +66,29 @@ namespace Service
         public async Task<Planejamento?> Get(uint id)
         {
             return await context.Planejamentos
-                                .Include(p => p.IdPacienteNavigation)
-                                .Include(p => p.IdMedicamentoNavigation)
-                                .Include(p => p.Execucaos)
-                                .FirstOrDefaultAsync(p => p.Id == id);
+                .AsNoTracking()
+                .Include(p => p.IdPacienteNavigation)
+                .Include(p => p.IdMedicamentoNavigation)
+                .Include(p => p.Execucaos)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         /// <summary>
-        /// Buscar todos os planejamentos cadastrados
+        /// Buscar todos os planejamentos cadastrados (com filtro opcional por paciente)
         /// </summary>
         /// <returns>Lista de planejamentos</returns>
-        public async Task<IEnumerable<Planejamento>> GetAll(uint idCuidador)
+        public async Task<IEnumerable<Planejamento>> GetAll(uint idCuidador, uint? idPaciente = null)
         {
-            return await context.Planejamentos
+            var query = context.Planejamentos
+                .AsNoTracking()
                 .Include(p => p.IdPacienteNavigation)
                 .Include(p => p.IdMedicamentoNavigation)
-                .Where(p => p.IdMedicamentoNavigation.IdCuidador == idCuidador)
-                .ToListAsync();
+                .Where(p => p.IdMedicamentoNavigation.IdCuidador == idCuidador);
+
+            if (idPaciente.HasValue)
+                query = query.Where(p => p.IdPaciente == idPaciente.Value);
+
+            return await query.ToListAsync();
         }
 
         /// <summary>

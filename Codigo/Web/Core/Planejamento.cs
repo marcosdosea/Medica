@@ -28,7 +28,7 @@ public partial class Planejamento
 
     public string UnidadeDosagem { get; set; } = null!;
 
-    public string Ativo { get; set; } = null!;
+    public string? Ativo { get; set; }
 
     public string Status { get; set; } = null!;
 

@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Core.Enum.Planejamento;
 
 namespace MedicaWeb.Models
 {
@@ -6,39 +9,39 @@ namespace MedicaWeb.Models
     {
         public uint Id { get; set; }
 
+        [Display(Name = "Paciente")]
+        [Required(ErrorMessage = "Selecione um paciente.")]
+        [Range(1, uint.MaxValue, ErrorMessage = "Selecione um paciente.")]
         public uint IdPaciente { get; set; }
 
         public uint IdMedicamento { get; set; }
 
-        [Display(Name = "Data de Início")]
-        [Required(ErrorMessage = "A data de início é obrigatória.")]
         [DataType(DataType.Date)]
-        public DateTime DataInicio { get; set; }
+        public DateTime DataInicio { get; set; } = DateTime.Today;
 
         [Display(Name = "Data de Fim")]
         [DataType(DataType.Date)]
-        public DateTime? DataFim { get; set; }
+        public DateTime DataFim { get; set; } = DateTime.MaxValue;
 
-        [Display(Name = "Dia da Semana")]
+        public bool Continuo { get; set; } = false;
+
         public string DiaSemana { get; set; } = null!;
 
         [Display(Name = "Hora de Início")]
-        [Required(ErrorMessage = "A hora de início é obrigatória.")]
         [DataType(DataType.Time)]
         public TimeSpan Hora { get; set; }
 
-        [Display(Name = "Intervalo de Execução")]
-        [DataType(DataType.Time)]
         public TimeSpan IntervaloExecucao { get; set; }
 
-        [Display(Name = "Dosagem")]
-        [Required(ErrorMessage = "A dosagem é obrigatória.")]
         public int Dosagem { get; set; }
 
-        [Display(Name = "Unidade de Dosagem")]
-        public string Unidade { get; set; } = null!;
+        public UnidadeDosagem Unidade { get; set; }
 
-        [Display(Name = "Ativo")]
         public string Ativo { get; set; } = "S";
+
+        public string Status { get; set; } = "NAO_INICIADO";
+
+        [MinLength(1, ErrorMessage = "Adicione ao menos um planejamento antes de salvar.")]
+        public List<PlanejamentoViewModel> Itens { get; set; } = new();
     }
 }

@@ -1,3 +1,4 @@
+using BibliotecaWeb.Filter;
 using Core;
 using Core.Service;
 using MedicaWeb.Areas.Identity.Data;
@@ -14,7 +15,10 @@ namespace MedicaWeb
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<CustomExceptionFilter>();
+            });
             builder.Services.AddRazorPages();
 
             var connectionString = builder.Configuration.GetConnectionString("MedicaConnection")!;

@@ -99,7 +99,7 @@
     }
 
 .actions-container {
-    position: fixed;
+    position: fixed !important;
     bottom: 0;
     right: 0;
     left: var(--side-w);
@@ -118,29 +118,45 @@
 }
 
 .btn-med {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 12px 35px;
     border-radius: 10px;
     font-weight: 700;
     font-size: 16px;
     border: none;
-    transition: 0.2s;
-    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    text-decoration: none !important;
     cursor: pointer;
+    line-height: normal;
 }
+
+    .btn-med:active {
+        transform: scale(0.98);
+    }
 
 .btn-med-danger {
     background-color: #FF4D4D;
-    color: white;
+    color: white !important;
 }
+
+    .btn-med-danger:hover {
+        background-color: #e03b3b;
+        color: white !important;
+        box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3);
+    }
 
 .btn-med-primary {
     background-color: #4285F4;
-    color: white;
+    color: white !important;
 }
 
-.paciente-card-footer {
-    display: none;
-}
+    .btn-med-primary:hover {
+        background-color: #3367d6;
+        color: white !important;
+        box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3);
+    }
 
 @media (max-width: 768px) {
     .actions-container {

@@ -311,6 +311,7 @@ public partial class MedicaContext : DbContext
                 .HasColumnType("time")
                 .HasColumnName("intervaloExecucao");
             entity.Property(e => e.Status)
+                .HasDefaultValueSql("'NAO_INICIADO'")
                 .HasColumnType("enum('NAO_INICIADO','EM_ANDAMENTO','CONCLUIDO','INTERROMPIDO')")
                 .HasColumnName("status");
             entity.Property(e => e.UnidadeDosagem)
