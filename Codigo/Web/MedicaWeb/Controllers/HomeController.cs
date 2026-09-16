@@ -6,7 +6,7 @@ using Util;
 
 namespace MedicaWeb.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrador, Cuidador")]
     public class HomeController : Controller
     {
         private readonly IPacienteService pacienteService;
@@ -20,6 +20,7 @@ namespace MedicaWeb.Controllers
             this.logger = logger;
         }
 
+        // GET: HomeController
         public async Task<IActionResult> Index()
         {
 
@@ -28,11 +29,13 @@ namespace MedicaWeb.Controllers
             return View(pacienteDtos);
         }
 
+        // GET: HomeController/Privacy
         public IActionResult Privacy()
         {
             return View();
         }
 
+        // GET: HomeController/Error
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

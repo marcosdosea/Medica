@@ -13,7 +13,7 @@ using Util;
 
 namespace MedicaWeb.Controllers
 {
-    [Authorize(Roles = "Cuidador")]
+    [Authorize(Roles = "Administrador, Cuidador")]
     public class PlanejamentoController : Controller
     {
         private readonly IPlanejamentoService planejamentoService;

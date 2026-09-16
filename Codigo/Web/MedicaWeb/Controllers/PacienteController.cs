@@ -12,7 +12,7 @@ using Util;
 
 namespace MedicaWeb.Controllers
 {
-    [Authorize(Roles = "Cuidador")]
+    [Authorize(Roles = "Administrador, Cuidador")]
     public class PacienteController : Controller
     {
         private readonly IPacienteService pacienteService;
@@ -33,6 +33,7 @@ namespace MedicaWeb.Controllers
             this.mapper = mapper;
         }
 
+        // GET: PacienteController
         public async Task<IActionResult> Index()
         {
             var pacientes = await pacienteService.GetAll(User.GetId());
@@ -40,6 +41,7 @@ namespace MedicaWeb.Controllers
             return View(pacienteDtos);
         }
 
+        // GET: PacienteController/Details/5
         public async Task<IActionResult> Details(uint id)
         {
             var paciente = await pacienteService.Get(id);
@@ -47,6 +49,7 @@ namespace MedicaWeb.Controllers
             return View(pacienteDetailsDto);
         }
 
+        // GET: PacienteController/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -55,6 +58,7 @@ namespace MedicaWeb.Controllers
             return View(new PacienteDetailsDto());
         }
 
+        // POST: PacienteController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PacienteDetailsDto pacienteDetailsDto)
@@ -76,6 +80,7 @@ namespace MedicaWeb.Controllers
             return View(pacienteDetailsDto);
         }
 
+        // GET: PacienteController/Edit/5
         public async Task<IActionResult> Edit(uint id)
         {
             var paciente = await pacienteService.Get(id);
@@ -83,6 +88,7 @@ namespace MedicaWeb.Controllers
             return View(pacienteDetailsDto);
         }
 
+        // POST: PacienteController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(uint id, PacienteDetailsDto pacienteDetailsDto)
@@ -94,6 +100,7 @@ namespace MedicaWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // POST: PacienteController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(uint id)
