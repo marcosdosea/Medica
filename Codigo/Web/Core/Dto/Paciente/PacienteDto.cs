@@ -20,6 +20,8 @@ namespace Core.Dto.Paciente
 
         public IEnumerable<ExecucaoDto> ExecucoesFalhas { get; set; } = [];
 
+        public string NomePrimeiroUltimo { get; set; } = string.Empty;
+
         public class ExecucaoDto
         {
             public string Data { get; set; } = null!;

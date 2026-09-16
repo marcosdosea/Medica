@@ -1,21 +1,6 @@
 @using Core.Dto.Paciente
 @model IEnumerable<PacienteDto>
 
-@functions {
-    public static string FormatarPrimeiroEUltimoNome(string? nomeCompleto)
-    {
-        if (string.IsNullOrWhiteSpace(nomeCompleto))
-            return "-";
-
-        var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (partes.Length <= 1)
-            return partes[0];
-
-        return $"{partes[0]} {partes[^1]}";
-    }
-}
-
 <div class="home-wrapper">
     <section class="pacientes-topo">
         <div class="header-com-botao">
@@ -27,7 +12,7 @@
             <div class="cards-grid">
                 @foreach (var paciente in Model)
                 {
-                    var nomeExibicao = FormatarPrimeiroEUltimoNome(paciente.Nome);
+                    var nomeExibicao = paciente.NomePrimeiroUltimo;
 
                     <div class="paciente-card">
                         <div class="foto-wrapper">
@@ -63,7 +48,6 @@
             <div id='calendar'></div>
 
             <div class="caption-container">
-                <span class="legenda-item"><span class="caption confirmado"></span> Confirmado</span>
                 <span class="legenda-item"><span class="caption sem-confirmacao"></span> Sem confirmação</span>
                 <span class="legenda-item"><span class="caption atraso"></span> Confirmado com atraso</span>
                 <span class="legenda-item"><span class="caption hoje"></span> Hoje</span>

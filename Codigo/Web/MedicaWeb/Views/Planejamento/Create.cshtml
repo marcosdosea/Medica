@@ -8,17 +8,6 @@
     var pacientes = ViewBag.Pacientes as IEnumerable<PacienteDto> ?? Enumerable.Empty<PacienteDto>();
 }
 
-@functions {
-    public static string FormatarPrimeiroEUltimoNome(string? nomeCompleto)
-    {
-        if (string.IsNullOrWhiteSpace(nomeCompleto))
-            return "-";
-
-        var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return partes.Length <= 1 ? partes[0] : $"{partes[0]} {partes[^1]}";
-    }
-}
-
 @section Styles {
     <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/form/formPlanejamento.css" asp-append-version="true" />
@@ -50,7 +39,7 @@
             @foreach (var paciente in pacientes)
             {
                 var isSelected = Model?.IdPaciente == paciente.Id;
-                var nomeExibicao = FormatarPrimeiroEUltimoNome(paciente.Nome);
+                var nomeExibicao = paciente.NomePrimeiroUltimo;
 
                 <div class="paciente-card-wrapper">
                     <div class="paciente-card @(isSelected ? "active" : "")"

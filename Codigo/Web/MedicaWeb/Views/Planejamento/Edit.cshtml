@@ -1,21 +1,11 @@
 @model MedicaWeb.Models.PlanejamentoViewModel
 @using Core.Enum.Planejamento
+@using Util
 
 @{
     ViewData["Title"] = "Editar Planejamento";
     var nomePaciente = ViewBag.NomePaciente as string ?? "Paciente";
     var isContinuo = Model.Continuo || Model.DataFim.Year > 9000;
-}
-
-@functions {
-    public static string FormatarPrimeiroEUltimoNome(string? nomeCompleto)
-    {
-        if (string.IsNullOrWhiteSpace(nomeCompleto))
-            return "-";
-
-        var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return partes.Length <= 1 ? partes[0] : $"{partes[0]} {partes[^1]}";
-    }
 }
 
 @section Styles {
@@ -59,7 +49,9 @@
                     <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
                 </div>
                 <div class="paciente-info">
-                    <h3 class="paciente-nome" title="@nomePaciente">@FormatarPrimeiroEUltimoNome(nomePaciente)</h3>
+                    <h3 class="paciente-nome" title="@nomePaciente">
+                        @PacienteHelper.FormatarPrimeiroEUltimoNome(nomePaciente)
+                    </h3>
                 </div>
             </div>
         </div>

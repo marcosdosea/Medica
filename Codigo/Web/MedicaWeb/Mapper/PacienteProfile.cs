@@ -27,6 +27,8 @@ namespace MedicaWeb.Mapper
                         : new List<Alergium>()));
 
             CreateMap<Paciente, PacienteDto>()
+                .ForMember(dest => dest.NomePrimeiroUltimo,
+                    opt => opt.MapFrom(src => PacienteHelper.FormatarPrimeiroEUltimoNome(src.Nome)))
                 .ForMember(dest => dest.Sexo, opt => opt.MapFrom(src => src.Sexo ?? "M"));
 
             CreateMap<Paciente, PacienteDetailsDto>()

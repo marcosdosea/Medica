@@ -1,10 +1,10 @@
-﻿using System.Text.RegularExpressions;
-using Core.Helpers;
+﻿using Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using MySql.Data.MySqlClient;
+using Util;
 
 namespace BibliotecaWeb.Filter
 {
@@ -35,7 +35,7 @@ namespace BibliotecaWeb.Filter
                 }
                 else if (mySqlException.Number == 1062)
                 {
-                    var campo = ExtrairNomeChave(mySqlException.Message);
+                    var campo = FilterHelper.ExtrairNomeChave(mySqlException.Message);
                     errorMessage = $"Já existe um registro com este {campo} cadastrado.";
                 }
                 else if (mySqlException.Number == 1048)
@@ -48,7 +48,7 @@ namespace BibliotecaWeb.Filter
                 }
                 else if (mySqlException.Number == 1216 || mySqlException.Number == 1217)
                 {
-                    var campo = ExtrairNomeChave(mySqlException.Message);
+                    var campo = FilterHelper.ExtrairNomeChave(mySqlException.Message);
                     errorMessage = $"Violação de chave estrangeira: operação inválida com {campo}.";
                 }
                 else if (mySqlException.Number == 1366)
@@ -93,20 +93,6 @@ namespace BibliotecaWeb.Filter
             }
 
             context.ExceptionHandled = true;
-        }
-
-        private static string ExtrairNomeChave(string sqlMessage)
-        {
-            var match = Regex.Match(sqlMessage ?? "", @"(?:for key|CONSTRAINT)\s+['`]?([^'`]+)['`]?", RegexOptions.IgnoreCase);
-            if (!match.Success)
-                return "registro";
-
-            var nomeChave = match.Groups[1].Value.Split('.').Last();
-            var chave = Regex.Replace(nomeChave, @"(?i)(_unique|unique|fk_|uk_)", "")
-                             .Replace("_", " ")
-                             .Trim();
-
-            return string.IsNullOrEmpty(chave) ? "registro" : chave.ToLower();
         }
     }
 }

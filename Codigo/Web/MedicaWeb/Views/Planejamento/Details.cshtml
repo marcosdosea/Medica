@@ -1,19 +1,9 @@
 @model Core.Dto.Planejamento.PlanejamentoDetailsDto
+@using Util
 
 @{
     ViewData["Title"] = "Detalhes do planejamento";
     var isContinuo = Model.DataFim.Year > 9000;
-}
-
-@functions {
-    public static string FormatarPrimeiroEUltimoNome(string? nomeCompleto)
-    {
-        if (string.IsNullOrWhiteSpace(nomeCompleto))
-            return "-";
-
-        var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return partes.Length <= 1 ? partes[0] : $"{partes[0]} {partes[^1]}";
-    }
 }
 
 @section Styles {
@@ -43,7 +33,9 @@
                     <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
                 </div>
                 <div class="paciente-info">
-                    <h3 class="paciente-nome" title="@Model.NomePaciente">@FormatarPrimeiroEUltimoNome(Model.NomePaciente)</h3>
+                    <h3 class="paciente-nome" title="@Model.NomePaciente">
+                        @PacienteHelper.FormatarPrimeiroEUltimoNome(Model.NomePaciente)
+                    </h3>
                 </div>
             </div>
         </div>
