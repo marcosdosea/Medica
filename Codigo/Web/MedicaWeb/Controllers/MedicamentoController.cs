@@ -25,9 +25,9 @@ namespace MedicaWeb.Controllers
         // GET: MedicamentoController
         public async Task<ActionResult> Index()
         {
-            var listaMedicamentos = await medicamentoService.GetAll(User.GetId());
-            var listaMedicamentosModel = mapper.Map<List<MedicamentoViewModel>>(listaMedicamentos);
-            return View(listaMedicamentosModel);
+            var medicamentos = await medicamentoService.GetAll(User.GetId());
+            var medicamentoViewModels = mapper.Map<List<MedicamentoViewModel>>(medicamentos);
+            return View(medicamentoViewModels);
         }
 
         // GET: MedicamentoController/Details/5

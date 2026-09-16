@@ -1,6 +1,6 @@
-﻿namespace Core.Dto.Cuidador
+﻿namespace Core.Dto.Usuario
 {
-    public class CuidadorDto
+    public class UsuarioDto
     {
         public int Id { get; set; }
 
@@ -11,5 +11,7 @@
         public string Ativo { get; set; } = "S";
 
         public int QuantidadePacientes { get; set; }
+
+        public string Perfil { get; set; } = "Cuidador";
     }
 }

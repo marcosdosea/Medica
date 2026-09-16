@@ -27,5 +27,7 @@ namespace MedicaWeb.Models
         public byte[]? Foto { get; set; }
 
         public uint IdCuidador { get; set; }
+
+        public string Ativo { get; set; } = "S";
     }
 }

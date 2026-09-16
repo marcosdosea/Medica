@@ -1,8 +1,8 @@
-﻿@model IEnumerable<Core.Dto.Cuidador.CuidadorDto>
+﻿@model IEnumerable<Core.Dto.Usuario.UsuarioDto>
 
 <div class="calendario-container">
     <div class="table-header">
-        <h2 class="titulo-sessao">Cuidadores</h2>
+        <h2 class="titulo-sessao">Usuários</h2>
     </div>
 
     <table id="tabelaUsuarios" class="custom-table">
@@ -10,6 +10,7 @@
             <tr>
                 <th>Nome</th>
                 <th>CPF</th>
+                <th>Perfil</th>
                 <th>Qtd. de Pacientes</th>
                 <th>Status</th>
             </tr>
@@ -19,17 +20,17 @@
             {
                 <tr>
                     <td class="font-bold">@item.Nome</td>
-                    <td>@item.Cpf</td>
+                    <td>@(ulong.TryParse(item.Cpf, out var numCpf) ? numCpf.ToString(@"000\.000\.000\-00") : item.Cpf)</td>
+                    <td>@item.Perfil</td>
                     <td>@item.QuantidadePacientes</td>
-
                     <td>
                         @if (item.Ativo == "S")
                         {
-                            <span>Ativo</span>
+                            <span class="badge bg-success">Ativo</span>
                         }
                         else
                         {
-                            <span>Inativo</span>
+                            <span class="badge bg-danger">Inativo</span>
                         }
                     </td>
                 </tr>
@@ -50,10 +51,11 @@
                 "info": false,
                 "dom": 'rt<"bottom"lp><"clear">',
                 "columnDefs": [
-                    { "width": "40%", "targets": 0 },
-                    { "width": "25%", "targets": 1 },
+                    { "width": "30%", "targets": 0 },
+                    { "width": "20%", "targets": 1 },
                     { "width": "20%", "targets": 2 },
-                    { "width": "15%", "targets": 3 }
+                    { "width": "15%", "targets": 3 },
+                    { "width": "15%", "targets": 4 }
                 ]
             });
         });

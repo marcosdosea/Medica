@@ -29,15 +29,20 @@
                         ? "Masculino"
                         : "Feminino";
 
-                    var statusFormatado = string.Equals(item.Ativo, "S")
-                        ? "Ativo"
-                        : "Inativo";
-
                     <tr onclick="location.href='@Url.Action("Details", "Paciente", new { id = item.Id })'" style="cursor:pointer;">
                         <td class="font-bold">@item.Nome</td>
                         <td>@(ulong.TryParse(item.Cpf, out var numCpf) ? numCpf.ToString(@"000\.000\.000\-00") : item.Cpf)</td>
                         <td>@sexoFormatado</td>
-                        <td>@statusFormatado</td>
+                        <td>
+                            @if (item.Ativo == "S")
+                            {
+                                <span class="badge bg-success">Ativo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inativo</span>
+                            }
+                        </td>
                     </tr>
                 }
             }

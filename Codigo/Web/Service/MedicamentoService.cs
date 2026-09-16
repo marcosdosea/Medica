@@ -74,11 +74,6 @@ namespace Service
             return await context.Medicamentos
                 .AsNoTracking()
                 .Where(m => m.IdCuidador == idCuidador)
-                .Select(m => new Medicamento
-                {
-                    Id = m.Id,
-                    Nome = m.Nome
-                })
                 .OrderBy(m => m.Nome)
                 .ToListAsync();
         }
