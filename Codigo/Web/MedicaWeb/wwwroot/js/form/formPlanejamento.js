@@ -1,4 +1,4 @@
-﻿let dtPlanejamentos = null;
+let dtPlanejamentos = null;
 let todosPlanejamentos = [];
 let listaPlanejamentos = [];
 
@@ -64,14 +64,12 @@ const FormPlanejamento = {
             btnAdd.addEventListener('click', FormPlanejamento.executarAdicionarPreview);
         }
 
-        $('#btnSalvarForm').on('click', function (e) {
-            e.preventDefault();
-
+        $('#formPlanejamento').on('submit', function (e) {
             if (listaPlanejamentos.length === 0) {
+                e.preventDefault();
                 return false;
             }
 
-            const form = document.getElementById('formPlanejamento');
             const container = document.getElementById('hiddenPlanejamentosContainer');
 
             if (container) {
@@ -94,8 +92,6 @@ const FormPlanejamento = {
                     `;
                 });
             }
-
-            form.submit();
         });
 
         const idInicial = $('#IdPaciente').val();

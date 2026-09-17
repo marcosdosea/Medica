@@ -37,11 +37,16 @@ namespace Service
         {
             var planejamento = await context.Planejamentos.FindAsync((int)id);
 
-            bool possuiExecucao = await context.Execucaos.AnyAsync(e => e.IdPlanejamento == id);
+            if (planejamento == null)
+            {
+                throw new ServiceException("Planejamento não encontrado.");
+            }
 
+            bool possuiExecucao = await context.Execucaos.AnyAsync(e => e.IdPlanejamento == id);
             if (possuiExecucao)
             {
-                planejamento!.Ativo = StatusAtivo.N.ToString();
+                planejamento.Ativo = StatusAtivo.N.ToString();
+                planejamento.Status = Core.Enum.Planejamento.Status.INTERROMPIDO.ToString();
                 context.Planejamentos.Update(planejamento);
             }
             else
@@ -59,6 +64,14 @@ namespace Service
         /// <returns>Dados do planejamento</returns>
         public async Task Edit(Planejamento planejamento)
         {
+            bool possuiExecucao = await context.Execucaos
+                .AnyAsync(e => e.IdPlanejamento == planejamento.Id);
+
+            if (possuiExecucao)
+            {
+                throw new ServiceException("Não é possível editar um planejamento que possui execuções.");
+            }
+
             context.Planejamentos.Update(planejamento);
             await context.SaveChangesAsync();
         }
@@ -98,11 +111,28 @@ namespace Service
         public async Task Activate(uint id)
         {
             var planejamento = await this.Get(id);
-            if (planejamento!.Ativo == StatusAtivo.S.ToString())
+
+            if (planejamento == null)
+            {
+                throw new ServiceException("Planejamento não encontrado.");
+            }
+
+            if (planejamento.Ativo == StatusAtivo.S.ToString())
             {
                 return;
             }
+
+            var agora = DateTime.Now;
+            bool isContinuo = planejamento.DataFim.Date == DateTime.MaxValue.Date;
+            if (!isContinuo && planejamento.DataFim < agora)
+            {
+                throw new ServiceException("Não é possível reativar um planejamento com período encerrado.");
+            }
+
             planejamento.Ativo = StatusAtivo.S.ToString();
+            planejamento.Status = (planejamento.DataInicio > agora
+                ? Core.Enum.Planejamento.Status.NAO_INICIADO
+                : Core.Enum.Planejamento.Status.EM_ANDAMENTO).ToString();
             context.Planejamentos.Update(planejamento);
             await context.SaveChangesAsync();
         }

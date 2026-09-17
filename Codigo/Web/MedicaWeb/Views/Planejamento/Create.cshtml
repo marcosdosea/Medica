@@ -58,10 +58,6 @@
                         </div>
                         <div class="paciente-info">
                             <h3 class="paciente-nome" title="@paciente.Nome">@nomeExibicao</h3>
-                            @if (!string.IsNullOrWhiteSpace(paciente.Apelido))
-                            {
-                                <span class="paciente-apelido" title="@paciente.Apelido">@paciente.Apelido</span>
-                            }
                         </div>
                     </div>
 
@@ -199,8 +195,8 @@
     </div>
 
     <div class="actions-container actions-container-planejamento d-flex flex-column flex-sm-row justify-content-end gap-2">
-        <a asp-action="Index" class="btn-med btn-med-danger text-center" style="text-decoration: none;">Cancelar</a>
-        <button type="submit" id="btnSalvarForm" class="btn-med btn-med-primary" disabled>Salvar</button>
+        <a asp-action="Index" class="btn-med btn-med-danger text-center btn-cancelar" style="text-decoration: none;">Cancelar</a>
+        <button type="submit" id="btnSalvarForm" class="btn-med btn-med-primary btn-salvar" disabled>Salvar</button>
     </div>
 </form>
 

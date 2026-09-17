@@ -76,8 +76,7 @@ namespace MedicaWeb.Controllers
         public async Task<IActionResult> Edit(uint id)
         {
             var planejamento = await planejamentoService.Get(id);
-            uint idCuidador = User.GetId();
-            var medicamentos = await medicamentoService.GetAll(idCuidador);
+            var medicamentos = await medicamentoService.GetAll(User.GetId());
             ViewBag.Medicamentos = new SelectList(medicamentos, "Id", "Nome", planejamento!.IdMedicamento);
             var paciente = await pacienteService.Get(planejamento.IdPaciente);
             ViewBag.NomePaciente = paciente?.Nome ?? "Paciente";

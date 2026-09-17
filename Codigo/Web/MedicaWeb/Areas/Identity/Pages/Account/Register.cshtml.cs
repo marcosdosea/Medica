@@ -160,7 +160,7 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        return LocalRedirect(returnUrl);
+                        return RedirectToPage("Login", new { returnUrl = returnUrl });
                     }
                 }
                 foreach (var error in result.Errors)

@@ -70,9 +70,9 @@ namespace MedicaWeb.Controllers
         }
 
         // GET: MedicamentoController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var medicamento = medicamentoService.Get((uint)id);
+            var medicamento = await medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
             return View(medicamentoModel);
         }
@@ -109,9 +109,9 @@ namespace MedicaWeb.Controllers
         }
 
         // GET: MedicamentoController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var medicamento = medicamentoService.Get((uint)id);
+            var medicamento = await medicamentoService.Get((uint)id);
             var medicamentoModel = mapper.Map<MedicamentoViewModel>(medicamento);
             return View(medicamentoModel);
         }
@@ -119,9 +119,9 @@ namespace MedicaWeb.Controllers
         // POST: MedicamentoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, MedicamentoViewModel _)
+        public async Task<IActionResult> Delete(int id, MedicamentoViewModel _)
         {
-            medicamentoService.Delete((uint)id);
+            await medicamentoService.Delete((uint)id);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
             return RedirectToAction(nameof(Index));
         }

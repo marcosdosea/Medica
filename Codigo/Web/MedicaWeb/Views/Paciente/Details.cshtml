@@ -1,4 +1,4 @@
-﻿@using Core.Dto.Paciente
+@using Core.Dto.Paciente
 @using Core.Enum.Paciente
 @model PacienteDetailsDto
 
@@ -20,7 +20,6 @@
     </div>
 </div>
 
-<form>
     <div class="form-section">
         <div class="secao-header" style="border:none; margin-top:0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
             <i class="bi bi-person-fill" style="color: var(--text-muted);"></i>
@@ -48,7 +47,7 @@
             </div>
             <div class="col-12 col-md-8 form-group-custom">
                 <label asp-for="CartaoSus" class="label-custom">Cartão SUS</label>
-                <input value="@(string.IsNullOrWhiteSpace(Model.CartaoSus) ? "-" : Model.CartaoSus)" class="form-input-custom" readonly />
+                <input value="@(string.IsNullOrWhiteSpace(Model.CartaoSus) ? "" : Model.CartaoSus)" class="form-input-custom" readonly />
             </div>
         </div>
 
@@ -68,12 +67,12 @@
 
             <div class="col-6 col-md-4 col-xl-2">
                 <label class="label-custom">Peso (kg)</label>
-                <input value="@(Model.Peso.HasValue ? Model.Peso.Value.ToString("N2") : "-")" class="form-input-custom" readonly />
+                <input value="@(Model.Peso.HasValue ? Model.Peso.Value.ToString("N2") : "")" class="form-input-custom" readonly />
             </div>
 
             <div class="col-6 col-md-6 col-xl-2">
                 <label class="label-custom">Altura (m)</label>
-                <input value="@(Model.Altura.HasValue ? Model.Altura.Value.ToString("N2") : "-")" class="form-input-custom" readonly />
+                <input value="@(Model.Altura.HasValue ? Model.Altura.Value.ToString("N2") : "")" class="form-input-custom" readonly />
             </div>
 
             <div class="col-6 col-md-6 col-xl-3">
@@ -101,7 +100,7 @@
 
             <div class="col-6 col-md-4 col-xl-4">
                 <label class="label-custom">Apelido</label>
-                <input value="@(string.IsNullOrWhiteSpace(Model.Apelido) ? "-" : Model.Apelido)" class="form-input-custom" readonly />
+                <input value="@(string.IsNullOrWhiteSpace(Model.Apelido) ? "" : Model.Apelido)" class="form-input-custom" readonly />
             </div>
 
             <div class="col-12 col-md-12 col-xl-3">
@@ -151,8 +150,8 @@
                         {
                             <tr>
                                 <td class="fw-bold">@alergia.Tipo</td>
-                                <td>@(string.IsNullOrWhiteSpace(alergia.MedicamentoNome) ? "-" : alergia.MedicamentoNome)</td>
-                                <td>@(string.IsNullOrWhiteSpace(alergia.Descricao) ? "-" : alergia.Descricao)</td>
+                                <td>@(string.IsNullOrWhiteSpace(alergia.MedicamentoNome) ? "" : alergia.MedicamentoNome)</td>
+                                <td>@(string.IsNullOrWhiteSpace(alergia.Descricao) ? "" : alergia.Descricao)</td>
                             </tr>
                         }
                     </tbody>
@@ -198,7 +197,7 @@
         <div class="row g-3 mb-3">
             <div class="col-12 col-sm-3 col-lg-1 form-group-custom">
                 <label asp-for="Identificador" class="label-custom">Identificador</label>
-                <input value="@(string.IsNullOrWhiteSpace(Model.Identificador) ? "-" : Model.Identificador)" class="form-input-custom" readonly />
+                <input value="@(string.IsNullOrWhiteSpace(Model.Identificador) ? "" : Model.Identificador)" class="form-input-custom" readonly />
             </div>
             <div class="col-12 col-sm-9 col-lg-4 form-group-custom">
                 <label asp-for="Cidade" class="label-custom">Cidade</label>
@@ -210,7 +209,7 @@
             </div>
             <div class="col-12 col-sm-8 col-lg-5 form-group-custom">
                 <label asp-for="Complemento" class="label-custom">Complemento</label>
-                <input value="@(string.IsNullOrWhiteSpace(Model.Complemento) ? "-" : Model.Complemento)" class="form-input-custom" readonly />
+                <input value="@(string.IsNullOrWhiteSpace(Model.Complemento) ? "" : Model.Complemento)" class="form-input-custom" readonly />
             </div>
         </div>
     </div>
@@ -238,36 +237,28 @@
         <div class="row g-3">
             <div class="col-12 col-sm-4 col-md-2 col-lg-1 form-group-custom">
                 <label class="label-custom">DDD</label>
-                <input value="@(string.IsNullOrWhiteSpace(Model.DddResponsavel) ? "-" : Model.DddResponsavel)" class="form-input-custom" readonly />
+                <input value="@(string.IsNullOrWhiteSpace(Model.DddResponsavel) ? "" : Model.DddResponsavel)" class="form-input-custom" readonly />
             </div>
 
             <div class="col-12 col-sm-8 col-md-4 col-lg-3 form-group-custom">
                 <label class="label-custom">Telefone</label>
-                <input value="@(string.IsNullOrWhiteSpace(Model.TelefoneResponsavel) ? "-" : Model.TelefoneResponsavel)" class="form-input-custom" readonly />
+                <input value="@(string.IsNullOrWhiteSpace(Model.TelefoneResponsavel) ? "" : Model.TelefoneResponsavel)" class="form-input-custom" readonly />
             </div>
 
             <div class="col-12 col-md-6 col-lg-6 form-group-custom">
                 <label class="label-custom">Responsável</label>
-                <input value="@(string.IsNullOrWhiteSpace(Model.NomeTelefoneResponsavel) ? "-" : Model.NomeTelefoneResponsavel)" class="form-input-custom" readonly />
+                <input value="@(string.IsNullOrWhiteSpace(Model.NomeTelefoneResponsavel) ? "" : Model.NomeTelefoneResponsavel)" class="form-input-custom" readonly />
             </div>
         </div>
     </div>
 
     <div class="actions-container d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
-        <button type="button"
-                class="btn-med btn-med-danger text-center"
-                onclick="DialogConfirmacao.exibir({
-            url: '@Url.Action("Delete", "Paciente", new { id = Model.Id })',
-            mensagem: 'Deseja realmente excluir o paciente @Model.Nome?',
-            textoBotao: 'Excluir'
-            })">
-            Excluir
-        </button>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: inline; margin: 0;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn-med btn-med-danger text-center btn-excluir" data-nome="o paciente @Model.Nome">Excluir</button>
+        </form>
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary text-center" style="text-decoration: none;">Editar</a>
     </div>
-</form>
-
-<partial name="_ModalConfirmacao" />
 
 @section Scripts {
     <script>

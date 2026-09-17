@@ -1,4 +1,4 @@
-﻿function previewImage(input) {
+function previewImage(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
@@ -85,3 +85,115 @@ class DialogConfirmacao {
         modal.show();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const botoesCancelar = document.querySelectorAll('.btn-cancelar');
+    botoesCancelar.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const urlDestino = this.getAttribute('href');
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: "Os dados não salvos serão perdidos!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim, cancelar',
+                    cancelButtonText: 'Voltar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed && urlDestino) {
+                        window.location.href = urlDestino;
+                    }
+                });
+            } else {
+                if (confirm("Tem certeza? Os dados não salvos serão perdidos!")) {
+                    window.location.href = urlDestino;
+                }
+            }
+        });
+    });
+
+    const botoesSalvar = document.querySelectorAll('.btn-salvar');
+    botoesSalvar.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            const form = this.closest('form');
+            if (!form) return;
+
+            if (typeof $(form).valid === 'function' && !$(form).valid()) {
+                return;
+            }
+
+            e.preventDefault();
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Deseja salvar?',
+                    text: "Confirme se os dados inseridos estão corretos.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim, salvar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (form.requestSubmit) {
+                            form.requestSubmit();
+                        } else {
+                            form.submit();
+                        }
+                    }
+                });
+            } else {
+                if (confirm("Deseja salvar os dados?")) {
+                    if (form.requestSubmit) {
+                        form.requestSubmit();
+                    } else {
+                        form.submit();
+                    }
+                }
+            }
+        });
+    });
+
+    const botoesExcluir = document.querySelectorAll('.btn-excluir');
+    botoesExcluir.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const form = this.closest('form');
+            if (!form) return;
+
+            const nomeItem = this.getAttribute('data-nome') || 'este registro';
+            const actionUrl = this.getAttribute('formaction');
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Confirmar Exclusão',
+                    text: `Deseja realmente excluir ${nomeItem}?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Sim, excluir',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (actionUrl) form.setAttribute('action', actionUrl);
+                        form.submit();
+                    }
+                });
+            } else {
+                if (confirm(`Deseja realmente excluir ${nomeItem}?`)) {
+                    if (actionUrl) form.setAttribute('action', actionUrl);
+                    form.submit();
+                }
+            }
+        });
+    });
+});

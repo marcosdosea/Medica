@@ -9,18 +9,18 @@ namespace MedicaWeb.Models
         public uint Id { get; set; }
 
         [Display(Name = "Nome")]
-        [Required(ErrorMessage = "O nome do medicamento é obrigatório")]
+        [Required(ErrorMessage = "Campo obrigatório.")]
         [StringLength(60, ErrorMessage = "O nome deve ter no máximo 60 caracteres")]
         public string Nome { get; set; } = null!;
 
         [Display(Name = "Apelido")]
         public string? Apelido { get; set; }
 
-        [Required(ErrorMessage = "O quantidade do medicamento é obrigatório")]
+        [Required(ErrorMessage = "Campo obrigatório.")]
         public int Quantidade { get; set; }
 
         [Display(Name = "Forma Farmacêutica")]
-        [Required(ErrorMessage = "A forma farmacêutica é obrigatória")]
+        [Required(ErrorMessage = "Campo obrigatório.")]
         public FormaFarmaceutica FormaFarmaceutica { get; set; }
 
         [Display(Name = "Foto do Medicamento")]

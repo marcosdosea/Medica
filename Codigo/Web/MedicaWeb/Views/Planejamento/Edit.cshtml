@@ -108,7 +108,7 @@
 
             <div class="col-12 col-md-2 form-group-custom">
                 <label asp-for="Dosagem" class="label-custom">Dosagem</label>
-                <input asp-for="Dosagem" type="number" min="1" class="form-input-custom" id="inputDosagem" placeholder="1" />
+                <input asp-for="Dosagem" type="number" min="1" class="form-input-custom" id="inputDosagem" />
                 <span asp-validation-for="Dosagem" class="text-danger" style="font-size: 13px;"></span>
             </div>
 
@@ -141,8 +141,8 @@
     </div>
 
     <div class="actions-container actions-container-planejamento d-flex flex-column flex-sm-row justify-content-end gap-2">
-        <a asp-action="Index" class="btn-med btn-med-danger text-center" style="text-decoration: none;">Cancelar</a>
-        <button type="submit" id="btnSalvarEdit" class="btn-med btn-med-primary">Salvar</button>
+        <a asp-action="Index" class="btn-med btn-med-danger text-center btn-cancelar" style="text-decoration: none;">Cancelar</a>
+        <button type="submit" id="btnSalvarEdit" class="btn-med btn-med-primary btn-salvar">Salvar</button>
     </div>
 </form>
 

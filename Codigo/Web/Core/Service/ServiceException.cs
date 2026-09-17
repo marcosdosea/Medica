@@ -18,20 +18,6 @@ namespace Core.Service
         public ServiceException(string mensagem, Exception inner)
             : base(mensagem, inner)
         {
-            VerificarELancarErroBanco(inner);
-        }
-
-        private static void VerificarELancarErroBanco(Exception? ex)
-        {
-            var atual = ex;
-            while (atual != null)
-            {
-                if (atual is MySqlException sqlEx)
-                {
-                    throw sqlEx;
-                }
-                atual = atual.InnerException;
-            }
         }
     }
 }

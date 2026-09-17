@@ -1,4 +1,5 @@
 ﻿using Core.Helpers;
+using Core.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -27,7 +28,24 @@ namespace BibliotecaWeb.Filter
             var tempData = tempDataDictionaryFactory.GetTempData(context.HttpContext);
             string errorMessage;
 
-            if (exception is MySqlException mySqlException)
+            if (exception is ServiceException serviceException)
+            {
+                NotificacaoHelper.AlertaErro(tempData, serviceException.Message);
+
+                context.Result = new RedirectToActionResult(
+                    actionName: "Index",
+                    controllerName: null,
+                    routeValues: null
+                );
+
+                context.ExceptionHandled = true;
+                return;
+            }
+
+            var mySqlException = exception as MySqlException
+                  ?? exception.InnerException as MySqlException;
+
+            if (mySqlException != null)
             {
                 if (mySqlException.Number == 1451)
                 {

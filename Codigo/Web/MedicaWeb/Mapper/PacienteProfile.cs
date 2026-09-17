@@ -16,14 +16,18 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.NomeResponsavel, opt => opt.MapFrom(src => src.NomeTelefoneResponsavel))
                 .ForMember(dest => dest.Sexo, opt => opt.MapFrom(src => src.Sexo.ToString()))
                 .ForMember(dest => dest.Foto, opt => opt.MapFrom(src => FotoHelper.ConverterFoto(src.Foto)))
+                .ForMember(dest => dest.Cpf, opt => opt.MapFrom(src => src.Cpf.FormatarApenasNumeros()))
+                .ForMember(dest => dest.Cep, opt => opt.MapFrom(src => src.Cep.FormatarApenasNumeros()))
+                .ForMember(dest => dest.Telefone, opt => opt.MapFrom(src => src.Telefone.FormatarApenasNumeros()))
+                .ForMember(dest => dest.TelefoneResponsavel, opt => opt.MapFrom(src => src.TelefoneResponsavel.FormatarApenasNumeros()))
                 .ForMember(dest => dest.Alergia, opt => opt.MapFrom(src =>
                     src.Alergias != null
                         ? src.Alergias.Select(a => new Alergium
-                        {
-                            Tipo = a.Tipo,
-                            IdMedicamento = a.IdMedicamento,
-                            Descricao = a.Descricao
-                        }).ToList()
+                            {
+                                Tipo = a.Tipo,
+                                IdMedicamento = a.IdMedicamento,
+                                Descricao = a.Descricao
+                            }).ToList()
                         : new List<Alergium>()));
 
             CreateMap<Paciente, PacienteDto>()

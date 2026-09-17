@@ -158,6 +158,17 @@
         box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3);
     }
 
+.btn-med-success {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+}
+
+    .btn-med-success:hover {
+        background-color: #218838;
+        color: #fff;
+    }
+
 @media (max-width: 768px) {
     .actions-container {
         left: 0 !important;

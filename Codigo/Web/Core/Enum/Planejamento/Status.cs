@@ -10,9 +10,6 @@ namespace Core.Enum.Planejamento
         [Display(Name = "Em Andamento")]
         EM_ANDAMENTO,
 
-        [Display(Name = "Falha")]
-        FALHA,
-
         [Display(Name = "Concluído")]
         CONCLUIDO,
 

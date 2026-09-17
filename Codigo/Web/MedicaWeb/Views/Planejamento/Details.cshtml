@@ -55,7 +55,7 @@
 
             <div class="col-12 col-md-3 form-group-custom">
                 <label class="label-custom">Apelido do medicamento</label>
-                <div class="details-static-input">@(string.IsNullOrWhiteSpace(Model.ApelidoMedicamento) ? "--" : Model.ApelidoMedicamento)</div>
+                <div class="details-static-input">@(string.IsNullOrWhiteSpace(Model.ApelidoMedicamento) ? "" : Model.ApelidoMedicamento)</div>
             </div>
 
             <div class="col-12 col-md-3 form-group-custom">
@@ -144,7 +144,7 @@
                     {
                         <tr>
                             <td class="font-bold">@execucao.DataConfirmacao</td>
-                            <td>@(string.IsNullOrWhiteSpace(execucao.HoraConfirmacao) ? "--" : execucao.HoraConfirmacao)</td>
+                            <td>@(string.IsNullOrWhiteSpace(execucao.HoraConfirmacao) ? "Não possui" : execucao.HoraConfirmacao)</td>
                             <td>@Html.DisplayFor(modelItem => execucao.Status)</td>
                         </tr>
                     }
@@ -154,31 +154,38 @@
     </div>
 
     <div class="actions-container actions-container-planejamento d-flex flex-column flex-sm-row justify-content-end align-items-center gap-2">
-        <form method="post" style="display: inline-flex; margin: 0;">
-            @Html.AntiForgeryToken()
-
-            @if (Model.Status != Core.Enum.Planejamento.Status.INTERROMPIDO)
-            {
-                @if (Model.Ativo == "S")
-                {
-                    <button type="submit" asp-action="Delete" asp-route-id="@Model.Id" class="btn-med btn-med-danger">Excluir</button>
-                }
-                else
-                {
-                    <button type="submit" asp-action="Activate" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Ativar</button>
-                }
-            }
-            else
-            {
-                <span class="badge bg-secondary text-white px-3 py-2 fs-6 d-inline-flex align-items-center" style="font-weight: 600; height: 42px;">
-                    Planejamento Interrompido
-                </span>
-            }
-        </form>
-
-        @if (Model.Status != Core.Enum.Planejamento.Status.INTERROMPIDO)
+        @if (Model.Status == Core.Enum.Planejamento.Status.CONCLUIDO)
         {
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
+            <span class="badge bg-info text-dark px-3 py-2 fs-6 d-inline-flex align-items-center" style="font-weight: 600; height: 42px;">
+                Planejamento Concluído
+            </span>
+        }
+        else if (Model.Ativo == "N")
+        {
+            <span class="badge bg-secondary text-white px-3 py-2 fs-6 d-inline-flex align-items-center" style="font-weight: 600; height: 42px;">
+                Planejamento Interrompido
+            </span>
+
+            <form asp-action="Activate" asp-route-id="@Model.Id" method="post" style="display: inline-flex; margin: 0;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-med btn-med-success">
+                    Reativar
+                </button>
+            </form>
+        }
+        else
+        {
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: inline-flex; margin: 0;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-med btn-med-danger btn-excluir" data-nome="este planejamento">
+                    Excluir
+                </button>
+            </form>
+
+            @if (Model.Status == Core.Enum.Planejamento.Status.NAO_INICIADO)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary">Editar</a>
+            }
         }
     </div>
 </div>

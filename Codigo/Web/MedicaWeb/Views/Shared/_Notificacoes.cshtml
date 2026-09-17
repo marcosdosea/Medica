@@ -1,6 +1,5 @@
-﻿@if (TempData["Notificacao_Mensagem"] != null)
+@if (TempData["Notificacao_Mensagem"] != null)
 {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const tipo = '@TempData["Notificacao_Tipo"]';
