@@ -1,23 +1,30 @@
-﻿@page
+@page
 @model ErrorModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "Ops! Ocorreu um erro";
+    Layout = "/Views/Shared/_LayoutIdentity.cshtml";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="login-wrapper">
+    <div class="login-box text-center">
+        <div class="login-logo mb-3">
+            <img src="~/img/logo.png" alt="Logo" />
+        </div>
 
-@if (Model != null && Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+        <div class="mb-4">
+            <i class="bi bi-exclamation-circle-fill" style="font-size: 54px; color: #ffffff;"></i>
+        </div>
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>Development environment should not be enabled in deployed applications</strong>, as it can result in sensitive information from exceptions being displayed to end users. For local debugging, development environment can be enabled by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>, and restarting the application.
-</p>
+        <h3 style="font-weight: 700; font-size: 24px; color: #ffffff; margin-bottom: 12px;">Ops! Ocorreu um erro</h3>
+        
+        <p style="color: rgba(255, 255, 255, 0.85); font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
+            Não foi possível concluir sua solicitação no momento.<br>
+            Por favor, tente novamente mais tarde ou retorne à tela inicial.
+        </p>
+
+
+        <div class="d-flex flex-column gap-2 mt-4">
+            <a asp-page="./Account/Login" class="btn-login" style="display: block; text-decoration: none; line-height: 40px; margin: 0;">VOLTAR PARA O LOGIN</a>
+        </div>
+    </div>
+</div>
