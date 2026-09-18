@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicaWeb.Areas.Identity.Pages.Account
 {
@@ -45,8 +46,8 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "O campo E-mail é obrigatório.")]
+            [EmailAddress(ErrorMessage = "Informe um endereço de e-mail válido.")]
             public string Email { get; set; }
         }
 
@@ -54,27 +55,45 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == Input.Email && u.EmailConfirmed);
+                if (user == null)
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
+                    // Não revelar se o usuário não existe ou se não confirmou e-mail por segurança
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
                     "/Account/ResetPassword",
                     pageHandler: null,
-                    values: new { area = "Identity", code },
+                    values: new { area = "Identity", code, email = Input.Email },
                     protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                var emailDestino = Input.Email;
+                var linkRedefinicao = HtmlEncoder.Default.Encode(callbackUrl);
+
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _emailSender.SendEmailAsync(
+                            emailDestino,
+                            "Redefinição de Senha - Medica",
+                            $"Olá!<br><br>" +
+                            $"Recebemos uma solicitação para redefinir a sua senha no <strong>Sistema Medica</strong>.<br>" +
+                            $"Para criar uma nova senha e restabelecer o seu acesso, clique no botão abaixo:<br><br>" +
+                            $"<div style='text-align: center; margin: 30px 0;'>" +
+                            $"  <a href='{linkRedefinicao}' style='background-color: #2854d9; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block;'>" +
+                            $"      Redefinir Minha Senha" +
+                            $"  </a>" +
+                            $"</div>" +
+                            $"<p style='color: #6c757d; font-size: 13px; text-align: center; margin-top: 25px;'>Este link é válido por 2 horas. Se você não solicitou a alteração de senha, ignore este e-mail.</p>");
+                    }
+                    catch
+                    {
+                    }
+                });
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -119,9 +120,57 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
-
                 var cpf = new string(Input.UserName.Where(char.IsDigit).ToArray());
+                try
+                {
+                    var unconfirmedByCpf = await _userManager.Users
+                        .Where(u => u.UserName == cpf && !u.EmailConfirmed)
+                        .ToListAsync();
+
+                    foreach (var u in unconfirmedByCpf)
+                    {
+                        var roles = await _userManager.GetRolesAsync(u);
+                        if (roles != null && roles.Count > 0)
+                        {
+                            await _userManager.RemoveFromRolesAsync(u, roles);
+                        }
+                        await _userManager.DeleteAsync(u);
+                    }
+
+                    var unconfirmedByEmail = await _userManager.Users
+                        .Where(u => u.Email == Input.Email && !u.EmailConfirmed)
+                        .ToListAsync();
+
+                    foreach (var u in unconfirmedByEmail)
+                    {
+                        var roles = await _userManager.GetRolesAsync(u);
+                        if (roles != null && roles.Count > 0)
+                        {
+                            await _userManager.RemoveFromRolesAsync(u, roles);
+                        }
+                        await _userManager.DeleteAsync(u);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Não foi possível remover usuário prévio não confirmado para CPF {Cpf}", cpf);
+                }
+
+                var emailJaCadastrado = await _userManager.Users.AnyAsync(u => u.Email == Input.Email && u.EmailConfirmed);
+                if (emailJaCadastrado)
+                {
+                    ModelState.AddModelError("Input.Email", "Este e-mail já está cadastrado no sistema.");
+                    return Page();
+                }
+
+                var cpfJaCadastrado = await _userManager.Users.AnyAsync(u => u.UserName == cpf && u.EmailConfirmed);
+                if (cpfJaCadastrado)
+                {
+                    ModelState.AddModelError("Input.UserName", "Este CPF já está cadastrado no sistema.");
+                    return Page();
+                }
+
+                var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, cpf, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -134,14 +183,17 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
                     
                     await _userManager.AddToRoleAsync(user, "Cuidador");
 
-                    var cuidador = new Cuidador
+                    var existingCuidadorId = await _cuidadorService.GetIdByCpf(cpf);
+                    if (existingCuidadorId == 0)
                     {
-                        Nome = Input.Nome,
-                        Cpf = cpf
-                    };
+                        var cuidador = new Cuidador
+                        {
+                            Nome = Input.Nome,
+                            Cpf = cpf
+                        };
+                        await _cuidadorService.Create(cuidador);
+                    }
 
-                    await _cuidadorService.Create(cuidador);
-                    NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.RegistroSucesso);
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -151,8 +203,30 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    var emailDestino = Input.Email;
+                    var emailNome = Input.Nome;
+                    var linkConfirmacao = HtmlEncoder.Default.Encode(callbackUrl);
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await _emailSender.SendEmailAsync(emailDestino, "Confirmação de Conta - Medica",
+                                $"Olá, <strong>{emailNome}</strong>!<br><br>" +
+                                $"Obrigado por se cadastrar no <strong>Sistema Medica</strong>.<br>" +
+                                $"Para ativar sua conta e começar a cuidar de quem você quer bem, confirme seu endereço de e-mail clicando no botão abaixo:<br><br>" +
+                                $"<div style='text-align: center; margin: 30px 0;'>" +
+                                $"  <a href='{linkConfirmacao}' style='background-color: #2854d9; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block;'>" +
+                                $"      Confirmar Minha Conta" +
+                                $"  </a>" +
+                                $"</div>" +
+                                $"<p style='color: #6c757d; font-size: 13px; text-align: center; margin-top: 25px;'>Este link é válido por 2 horas. Se você não solicitou este cadastro, basta ignorar este e-mail.</p>");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Erro ao enviar e-mail de confirmação para {Email}", emailDestino);
+                        }
+                    });
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -160,6 +234,7 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
+                        NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.RegistroSucesso);
                         return RedirectToPage("Login", new { returnUrl = returnUrl });
                     }
                 }

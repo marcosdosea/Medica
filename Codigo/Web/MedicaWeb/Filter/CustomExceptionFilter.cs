@@ -1,4 +1,4 @@
-﻿using Core.Helpers;
+using Core.Helpers;
 using Core.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -24,6 +24,13 @@ namespace BibliotecaWeb.Filter
 
         public void OnException(ExceptionContext context)
         {
+            if (context.RouteData.Values.ContainsKey("page"))
+            {
+                context.Result = new RedirectToPageResult("/Error", new { area = "Identity" });
+                context.ExceptionHandled = true;
+                return;
+            }
+
             var exception = context.Exception;
             var tempData = tempDataDictionaryFactory.GetTempData(context.HttpContext);
             string errorMessage;

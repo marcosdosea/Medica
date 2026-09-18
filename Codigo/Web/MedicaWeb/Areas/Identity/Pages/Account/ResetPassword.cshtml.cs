@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicaWeb.Areas.Identity.Pages.Account
 {
@@ -37,52 +38,36 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "O campo E-mail é obrigatório.")]
+            [EmailAddress(ErrorMessage = "Informe um e-mail válido.")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "O campo Nova Senha é obrigatório.")]
+            [StringLength(100, ErrorMessage = "A senha deve conter no mínimo {2} e no máximo {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirmar nova senha")]
+            [Compare("Password", ErrorMessage = "A nova senha e a confirmação de senha não coincidem.")]
             public string ConfirmPassword { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             public string Code { get; set; }
-
         }
 
-        public IActionResult OnGet(string code = null)
+        public IActionResult OnGet(string code = null, string email = null)
         {
             if (code == null)
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return BadRequest("Um código de segurança deve ser fornecido para redefinir a senha.");
             }
             else
             {
                 Input = new InputModel
                 {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)),
+                    Email = email
                 };
                 return Page();
             }
@@ -95,10 +80,10 @@ namespace MedicaWeb.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == Input.Email);
             if (user == null)
             {
-                // Don't reveal that the user does not exist
+                // Não revelar se o usuário não existe por segurança
                 return RedirectToPage("./ResetPasswordConfirmation");
             }
 
