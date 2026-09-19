@@ -1,8 +1,9 @@
-﻿@page
+@page
 @model RegisterModel
 
 @{
     ViewData["Title"] = "Registre-se";
+    Layout = "/Views/Shared/_LayoutIdentity.cshtml";
 }
 
 <div class="login-wrapper">
@@ -70,4 +71,15 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <partial name="_Notificacoes" />
+    <script>
+        $('#registerForm').on('submit', function () {
+            if ($(this).valid()) {
+                var btn = $('#registerSubmit');
+                btn.css('pointer-events', 'none').css('opacity', '0.7');
+                setTimeout(function () {
+                    btn.prop('disabled', true);
+                }, 10);
+            }
+        });
+    </script>
 }

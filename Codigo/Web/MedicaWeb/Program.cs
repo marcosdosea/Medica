@@ -4,6 +4,7 @@ using Core.Service;
 using MedicaWeb.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Service;
 
@@ -13,6 +14,8 @@ namespace MedicaWeb
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.TraversePath().Load();
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews(options =>
@@ -31,8 +34,8 @@ namespace MedicaWeb
 
             builder.Services.AddDefaultIdentity<Usuario>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = false;
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedAccount = true;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = false;
@@ -41,6 +44,7 @@ namespace MedicaWeb
                 options.Password.RequiredLength = 6;
                 options.User.AllowedUserNameCharacters =
                         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
@@ -48,6 +52,8 @@ namespace MedicaWeb
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<IdentityContext>()
             .AddSignInManager<ApplicationSignInManager>();
+
+            builder.Services.AddTransient<IEmailSender, IdentityEmailSender>();
 
             builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
                 options.TokenLifespan = TimeSpan.FromHours(2)
