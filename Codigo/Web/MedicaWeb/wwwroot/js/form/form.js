@@ -4,13 +4,41 @@ function previewImage(input) {
         reader.onload = function (e) {
             const img = document.getElementById('img-preview');
             const icon = document.getElementById('placeholder-icon');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            icon.style.display = 'none';
-            document.getElementById('file-name').innerText = input.files[0].name;
+            const btnRemover = document.getElementById('btn-remover-foto');
+            const inputRemover = document.getElementById('inputRemoverFoto');
+
+            if (img) {
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            if (icon) icon.style.display = 'none';
+            const fileName = document.getElementById('file-name');
+            if (fileName) fileName.innerText = input.files[0].name;
+
+            if (btnRemover) btnRemover.style.display = 'flex';
+            if (inputRemover) inputRemover.value = 'false';
         }
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+function removerFoto() {
+    const inputFoto = document.getElementById('FotoInput') || document.getElementById('f-upload');
+    const img = document.getElementById('img-preview');
+    const icon = document.getElementById('placeholder-icon');
+    const fileName = document.getElementById('file-name');
+    const btnRemover = document.getElementById('btn-remover-foto');
+    const inputRemover = document.getElementById('inputRemoverFoto');
+
+    if (inputFoto) inputFoto.value = '';
+    if (img) {
+        img.src = '';
+        img.style.display = 'none';
+    }
+    if (icon) icon.style.display = 'block';
+    if (fileName) fileName.innerText = 'Upload.png';
+    if (btnRemover) btnRemover.style.display = 'none';
+    if (inputRemover) inputRemover.value = 'true';
 }
 
 function toggleText(checkbox) {

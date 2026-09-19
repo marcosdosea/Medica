@@ -15,7 +15,7 @@
 }
 
 <div class="header-inline mb-4 d-flex align-items-center gap-3">
-    <a asp-action="Index" class="btn-voltar">
+    <a asp-controller="Home" asp-action="Index" class="btn-voltar">
         <i class="fas fa-arrow-left"></i>
     </a>
     <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Cadastro de planejamento</h2>
@@ -81,9 +81,11 @@
 
     <span asp-validation-for="IdPaciente" class="text-danger d-block mb-4" style="font-size: 13px;"></span>
 
+    <input type="hidden" id="idPlanejamentoEdit" value="0" />
+
     <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
         <i class="bi bi-calendar3" style="color: var(--text-muted); font-size: 18px;"></i>
-        <span style="font-weight: 700; color: #495057; font-size: 18px;">Novo planejamento</span>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;" id="tituloSecaoForm">Novo planejamento</span>
     </div>
 
     <div class="form-section mb-4">
@@ -155,7 +157,10 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-center mt-4">
+        <div class="container-botoes-form-planejamento d-flex align-items-center gap-3 mt-4" id="containerBotoesForm">
+            <button type="button" id="btnCancelarEdicao" class="btn btn-outline-secondary" style="display: none; padding: 9px 24px; border-radius: 6px; font-weight: 600;">
+                Cancelar
+            </button>
             <button type="button" id="btnAdicionarPreview" class="btn-adicionar-cinza" disabled>
                 Adicionar
             </button>
@@ -169,12 +174,12 @@
                 Planejamentos atuais
             </span>
         </div>
-        <div class="form-check d-flex align-items-center gap-2">
+        <label class="filtro-adicionados-wrapper" for="chkFiltrarAdicionados">
             <input class="form-check-input" type="checkbox" id="chkFiltrarAdicionados">
-            <label class="form-check-label" for="chkFiltrarAdicionados" style="font-size: 13px; color: #6c757d; cursor: pointer;">
+            <span class="filtro-adicionados-label">
                 Filtrar adicionados
-            </label>
-        </div>
+            </span>
+        </label>
     </div>
 
     <div class="calendario-container mt-3 table-responsive" style="padding: 0; margin-bottom: 25px;">
@@ -185,8 +190,10 @@
                     <th>Data de início</th>
                     <th>Data de fim</th>
                     <th>Hora</th>
+                    <th>Intervalo</th>
                     <th>Dias da Semana</th>
                     <th>Dosagem</th>
+                    <th style="text-align: center; width: 90px;">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -195,9 +202,28 @@
     </div>
 
     <div class="actions-container actions-container-planejamento d-flex flex-column flex-sm-row justify-content-end gap-2">
-        <a asp-action="Index" class="btn-med btn-med-danger text-center btn-cancelar" style="text-decoration: none;">Cancelar</a>
+        <a href="javascript:void(0)" id="btnCancelarFooter" class="btn-med btn-med-danger text-center btn-cancelar" style="text-decoration: none; display: none;">Cancelar</a>
         <button type="submit" id="btnSalvarForm" class="btn-med btn-med-primary btn-salvar" disabled>Salvar</button>
     </div>
+</form>
+
+<form id="formExcluirPlanejamento" method="post" style="display: none;">
+    @Html.AntiForgeryToken()
+</form>
+
+<form id="formEditarPlanejamento" method="post" style="display: none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" id="editFormId" />
+    <input type="hidden" name="IdPaciente" id="editFormIdPaciente" />
+    <input type="hidden" name="IdMedicamento" id="editFormIdMedicamento" />
+    <input type="hidden" name="DataInicio" id="editFormDataInicio" />
+    <input type="hidden" name="DataFim" id="editFormDataFim" />
+    <input type="hidden" name="Continuo" id="editFormContinuo" />
+    <input type="hidden" name="Hora" id="editFormHora" />
+    <input type="hidden" name="IntervaloExecucao" id="editFormIntervalo" />
+    <input type="hidden" name="Dosagem" id="editFormDosagem" />
+    <input type="hidden" name="Unidade" id="editFormUnidade" />
+    <input type="hidden" name="DiaSemana" id="editFormDiaSemana" />
 </form>
 
 @section Scripts {
@@ -207,8 +233,8 @@
 
     <script>
         $(document).ready(function () {
-            const dadosPlanejamentos = @Html.Raw(JsonSerializer.Serialize(ViewBag.PlanejamentosExistentes as IEnumerable<PlanejamentoItemDto> ?? Enumerable.Empty<PlanejamentoItemDto>()))
-            FormPlanejamento.init(dadosPlanejamentos)
+            const dadosPlanejamentos = @Html.Raw(JsonSerializer.Serialize(ViewBag.PlanejamentosExistentes as IEnumerable<PlanejamentoItemDto> ?? Enumerable.Empty<PlanejamentoItemDto>(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            FormPlanejamento.init(dadosPlanejamentos);
         });
     </script>
 }

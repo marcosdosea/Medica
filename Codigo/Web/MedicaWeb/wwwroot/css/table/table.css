@@ -1,4 +1,4 @@
-﻿.calendario-container {
+.calendario-container {
     padding: 20px;
     background-color: var(--bg-card);
     border-radius: 12px;
@@ -124,3 +124,55 @@ table.dataTable.no-footer {
     outline: none !important;
     box-shadow: none !important;
 }
+
+.acoes-tabela-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-acao-tabela {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.btn-acao-editar {
+    background-color: #e7f1ff;
+    color: #0d6efd !important;
+}
+
+    .btn-acao-editar:hover {
+        background-color: #0d6efd;
+        color: #ffffff !important;
+    }
+
+.btn-acao-excluir {
+    background-color: #fde8e8;
+    color: #dc3545 !important;
+}
+
+    .btn-acao-excluir:hover {
+        background-color: #dc3545;
+        color: #ffffff !important;
+    }
+
+.btn-acao-tabela.desabilitado {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(80%) !important;
+}
+
+    .btn-acao-tabela.desabilitado:hover {
+        filter: grayscale(80%) !important;
+    }
+

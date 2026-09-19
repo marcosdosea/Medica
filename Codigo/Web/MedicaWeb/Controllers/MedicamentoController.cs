@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Core;
 using Core.Helper;
 using Core.Helpers;
@@ -49,18 +49,9 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MedicamentoViewModel medicamentoModel)
         {
-            medicamentoModel.IdCuidador = User.GetId();
-
-            var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
-            if (fotoMedicamento != null && fotoMedicamento.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await fotoMedicamento.CopyToAsync(ms);
-                medicamentoModel.Foto = ms.ToArray();
-            }
-
             if (ModelState.IsValid)
             {
+                medicamentoModel.IdCuidador = User.GetId();
                 var medicamento = mapper.Map<Medicamento>(medicamentoModel);
                 await medicamentoService.Create(medicamento);
                 NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
@@ -82,28 +73,14 @@ namespace MedicaWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, MedicamentoViewModel medicamentoModel)
         {
-            medicamentoModel.IdCuidador = User.GetId();
-
-            var fotoMedicamento = Request.Form.Files["fotoMedicamento"];
-            if (fotoMedicamento != null && fotoMedicamento.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await fotoMedicamento.CopyToAsync(ms);
-                medicamentoModel.Foto = ms.ToArray();
-            }
-            else
-            {
-                var medicamentoAtual = await medicamentoService.Get((uint)id);
-                medicamentoModel.Foto = medicamentoAtual?.Foto;
-            }
-
             if (!ModelState.IsValid)
             {
                 return View(medicamentoModel);
             }
-
-            var medicamento = mapper.Map<Medicamento>(medicamentoModel);
-            await medicamentoService.Edit(medicamento);
+            medicamentoModel.IdCuidador = User.GetId();
+            var medicamento = await medicamentoService.Get((uint)id);
+            mapper.Map(medicamentoModel, medicamento);
+            await medicamentoService.Edit(medicamento!);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
             return RedirectToAction(nameof(Index));
         }

@@ -1,4 +1,4 @@
-﻿.paciente-card-wrapper {
+.paciente-card-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -52,8 +52,18 @@
         cursor: pointer;
     }
 
+.container-botoes-form-planejamento {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100%;
+}
+
+    .container-botoes-form-planejamento.em-edicao {
+        justify-content: center !important;
+    }
+
 .btn-adicionar-cinza {
-    background-color: #6c757d;
+    background-color: #0d6efd;
     color: #ffffff;
     font-weight: 600;
     border: none;
@@ -64,7 +74,7 @@
 }
 
     .btn-adicionar-cinza:hover:not(:disabled) {
-        background-color: #5a6268;
+        background-color: #0b5ed7;
     }
 
     .btn-adicionar-cinza:disabled {
@@ -74,9 +84,60 @@
         opacity: 0.7;
     }
 
+    .btn-adicionar-cinza.btn-salvar-edicao {
+        background-color: #0d6efd;
+    }
+
+    .btn-adicionar-cinza.btn-salvar-edicao:hover:not(:disabled) {
+        background-color: #0b5ed7;
+    }
+
 .linha-preview {
     background-color: #d1e7dd !important;
     font-weight: 600;
+}
+
+.filtro-adicionados-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 6px;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.filtro-adicionados-wrapper .form-check-input {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #0d6efd;
+    box-shadow: none !important;
+    outline: none !important;
+    border: 1px solid #ced4da;
+}
+
+.filtro-adicionados-wrapper .form-check-input:focus,
+.filtro-adicionados-wrapper .form-check-input:active,
+.filtro-adicionados-wrapper .form-check-input:hover {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.filtro-adicionados-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+    margin: 0;
+    transition: color 0.15s ease;
+}
+
+.filtro-adicionados-wrapper:hover .filtro-adicionados-label {
+    color: #0d6efd;
 }
 
 
@@ -113,4 +174,4 @@
 
 #detailsPlanejamentoContainer {
     padding-bottom: 140px !important;
-}
+}

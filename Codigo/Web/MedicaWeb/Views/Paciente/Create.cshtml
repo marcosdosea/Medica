@@ -142,14 +142,27 @@
             </div>
         </div>
 
-        <div class="row g-3 mt-1">
-            <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="row g-3 mt-1 mb-3">
+            <div class="col-12 col-sm-auto">
                 <label class="label-custom">Foto</label>
-                <button type="button" class="btn-upload-foto" onclick="document.getElementById('FotoInput').click()">
-                    <span id="nomeArquivoFoto" class="text-truncate">imagem.png</span>
-                    <i class="bi bi-arrow-up-circle-fill flex-shrink-0"></i>
-                </button>
-                <input type="file" id="FotoInput" name="Foto" accept="image/*" style="display: none;" onchange="actualizarNomeFoto(this)" />
+                <div class="foto-medicamento-container">
+                    <div class="foto-wrapper" id="preview-box">
+                        <button type="button" id="btn-remover-foto" class="btn-remover-foto" onclick="removerFoto()" title="Remover foto" style="display:none;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <i class="fas fa-user fa-3x" id="placeholder-icon" style="color: var(--border);"></i>
+                        <img id="img-preview" style="display:none;" />
+                    </div>
+                    <label for="FotoInput" class="foto-medicamento-label" style="cursor: pointer; background-color: #4285F4; color: white; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 0 0 12px 12px;">
+                        <span id="file-name" style="font-size: 14px; font-weight: bold;">Upload.png</span>
+                        <div style="background: white; color: #4285F4; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-arrow-up" style="font-size: 12px;"></i>
+                        </div>
+                        <input type="file" id="FotoInput" asp-for="Foto" accept=".png, .jpg, .jpeg, image/png, image/jpeg" style="display:none;" onchange="previewImage(this)" />
+                    </label>
+                    <input type="hidden" id="inputRemoverFoto" asp-for="RemoverFoto" value="false" />
+                </div>
+                <span asp-validation-for="Foto" class="text-danger" style="display: block; min-height: 20px; margin-top: 5px; font-size: 13px;"></span>
             </div>
         </div>
     </div>
@@ -433,12 +446,6 @@
             }
         }
 
-        function actualizarNomeFoto(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('nomeArquivoFoto').innerText = input.files[0].name;
-            }
-        }
-
         function verificarTipoAlergia(tipo) {
             const errTipo = document.getElementById('alergia-tipo-error');
             const errMed = document.getElementById('alergia-error');
@@ -550,9 +557,11 @@
 
             listaAlergias.forEach((item, index) => {
                 const btnExcluir = `
-                    <button type="button" class="btn btn-sm text-danger p-0" style="border:none; background:transparent; font-size: 1.25rem; line-height: 1;" onclick="removerAlergia(${index})">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
+                    <div class="acoes-tabela-container">
+                        <button type="button" class="btn-acao-tabela btn-acao-excluir" title="Remover alergia" onclick="removerAlergia(${index})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 `;
 
                 dtAlergias.row.add([

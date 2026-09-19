@@ -1,5 +1,7 @@
-﻿using Core.Enum.Medicamento;
+using Core.Enum.Medicamento;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using Util;
 
 namespace MedicaWeb.Models
 {
@@ -25,6 +27,12 @@ namespace MedicaWeb.Models
 
         [Display(Name = "Foto do Medicamento")]
         public byte[]? Foto { get; set; }
+
+        [Display(Name = "Foto do Medicamento")]
+        [Foto(TamanhoMaximoBytes = 65535)]
+        public IFormFile? FotoMedicamento { get; set; }
+
+        public bool RemoverFoto { get; set; } = false;
 
         public uint IdCuidador { get; set; }
 

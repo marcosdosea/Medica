@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Core;
 using Core.Dto.Paciente;
 using Core.Dto.Planejamento;
@@ -30,22 +30,6 @@ namespace MedicaWeb.Controllers
             this.mapper = mapper;
         }
 
-        // GET: PlanejamentoController
-        public async Task<IActionResult> Index()
-        {
-            var planejamentos = await planejamentoService.GetAll(User.GetId());
-            var planejamentoDtos = mapper.Map<IEnumerable<PlanejamentoDto>>(planejamentos);
-            return View(planejamentoDtos);
-        }
-
-        // GET: PlanejamentoController/Details/5
-        public async Task<IActionResult> Details(uint id)
-        {
-            var planejamento = await planejamentoService.Get(id);
-            var planejamentoDetailsDto = mapper.Map<PlanejamentoDetailsDto>(planejamento);
-            return View(planejamentoDetailsDto);
-        }
-
         // GET: PlanejamentoController/Create
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -69,20 +53,7 @@ namespace MedicaWeb.Controllers
             var planejamentos = mapper.Map<IEnumerable<Planejamento>>(planejamentoViewModel);
             await planejamentoService.Create(planejamentos);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: PlanejamentoController/Edit/5
-        public async Task<IActionResult> Edit(uint id)
-        {
-            var planejamento = await planejamentoService.Get(id);
-            var medicamentos = await medicamentoService.GetAll(User.GetId());
-            ViewBag.Medicamentos = new SelectList(medicamentos, "Id", "Nome", planejamento!.IdMedicamento);
-            var paciente = await pacienteService.Get(planejamento.IdPaciente);
-            ViewBag.NomePaciente = paciente?.Nome ?? "Paciente";
-            ViewBag.FotoPaciente = paciente?.Foto;
-            var planejamentoViewModel = mapper.Map<PlanejamentoViewModel>(planejamento);
-            return View(planejamentoViewModel);
+            return RedirectToAction(nameof(Create));
         }
 
         // POST: PlanejamentoController/Edit/5
@@ -94,27 +65,17 @@ namespace MedicaWeb.Controllers
             var planejamentoModel = mapper.Map<Planejamento>(planejamentoViewModel);
             await planejamentoService.Edit(planejamentoModel);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Create));
         }
 
-        // POST: PlanejamentoController/Activate/5
+        // POST: PlanejamentoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(uint id)
         {
             await planejamentoService.Delete(id);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // POST: PlanejamentoController/Activate/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Activate(uint id)
-        {
-            await planejamentoService.Activate(id);
-            NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Create));
         }
     }
 }

@@ -168,6 +168,7 @@ namespace Util
         public static bool ValidarDimensoesFoto(byte[] bytesArquivo, int larguraMaxima, int alturaMaxima)
         {
             if (bytesArquivo == null || bytesArquivo.Length == 0) return true;
+            if (larguraMaxima <= 0 || alturaMaxima <= 0) return true;
             try
             {
                 using var stream = new MemoryStream(bytesArquivo);

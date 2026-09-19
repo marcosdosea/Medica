@@ -1,6 +1,7 @@
 using Core.Enum.Paciente;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using Util;
 
 namespace Core.Dto.Paciente
 {
@@ -65,13 +66,16 @@ namespace Core.Dto.Paciente
 
         public string? NomeTelefoneResponsavel { get; set; }
 
+        [Foto(TamanhoMaximoBytes = 65535)]
         public IFormFile? Foto { get; set; }
 
         public byte[]? FotoBytes { get; set; }
 
         public string? FotoBase64 => FotoBytes != null && FotoBytes.Length > 0
-                        ? $"data:image/png;base64,{Convert.ToBase64String(FotoBytes)}"
+                        ? $"data:image/{(FotoBytes.Length > 1 && FotoBytes[0] == 0xFF && FotoBytes[1] == 0xD8 ? "jpeg" : "png")};base64,{Convert.ToBase64String(FotoBytes)}"
                         : null;
+
+        public bool RemoverFoto { get; set; } = false;
 
         public string? Ativo { get; set; }
 

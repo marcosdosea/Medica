@@ -55,24 +55,22 @@
                 <label class="label-custom">Foto</label>
                 <div class="foto-medicamento-container">
                     <div class="foto-wrapper" id="preview-box">
-                        @if (Model.Foto != null && Model.Foto.Length > 0)
-                        {
-                            <img id="img-preview" src="data:image/png;base64,@Convert.ToBase64String(Model.Foto)" style="width:100%; height:100%; object-fit:cover;" />
-                        }
-                        else
-                        {
-                            <i class="fas fa-pills fa-3x" id="placeholder-icon" style="color: var(--border);"></i>
-                            <img id="img-preview" style="display:none; width:100%; height:100%; object-fit:cover;" />
-                        }
+                        <button type="button" id="btn-remover-foto" class="btn-remover-foto" onclick="removerFoto()" title="Remover foto" style="@(Model.Foto != null && Model.Foto.Length > 0 ? "" : "display:none;")">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <i class="fas fa-pills fa-3x" id="placeholder-icon" style="color: var(--border); @(Model.Foto != null && Model.Foto.Length > 0 ? "display:none;" : "")"></i>
+                        <img id="img-preview" src="@(Model.Foto != null && Model.Foto.Length > 0 ? $"data:image/{(Model.Foto.Length > 1 && Model.Foto[0] == 0xFF && Model.Foto[1] == 0xD8 ? "jpeg" : "png")};base64,{Convert.ToBase64String(Model.Foto)}" : "")" style="@(Model.Foto != null && Model.Foto.Length > 0 ? "" : "display:none;")" />
                     </div>
                     <label for="f-upload" class="foto-medicamento-label" style="cursor: pointer; background-color: #4285F4; color: white; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 0 0 12px 12px;">
-                        <span id="file-name" style="font-size: 14px; font-weight: bold;">Upload.png</span>
+                        <span id="file-name" style="font-size: 14px; font-weight: bold;">@(Model.Foto != null && Model.Foto.Length > 0 ? "Foto cadastrada" : "Upload.png")</span>
                         <div style="background: white; color: #4285F4; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-arrow-up" style="font-size: 12px;"></i>
                         </div>
-                        <input type="file" id="f-upload" name="fotoMedicamento" accept=".png,image/png" style="display:none;" onchange="previewImage(this)" />
+                        <input type="file" id="f-upload" asp-for="FotoMedicamento" accept=".png, .jpg, .jpeg, image/png, image/jpeg" style="display:none;" onchange="previewImage(this)" />
                     </label>
+                    <input type="hidden" id="inputRemoverFoto" asp-for="RemoverFoto" value="false" />
                 </div>
+                <span asp-validation-for="FotoMedicamento" class="text-danger" style="display: block; min-height: 20px; margin-top: 5px; font-size: 13px;"></span>
             </div>
         </div>
         <div class="actions-container">

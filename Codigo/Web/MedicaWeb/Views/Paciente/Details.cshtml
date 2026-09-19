@@ -109,21 +109,23 @@
             </div>
         </div>
 
-        <div class="row g-3 mt-1">
-            <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="row g-3 mt-1 mb-3">
+            <div class="col-12 col-sm-auto">
                 <label class="label-custom">Foto</label>
-                <div class="d-flex align-items-center gap-2">
-                    @if (!string.IsNullOrEmpty(Model.FotoBase64))
-                    {
-                        <img src="@Model.FotoBase64" alt="Foto do paciente" style="width: 43px; height: 43px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border, #ced4da);" />
-                    }
-                    else
-                    {
-                        <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="width: 43px; height: 43px; border-radius: 6px; border: 1px solid var(--border, #ced4da);">
-                            <i class="bi bi-person-fill" style="font-size: 20px;"></i>
-                        </div>
-                    }
-                    <span class="text-truncate text-muted" style="font-size: 14px;">@(string.IsNullOrEmpty(Model.FotoBase64) ? "Sem foto" : "Foto cadastrada")</span>
+                <div class="foto-medicamento-container">
+                    <div class="foto-wrapper">
+                        @if (!string.IsNullOrEmpty(Model.FotoBase64))
+                        {
+                            <img src="@Model.FotoBase64" alt="Paciente" />
+                        }
+                        else
+                        {
+                            <i class="fas fa-user fa-3x" style="color: var(--border);"></i>
+                        }
+                    </div>
+                    <div class="foto-medicamento-label">
+                        Foto
+                    </div>
                 </div>
             </div>
         </div>

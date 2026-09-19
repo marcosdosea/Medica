@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Core;
 using Core.Dto.Paciente;
 using Core.Enum.Paciente;
@@ -15,7 +15,7 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.Ativo, opt => opt.MapFrom(_ => "S"))
                 .ForMember(dest => dest.NomeResponsavel, opt => opt.MapFrom(src => src.NomeTelefoneResponsavel))
                 .ForMember(dest => dest.Sexo, opt => opt.MapFrom(src => src.Sexo.ToString()))
-                .ForMember(dest => dest.Foto, opt => opt.MapFrom(src => FotoHelper.ConverterFoto(src.Foto)))
+                .ForMember(dest => dest.Foto, opt => opt.MapFrom((src, dest) => src.RemoverFoto ? null : (src.Foto != null ? FotoHelper.ConverterFoto(src.Foto) : dest.Foto)))
                 .ForMember(dest => dest.Cpf, opt => opt.MapFrom(src => src.Cpf.FormatarApenasNumeros()))
                 .ForMember(dest => dest.Cep, opt => opt.MapFrom(src => src.Cep.FormatarApenasNumeros()))
                 .ForMember(dest => dest.Telefone, opt => opt.MapFrom(src => src.Telefone.FormatarApenasNumeros()))

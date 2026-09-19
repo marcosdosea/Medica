@@ -1,4 +1,4 @@
-﻿.form-group-custom {
+.form-group-custom {
     margin-bottom: 25px;
     display: flex;
     flex-direction: column;
@@ -52,6 +52,7 @@
 }
 
 .foto-medicamento-container .foto-wrapper {
+    position: relative;
     width: 100% !important;
     max-width: 100% !important;
     height: 180px !important;
@@ -62,12 +63,43 @@
     align-items: center;
     justify-content: center;
     background-color: var(--bg-body);
+    padding: 6px !important;
+    overflow: hidden;
 }
 
 .foto-medicamento-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain;
+    border-radius: 10px !important;
+    display: block;
+}
+
+.btn-remover-foto {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(220, 53, 69, 0.9);
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+    z-index: 5;
+}
+
+.btn-remover-foto:hover {
+    background-color: #dc3545;
+    transform: scale(1.1);
 }
 
 .foto-medicamento-label {

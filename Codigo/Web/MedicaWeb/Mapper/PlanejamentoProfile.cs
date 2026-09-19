@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using AutoMapper;
 using Core;
@@ -28,6 +28,7 @@ namespace MedicaWeb.Mapper
                 });
 
             CreateMap<PlanejamentoViewModel, Planejamento>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => (int)src.Id))
                 .ForMember(dest => dest.IdPaciente, opt => opt.MapFrom(src => src.IdPaciente))
                 .ForMember(dest => dest.IdMedicamento, opt => opt.MapFrom(src => src.IdMedicamento))
                 .ForMember(dest => dest.DataInicio, opt => opt.MapFrom(src => src.DataInicio))
@@ -69,11 +70,21 @@ namespace MedicaWeb.Mapper
             CreateMap<PlanejamentoDto, Planejamento>();
 
             CreateMap<Planejamento, PlanejamentoItemDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.IdPaciente, opt => opt.MapFrom(src => src.IdPaciente))
+                .ForMember(dest => dest.IdMedicamento, opt => opt.MapFrom(src => src.IdMedicamento))
                 .ForMember(dest => dest.MedicamentoNome, opt => opt.MapFrom(src => src.IdMedicamentoNavigation.Nome))
                 .ForMember(dest => dest.DataInicioFormatada, opt => opt.MapFrom(src => src.DataInicio.ToString("dd/MM/yyyy")))
+                .ForMember(dest => dest.DataInicioIso, opt => opt.MapFrom(src => src.DataInicio.ToString("yyyy-MM-dd")))
                 .ForMember(dest => dest.DataFimFormatada, opt => opt.MapFrom(src => src.DataFim.Year > 9000 ? "Contínuo" : src.DataFim.ToString("dd/MM/yyyy")))
+                .ForMember(dest => dest.DataFimIso, opt => opt.MapFrom(src => src.DataFim.Year > 9000 ? "" : src.DataFim.ToString("yyyy-MM-dd")))
+                .ForMember(dest => dest.Continuo, opt => opt.MapFrom(src => src.DataFim.Year > 9000))
                 .ForMember(dest => dest.Hora, opt => opt.MapFrom(src => src.Hora.ToString(@"hh\:mm")))
-                .ForMember(dest => dest.Dosagem, opt => opt.MapFrom(src => $"{src.Dosagem} {src.UnidadeDosagem}"));
+                .ForMember(dest => dest.IntervaloFormatado, opt => opt.MapFrom(src => src.IntervaloExecucao.ToString(@"hh\:mm")))
+                .ForMember(dest => dest.DiaSemana, opt => opt.MapFrom(src => src.DiaSemana))
+                .ForMember(dest => dest.Dosagem, opt => opt.MapFrom(src => $"{src.Dosagem} {src.UnidadeDosagem}"))
+                .ForMember(dest => dest.DosagemValor, opt => opt.MapFrom(src => src.Dosagem))
+                .ForMember(dest => dest.UnidadeDosagem, opt => opt.MapFrom(src => src.UnidadeDosagem));
         }
 
         private static TEnum ParseEnum<TEnum>(string? valor) where TEnum : struct, System.Enum =>
