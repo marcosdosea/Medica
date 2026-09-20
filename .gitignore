@@ -37,3 +37,7 @@ managed/
 .DS_Store
 Thumbs.db
 *.log
+
+
+firebase-key.json
+*firebase-key.json
