@@ -1,6 +1,8 @@
 using BibliotecaWeb.Filter;
 using Core;
 using Core.Service;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using MedicaWeb.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +19,18 @@ namespace MedicaWeb
             DotNetEnv.Env.TraversePath().Load();
 
             var builder = WebApplication.CreateBuilder(args);
+
+            var caminhoFirebase = Path.Combine(builder.Environment.ContentRootPath, builder.Configuration["Firebase:CredentialPath"] ?? "");
+            if (File.Exists(caminhoFirebase))
+            {
+                if (FirebaseApp.DefaultInstance == null)
+                {
+                    FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = CredentialFactory.FromFile<ServiceAccountCredential>(caminhoFirebase).ToGoogleCredential()
+                    });
+                }
+            }
 
             builder.Services.AddControllersWithViews(options =>
             {
@@ -75,6 +89,7 @@ namespace MedicaWeb
             builder.Services.AddScoped<IPlanejamentoService, PlanejamentoService>();
             builder.Services.AddScoped<ICuidadorService, CuidadorService>();
             builder.Services.AddTransient<IVinculoService, VinculoService>();
+            builder.Services.AddScoped<INotificacaoService, NotificacaoService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

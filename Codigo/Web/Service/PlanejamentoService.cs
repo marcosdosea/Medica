@@ -1,4 +1,4 @@
-﻿using Core;
+using Core;
 using Core.Enum;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
