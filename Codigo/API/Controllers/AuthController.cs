@@ -22,12 +22,5 @@ namespace MedicaAPI.Controllers
             var response = await authService.AssociarDispositivo(request.TokenPareamento, request.FcmToken);
             return Ok(DefaultGenericResponse<AuthResponseDto>.Success(response, "Dispositivo associado com sucesso."));
         }
-
-        [HttpGet("token-pareamento/{idPaciente}")]
-        public async Task<IActionResult> ObterTokenPareamento(uint idPaciente)
-        {
-            var token = await authService.GerarTokenPareamento(idPaciente);
-            return Ok(DefaultGenericResponse<string>.Success(token, "Token de pareamento gerado com sucesso."));
-        }
     }
 }
