@@ -159,6 +159,8 @@ public partial class MedicaContext : DbContext
 
             entity.HasIndex(e => e.IdCuidador, "fk_Medicamento_Cuidador1_idx");
 
+            entity.HasIndex(e => new { e.Nome, e.IdCuidador }, "uq_medicamento_cuidador_nome").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Apelido)
                 .HasMaxLength(60)
@@ -287,6 +289,8 @@ public partial class MedicaContext : DbContext
             entity.HasIndex(e => e.IdMedicamento, "fk_Paciente_has_Medicamento_Medicamento1_idx");
 
             entity.HasIndex(e => e.IdPaciente, "fk_Paciente_has_Medicamento_Paciente1_idx");
+
+            entity.HasIndex(e => new { e.IdPaciente, e.IdMedicamento, e.DataInicio, e.Ativo, e.Hora }, "uq_planejamento_horario_paciente").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Ativo)

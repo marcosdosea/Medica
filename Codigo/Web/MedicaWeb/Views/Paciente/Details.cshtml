@@ -18,6 +18,11 @@
         </a>
         <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Detalhes do Paciente</h2>
     </div>
+    <div>
+        <button type="button" class="btn-med btn-med-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalAssociarDispositivo">
+            <i class="bi bi-phone"></i> Associar dispositivo
+        </button>
+    </div>
 </div>
 
     <div class="form-section">
@@ -262,7 +267,23 @@
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-med btn-med-primary text-center" style="text-decoration: none;">Editar</a>
     </div>
 
+    <div class="modal fade" id="modalAssociarDispositivo" tabindex="-1" aria-labelledby="modalAssociarDispositivoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content text-center p-3">
+                <div class="modal-header border-0 pb-0 justify-content-between">
+                    <h5 class="modal-title font-bold" id="modalAssociarDispositivoLabel">Associar dispositivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body py-4 d-flex flex-column align-items-center">
+                    <div id="qrcode" class="d-flex justify-content-center p-2 bg-white rounded border"></div>
+                    <p class="text-muted small mt-3 mb-0">Paciente: <strong>@Model.Nome</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         $(document).ready(function () {
             if ($('#tabelaAlergiasDetails').length) {
@@ -281,6 +302,44 @@
                         { "width": "40%", "targets": 2 }
                     ]
                 });
+            }
+
+            const modalEl = document.getElementById('modalAssociarDispositivo');
+            if (modalEl) {
+                async function carregarQrCode() {
+                    const container = document.getElementById('qrcode');
+                    container.innerHTML = '<div class="d-flex flex-column align-items-center justify-content-center py-4"><div class="spinner-border text-primary mb-2" role="status"></div><span class="text-muted small">Gerando código seguro...</span></div>';
+
+                    try {
+                        const response = await fetch('@Url.Action("ObterToken", "Paciente", new { id = Model.Id })', {
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (!response.ok) throw new Error('Falha ao obter token');
+                        const data = await response.json();
+
+                        if (data && data.token) {
+                            container.innerHTML = '';
+                            new QRCode(container, {
+                                text: data.token,
+                                width: 200,
+                                height: 200,
+                                colorDark: "#000000",
+                                colorLight: "#ffffff",
+                                correctLevel: QRCode.CorrectLevel.M
+                            });
+                        } else {
+                            throw new Error('Token inválido');
+                        }
+                    } catch (err) {
+                        container.innerHTML = '<div class="d-flex flex-column align-items-center p-3 text-center"><div class="text-danger small mb-2"><i class="bi bi-exclamation-triangle-fill me-1"></i> Não foi possível conectar à MedicaApi.<br/>Verifique se o serviço está ativo.</div><button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="carregarQrCode()"><i class="bi bi-arrow-clockwise"></i> Tentar novamente</button></div>';
+                    }
+                }
+
+                modalEl.addEventListener('shown.bs.modal', function () {
+                    carregarQrCode();
+                });
+
+                window.carregarQrCode = carregarQrCode;
             }
         });
     </script>

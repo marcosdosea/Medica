@@ -1,7 +1,3 @@
-﻿using System;
-using System.Runtime.Serialization;
-using MySql.Data.MySqlClient;
-
 namespace Core.Service
 {
     [Serializable]

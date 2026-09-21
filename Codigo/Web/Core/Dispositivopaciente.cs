@@ -5,7 +5,7 @@ namespace Core;
 
 public partial class Dispositivopaciente
 {
-    public int Id { get; set; }
+    public uint Id { get; set; }
 
     public string FcmToken { get; set; } = null!;
 

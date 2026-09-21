@@ -49,7 +49,7 @@ namespace Util
                 return "Já existe uma conta cadastrada com este e-mail.";
             }
 
-            var campo = ExtrairNomeChave(sqlMessage);
+            var campo = ExtrairNomeChave(sqlMessage ?? "");
             return $"Já existe um registro com este {campo} cadastrado.";
         }
 

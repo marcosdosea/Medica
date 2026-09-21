@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Util;
 
-
 namespace MedicaWeb.Controllers
 {
     [Authorize(Roles = "Administrador, Cuidador")]
@@ -18,19 +17,22 @@ namespace MedicaWeb.Controllers
         private readonly IPacienteService pacienteService;
         private readonly IVinculoService vinculoService;
         private readonly IMedicamentoService medicamentoService;
+        private readonly IDispositivoService dispositivoService;
         private readonly IMapper mapper;
 
         public PacienteController(
             IPacienteService pacienteService,
             IVinculoService vinculoService,
             IMedicamentoService medicamentoService,
-            IMapper mapper
+            IMapper mapper,
+            IDispositivoService dispositivoService
         )
         {
             this.pacienteService = pacienteService;
             this.vinculoService = vinculoService;
             this.medicamentoService = medicamentoService;
             this.mapper = mapper;
+            this.dispositivoService = dispositivoService;
         }
 
         // GET: PacienteController
@@ -47,6 +49,22 @@ namespace MedicaWeb.Controllers
             var paciente = await pacienteService.Get(id);
             var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
             return View(pacienteDetailsDto);
+        }
+
+        // GET: PacienteController/ObterToken/5
+        public async Task<IActionResult> ObterToken(uint id)
+        {
+            var token = await dispositivoService.ObterToken(id);
+
+            if (Request.Headers.Accept.ToString().Contains("application/json"))
+            {
+                return Json(new { token });
+            }
+
+            var paciente = await pacienteService.Get(id);
+            var pacienteDetailsDto = mapper.Map<PacienteDetailsDto>(paciente);
+            ViewBag.TokenPareamento = token;
+            return View("Details", pacienteDetailsDto);
         }
 
         // GET: PacienteController/Create

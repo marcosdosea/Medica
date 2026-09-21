@@ -1,3 +1,4 @@
+using Core.Exceptions;
 using Core.Helpers;
 using Core.Service;
 using Microsoft.AspNetCore.Http;
@@ -38,6 +39,14 @@ namespace BibliotecaWeb.Filter
             var exception = context.Exception;
             var tempData = tempDataDictionaryFactory.GetTempData(context.HttpContext);
             string errorMessage;
+
+            if (exception is MedicaApiException apiException)
+            {
+                NotificacaoHelper.AlertaErro(tempData, apiException.Message);
+                context.Result = ObterResultadoRedirecionamento(context);
+                context.ExceptionHandled = true;
+                return;
+            }
 
             if (exception is ServiceException serviceException)
             {
@@ -109,34 +118,43 @@ namespace BibliotecaWeb.Filter
         private static IActionResult ObterResultadoRedirecionamento(ExceptionContext context)
         {
             var request = context.HttpContext.Request;
-            var isPostOrDelete = HttpMethods.IsPost(request.Method) || HttpMethods.IsDelete(request.Method);
+            var referer = request.Headers.Referer.ToString();
 
-            if (isPostOrDelete)
+            if (!string.IsNullOrEmpty(referer) && Uri.TryCreate(referer, UriKind.RelativeOrAbsolute, out _))
             {
-                var referer = request.Headers.Referer.ToString();
-                if (!string.IsNullOrEmpty(referer) && Uri.TryCreate(referer, UriKind.RelativeOrAbsolute, out _))
+                if (request.HasFormContentType && request.Form.TryGetValue("IdPaciente", out var idPaciente)
+                    && !string.IsNullOrWhiteSpace(idPaciente) && idPaciente != "0")
                 {
-                    if (request.HasFormContentType && request.Form.TryGetValue("IdPaciente", out var idPaciente)
-                        && !string.IsNullOrWhiteSpace(idPaciente) && idPaciente != "0")
-                    {
-                        var urlBase = referer.Contains('?') ? referer[..referer.IndexOf('?')] : referer;
-                        var queryString = referer.Contains('?') ? referer[referer.IndexOf('?')..] : "";
-                        var queryParams = QueryHelpers.ParseQuery(queryString);
-                        var dictionary = queryParams.ToDictionary(k => k.Key, v => (string?)v.Value.ToString());
-                        dictionary["idPaciente"] = idPaciente.ToString();
-                        var urlComQuery = QueryHelpers.AddQueryString(urlBase, dictionary);
-                        return new RedirectResult(urlComQuery);
-                    }
-
-                    return new RedirectResult(referer);
+                    var urlBase = referer.Contains('?') ? referer[..referer.IndexOf('?')] : referer;
+                    var queryString = referer.Contains('?') ? referer[referer.IndexOf('?')..] : "";
+                    var queryParams = QueryHelpers.ParseQuery(queryString);
+                    var dictionary = queryParams.ToDictionary(k => k.Key, v => (string?)v.Value.ToString());
+                    dictionary["idPaciente"] = idPaciente.ToString();
+                    var urlComQuery = QueryHelpers.AddQueryString(urlBase, dictionary);
+                    return new RedirectResult(urlComQuery);
                 }
 
-                var controllerName = context.RouteData.Values["controller"]?.ToString();
-                var actionName = string.Equals(controllerName, "Planejamento", StringComparison.OrdinalIgnoreCase)
+                return new RedirectResult(referer);
+            }
+
+            var controllerName = context.RouteData.Values["controller"]?.ToString();
+            var actionName = context.RouteData.Values["action"]?.ToString();
+
+            if (string.Equals(controllerName, "Paciente", StringComparison.OrdinalIgnoreCase)
+                && string.Equals(actionName, "ObterToken", StringComparison.OrdinalIgnoreCase)
+                && context.RouteData.Values.TryGetValue("id", out var idVal))
+            {
+                return new RedirectToActionResult("Details", "Paciente", new { id = idVal });
+            }
+
+            var isPostOrDelete = HttpMethods.IsPost(request.Method) || HttpMethods.IsDelete(request.Method);
+            if (isPostOrDelete)
+            {
+                var defaultAction = string.Equals(controllerName, "Planejamento", StringComparison.OrdinalIgnoreCase)
                     ? "Create"
                     : "Index";
 
-                return new RedirectToActionResult(actionName, controllerName, null);
+                return new RedirectToActionResult(defaultAction, controllerName, null);
             }
 
             return new ViewResult

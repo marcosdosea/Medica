@@ -37,6 +37,7 @@ namespace MedicaWeb
                 options.Filters.Add<CustomExceptionFilter>();
             });
             builder.Services.AddRazorPages();
+            builder.Services.AddHttpClient();
 
             var connectionString = builder.Configuration.GetConnectionString("MedicaConnection")!;
 
@@ -90,6 +91,7 @@ namespace MedicaWeb
             builder.Services.AddScoped<ICuidadorService, CuidadorService>();
             builder.Services.AddTransient<IVinculoService, VinculoService>();
             builder.Services.AddScoped<INotificacaoService, NotificacaoService>();
+            builder.Services.AddScoped<IDispositivoService, DispositivoService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

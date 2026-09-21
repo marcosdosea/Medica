@@ -3,21 +3,23 @@ using Core;
 using Core.Dto.Execucao;
 using Core.Service;
 using MedicaAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ExecucaoController : ControllerBase
     {
-        private readonly IExecucaoService _execucaoService;
-        private readonly IMapper _mapper;
+        private readonly IExecucaoService execucaoService;
+        private readonly IMapper mapper;
 
         public ExecucaoController(IExecucaoService execucaoService, IMapper mapper)
         {
-            _execucaoService = execucaoService;
-            _mapper = mapper;
+            this.execucaoService = execucaoService;
+            this.mapper = mapper;
         }
 
         [HttpPost]
@@ -25,10 +27,10 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(DefaultGenericResponse.Error(null, "Dados inválidos fornecidos pelo aplicativo."));
+                return BadRequest(DefaultGenericResponse.Error(null, "Dados inválidos."));
             }
-            var execucao = _mapper.Map<Execucao>(request);
-            var execucaoId = await _execucaoService.Create(execucao);
+            var execucao = mapper.Map<Execucao>(request);
+            var execucaoId = await execucaoService.Create(execucao);
             return StatusCode(StatusCodes.Status201Created, DefaultGenericResponse<uint>.Success(
                 execucaoId,
                 "Medicamento tomado com sucesso e estoque atualizado."));
