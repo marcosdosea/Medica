@@ -282,6 +282,8 @@ public partial class MedicaContext : DbContext
 
             entity.ToTable("planejamento");
 
+            entity.HasIndex(e => e.DataAtualizacao, "dataAtualizacao_idx");
+
             entity.HasIndex(e => e.IdMedicamento, "fk_Paciente_has_Medicamento_Medicamento1_idx");
 
             entity.HasIndex(e => e.IdPaciente, "fk_Paciente_has_Medicamento_Paciente1_idx");
@@ -291,6 +293,12 @@ public partial class MedicaContext : DbContext
                 .HasDefaultValueSql("'S'")
                 .HasColumnType("enum('S','N')")
                 .HasColumnName("ativo");
+            entity.Property(e => e.DataAtualizacao)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasComment("Guarda a data da última modificação do registro.")
+                .HasColumnType("datetime")
+                .HasColumnName("dataAtualizacao");
             entity.Property(e => e.DataFim)
                 .HasColumnType("date")
                 .HasColumnName("dataFim");

@@ -21,7 +21,7 @@ namespace MedicaWeb.Models
 
         [Display(Name = "Data de Fim")]
         [DataType(DataType.Date)]
-        public DateTime DataFim { get; set; } = DateTime.MaxValue;
+        public DateTime? DataFim { get; set; }
 
         public bool Continuo { get; set; } = false;
 

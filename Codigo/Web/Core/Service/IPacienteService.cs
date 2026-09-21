@@ -10,8 +10,5 @@ namespace Core.Service
         Task<uint> Create(Paciente paciente, Vinculo vinculo);
         Task Edit(Paciente paciente);
         Task Delete(uint id);
-        Task<IEnumerable<PacienteMobileDto>> GetMobileAsync();
-
-
     }
 }

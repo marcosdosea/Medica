@@ -1,4 +1,4 @@
-﻿namespace Core.Dto.Planejamento
+namespace Core.Dto.Planejamento
 {
     public class PlanejamentoDetailsDto
     {
@@ -18,7 +18,7 @@
 
         public DateTime DataInicio { get; set; }
 
-        public DateTime DataFim { get; set; }
+        public DateTime? DataFim { get; set; }
 
         public string DiaSemana { get; set; } = null!;
 

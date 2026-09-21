@@ -1,10 +1,14 @@
 using Core.Helpers;
 using Core.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.WebUtilities;
 using MySql.Data.MySqlClient;
+using System;
+using System.Linq;
 using Util;
 
 namespace BibliotecaWeb.Filter
@@ -38,19 +42,14 @@ namespace BibliotecaWeb.Filter
             if (exception is ServiceException serviceException)
             {
                 NotificacaoHelper.AlertaErro(tempData, serviceException.Message);
-
-                context.Result = new RedirectToActionResult(
-                    actionName: "Index",
-                    controllerName: null,
-                    routeValues: null
-                );
-
+                context.Result = ObterResultadoRedirecionamento(context);
                 context.ExceptionHandled = true;
                 return;
             }
 
             var mySqlException = exception as MySqlException
-                  ?? exception.InnerException as MySqlException;
+                  ?? exception.InnerException as MySqlException
+                  ?? exception.GetBaseException() as MySqlException;
 
             if (mySqlException != null)
             {
@@ -60,8 +59,7 @@ namespace BibliotecaWeb.Filter
                 }
                 else if (mySqlException.Number == 1062)
                 {
-                    var campo = FilterHelper.ExtrairNomeChave(mySqlException.Message);
-                    errorMessage = $"Já existe um registro com este {campo} cadastrado.";
+                    errorMessage = FilterHelper.ObterMensagemChaveDuplicada(mySqlException.Message);
                 }
                 else if (mySqlException.Number == 1048)
                 {
@@ -86,19 +84,7 @@ namespace BibliotecaWeb.Filter
                 }
 
                 NotificacaoHelper.AlertaErro(tempData, errorMessage);
-                var actionName = context.RouteData.Values["action"]?.ToString() ?? "Index";
-                var viewData = new ViewDataDictionary(modelMetadataProvider, context.ModelState);
-                if (context.HttpContext.Items.TryGetValue("ActionModel", out var savedModel))
-                {
-                    viewData.Model = savedModel;
-                }
-
-                context.Result = new ViewResult
-                {
-                    ViewName = actionName,
-                    ViewData = viewData,
-                    TempData = tempData
-                };
+                context.Result = ObterResultadoRedirecionamento(context);
             }
             else
             {
@@ -118,6 +104,49 @@ namespace BibliotecaWeb.Filter
             }
 
             context.ExceptionHandled = true;
+        }
+
+        private static IActionResult ObterResultadoRedirecionamento(ExceptionContext context)
+        {
+            var request = context.HttpContext.Request;
+            var isPostOrDelete = HttpMethods.IsPost(request.Method) || HttpMethods.IsDelete(request.Method);
+
+            if (isPostOrDelete)
+            {
+                var referer = request.Headers.Referer.ToString();
+                if (!string.IsNullOrEmpty(referer) && Uri.TryCreate(referer, UriKind.RelativeOrAbsolute, out _))
+                {
+                    if (request.HasFormContentType && request.Form.TryGetValue("IdPaciente", out var idPaciente)
+                        && !string.IsNullOrWhiteSpace(idPaciente) && idPaciente != "0")
+                    {
+                        var urlBase = referer.Contains('?') ? referer[..referer.IndexOf('?')] : referer;
+                        var queryString = referer.Contains('?') ? referer[referer.IndexOf('?')..] : "";
+                        var queryParams = QueryHelpers.ParseQuery(queryString);
+                        var dictionary = queryParams.ToDictionary(k => k.Key, v => (string?)v.Value.ToString());
+                        dictionary["idPaciente"] = idPaciente.ToString();
+                        var urlComQuery = QueryHelpers.AddQueryString(urlBase, dictionary);
+                        return new RedirectResult(urlComQuery);
+                    }
+
+                    return new RedirectResult(referer);
+                }
+
+                var controllerName = context.RouteData.Values["controller"]?.ToString();
+                var actionName = string.Equals(controllerName, "Planejamento", StringComparison.OrdinalIgnoreCase)
+                    ? "Create"
+                    : "Index";
+
+                return new RedirectToActionResult(actionName, controllerName, null);
+            }
+
+            return new ViewResult
+            {
+                ViewName = "Error",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), context.ModelState)
+                {
+                    ["ErrorMessage"] = "Ocorreu um erro ao processar a solicitação."
+                }
+            };
         }
     }
 }

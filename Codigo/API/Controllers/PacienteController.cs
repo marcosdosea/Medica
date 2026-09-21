@@ -1,6 +1,7 @@
 using AutoMapper;
 using Core.Dto.Paciente;
 using Core.Service;
+using MedicaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -22,27 +23,10 @@ namespace Api.Controllers
         public async Task<IActionResult> GetPacienteMobile(uint id)
         {
             var paciente = await _pacienteService.Get(id);
-
-            if (paciente == null)
-            {
-                return NotFound(new
-                {
-                    sucesso = false,
-                    mensagem = "Paciente não encontrado ou inativo.",
-                    timestamp = DateTime.UtcNow
-                });
-            }
-
-            // O AutoMapper converte a entidade Paciente para o PacienteMobileDto
-            var pacienteDto = _mapper.Map<PacienteMobileDto>(paciente);
-
-            return Ok(new
-            {
-                sucesso = true,
-                mensagem = "Paciente encontrado com sucesso.",
-                timestamp = DateTime.UtcNow,
-                data = pacienteDto
-            });
+            var pacienteDto = _mapper.Map<PacienteMobileDetailsDto>(paciente);
+            return Ok(DefaultGenericResponse.Success(pacienteDto,
+                "Paciente encontrado com sucesso.")
+            );
         }
     }
 }

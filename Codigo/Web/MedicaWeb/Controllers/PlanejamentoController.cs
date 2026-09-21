@@ -32,7 +32,7 @@ namespace MedicaWeb.Controllers
 
         // GET: PlanejamentoController/Create
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(uint? idPaciente = null)
         {
             uint idCuidador = User.GetId();
             var pacientesEntidades = await pacienteService.GetAll(idCuidador);
@@ -42,7 +42,7 @@ namespace MedicaWeb.Controllers
             var planejamentos = await planejamentoService.GetAll(idCuidador);
             var planejamentosAtivos = planejamentos.Where(p => p.Ativo == "S");
             ViewBag.PlanejamentosExistentes = mapper.Map<IEnumerable<PlanejamentoItemDto>>(planejamentosAtivos);
-            return View(new PlanejamentoViewModel());
+            return View(new PlanejamentoViewModel { IdPaciente = idPaciente ?? 0 });
         }
 
         // POST: PlanejamentoController/Create
@@ -53,7 +53,7 @@ namespace MedicaWeb.Controllers
             var planejamentos = mapper.Map<IEnumerable<Planejamento>>(planejamentoViewModel);
             await planejamentoService.Create(planejamentos);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
-            return RedirectToAction(nameof(Create));
+            return RedirectToAction(nameof(Create), new { idPaciente = planejamentoViewModel.IdPaciente });
         }
 
         // POST: PlanejamentoController/Edit/5
@@ -65,17 +65,17 @@ namespace MedicaWeb.Controllers
             var planejamentoModel = mapper.Map<Planejamento>(planejamentoViewModel);
             await planejamentoService.Edit(planejamentoModel);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
-            return RedirectToAction(nameof(Create));
+            return RedirectToAction(nameof(Create), new { idPaciente = planejamentoViewModel.IdPaciente });
         }
 
         // POST: PlanejamentoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(uint id)
+        public async Task<IActionResult> Delete(uint id, uint? idPaciente = null)
         {
             await planejamentoService.Delete(id);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
-            return RedirectToAction(nameof(Create));
+            return RedirectToAction(nameof(Create), new { idPaciente });
         }
     }
 }

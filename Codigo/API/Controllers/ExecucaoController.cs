@@ -2,6 +2,7 @@ using AutoMapper;
 using Core;
 using Core.Dto.Execucao;
 using Core.Service;
+using MedicaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -24,37 +25,13 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    mensagem = "Dados inválidos enviados pelo aplicativo.",
-                    timestamp = DateTime.UtcNow
-                });
+                return BadRequest(DefaultGenericResponse.Error(null, "Dados inválidos fornecidos pelo aplicativo."));
             }
-
-            try
-            {
-                var execucao = _mapper.Map<Execucao>(request);
-
-                await _execucaoService.Create(execucao);
-
-                return StatusCode(201, new
-                {
-                    sucesso = true,
-                    mensagem = "Execução inserida com sucesso.",
-                    timestamp = DateTime.UtcNow,
-                    data = (object)null!
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    mensagem = $"Erro ao registrar a execução: {ex.Message}",
-                    timestamp = DateTime.UtcNow
-                });
-            }
+            var execucao = _mapper.Map<Execucao>(request);
+            var execucaoId = await _execucaoService.Create(execucao);
+            return StatusCode(StatusCodes.Status201Created, DefaultGenericResponse<uint>.Success(
+                execucaoId,
+                "Medicamento tomado com sucesso e estoque atualizado."));
         }
     }
 }

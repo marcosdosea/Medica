@@ -8,22 +8,17 @@ namespace MedicaAPI.Mapper
     {
         public PlanejamentoProfile()
         {
-            CreateMap<Planejamento, PlanejamentoMobileDto>()
-                .ForMember(dest => dest.Horario,
-                    opt => opt.MapFrom(src => src.Hora.ToString(@"hh\:mm")))
-                .ForMember(dest => dest.UnidadeDosagem,
-                    opt => opt.MapFrom(src => src.UnidadeDosagem.ToString()))
-                // InstrucaoConsumo não existe na entidade — ignorado para evitar NullReferenceException
-                .ForMember(dest => dest.InstrucaoConsumo,
-                    opt => opt.Ignore())
-                .ForMember(dest => dest.Medicamento,
-                    opt => opt.MapFrom(src => src.IdMedicamentoNavigation));
+            CreateMap<Planejamento, PlanejamentoMobileResponseDto>();
 
-            CreateMap<Medicamento, MedicamentoMobileDto>()
-                .ForMember(dest => dest.FormaFarmaceutica,
-                    opt => opt.MapFrom(src => src.FormaFarmaceutica.ToString()))
-                .ForMember(dest => dest.Foto,
-                    opt => opt.MapFrom(src => src.Foto != null ? Convert.ToBase64String(src.Foto) : string.Empty));
+            CreateMap<Planejamento, PlanejamentoMobileDetailsDto>()
+                .ForMember(dest => dest.NomeMedicamento,
+                    opt => opt.MapFrom(src => src.IdMedicamentoNavigation.Nome))
+                .ForMember(dest => dest.ApelidoMedicamento,
+                    opt => opt.MapFrom(src => src.IdMedicamentoNavigation.Apelido))
+                .ForMember(dest => dest.FotoMedicamento,
+                    opt => opt.MapFrom(src => src.IdMedicamentoNavigation.Foto != null && src.IdMedicamentoNavigation.Foto.Length > 0
+                        ? Convert.ToBase64String(src.IdMedicamentoNavigation.Foto)
+                        : null));
         }
     }
 }

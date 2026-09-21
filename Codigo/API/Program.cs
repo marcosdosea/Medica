@@ -3,6 +3,8 @@ using Service;
 using Core.Service;
 using Core;
 
+using MedicaAPI.Filter;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<MedicaContext>(options =>
@@ -14,15 +16,15 @@ builder.Services.AddScoped<IPlanejamentoService, PlanejamentoService>();
 builder.Services.AddScoped<IExecucaoService, ExecucaoService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ApiExceptionFilter>();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 
-// Configuração atualizada do Swagger
 builder.Services.AddSwaggerGen(c =>
 {
-    // Utiliza o nome completo da classe (incluindo o namespace) 
-    // para gerar o schema e evitar erros 500 por nomes duplicados
     c.CustomSchemaIds(type => type.FullName);
 });
 

@@ -321,7 +321,7 @@ const FormPlanejamento = {
         const medNome = medSelect.find('option:selected').text();
         const dataInicio = $('#inputDataInicio').val();
         const isContinuo = $('#switchContinuo').is(':checked');
-        const dataFim = isContinuo ? '9999-12-31' : $('#inputDataFim').val();
+        const dataFim = isContinuo ? '' : $('#inputDataFim').val();
         const hora = $('#inputHora').val();
         const intervalo = $('#inputIntervalo').val() || '08:00';
         const dosagem = $('#inputDosagem').val();
@@ -367,7 +367,7 @@ const FormPlanejamento = {
         });
 
         const dataInicioFmt = dataInicio.split('-').reverse().join('/');
-        const dataFimFmt = isContinuo ? 'Contínuo' : dataFim.split('-').reverse().join('/');
+        const dataFimFmt = isContinuo ? 'Contínuo' : (dataFim ? dataFim.split('-').reverse().join('/') : 'Contínuo');
 
         const indexItem = listaPlanejamentos.length - 1;
         const acoesPreviewHtml = `

@@ -13,7 +13,7 @@ public partial class Planejamento
 
     public DateTime DataInicio { get; set; }
 
-    public DateTime DataFim { get; set; }
+    public DateTime? DataFim { get; set; }
 
     /// <summary>
     /// DOM,SEG,TER,QUA,QUI,SEX,SAB
@@ -31,6 +31,11 @@ public partial class Planejamento
     public string? Ativo { get; set; }
 
     public string Status { get; set; } = null!;
+
+    /// <summary>
+    /// Guarda a data da última modificação do registro.
+    /// </summary>
+    public DateTime DataAtualizacao { get; set; }
 
     public virtual ICollection<Execucao> Execucaos { get; set; } = new List<Execucao>();
 

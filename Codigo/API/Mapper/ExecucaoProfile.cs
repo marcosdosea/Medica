@@ -8,15 +8,15 @@ namespace MedicaAPI.Mapper
     {
         public ExecucaoProfile()
         {
-            // Mapeia o DTO recebido pelo controller (string → tipos corretos)
             CreateMap<ExecucaoRequestDto, Execucao>()
-                .ForMember(dest => dest.DataConfirmacao, opt =>
-                    opt.MapFrom(src => DateTime.Parse(src.DataConfirmacao)))
-                .ForMember(dest => dest.HoraConfirmacao, opt =>
-                    opt.MapFrom(src => string.IsNullOrWhiteSpace(src.HoraConfirmacao)
-                        ? (TimeSpan?)null
-                        : TimeSpan.Parse(src.HoraConfirmacao)));
-                
+                .ForMember(dest => dest.DataConfirmacao,
+                    opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.DataConfirmacao)
+                        ? DateTime.Parse(src.DataConfirmacao)
+                        : (DateTime?)null))
+                .ForMember(dest => dest.HoraConfirmacao,
+                    opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.HoraConfirmacao)
+                        ? TimeSpan.Parse(src.HoraConfirmacao)
+                        : (TimeSpan?)null));
         }
     }
 }

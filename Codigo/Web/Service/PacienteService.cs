@@ -1,12 +1,7 @@
 ﻿using Core;
-using Core.Dto.Paciente;
 using Core.Enum;
-using Core.Enum.Paciente;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Service
 {
@@ -132,27 +127,6 @@ namespace Service
                 .Where(p => p.Vinculos.Any(v => v.IdCuidador == idCuidador))
                 .OrderBy(p => p.Nome)
                 .ToListAsync();
-        }
-
-        public async Task<IEnumerable<PacienteMobileDto>> GetMobileAsync()
-        {
-            var pacientesDoBanco = await context.Pacientes
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Escolaridade,
-                    p.PossuiDeficiencia
-                })
-                .ToListAsync();
-
-            var resultadoDto = pacientesDoBanco.Select(p => new PacienteMobileDto
-            {
-                Id = p.Id,
-                Escolaridade = p.Escolaridade.ToString(),
-                PossuiDeficiencia = p.PossuiDeficiencia == 1
-            }).ToList();
-
-            return resultadoDto;
         }
     }
 }

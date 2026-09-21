@@ -32,7 +32,7 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.IdPaciente, opt => opt.MapFrom(src => src.IdPaciente))
                 .ForMember(dest => dest.IdMedicamento, opt => opt.MapFrom(src => src.IdMedicamento))
                 .ForMember(dest => dest.DataInicio, opt => opt.MapFrom(src => src.DataInicio))
-                .ForMember(dest => dest.DataFim, opt => opt.MapFrom(src => src.Continuo ? new DateTime(9999, 12, 31) : src.DataFim))
+                .ForMember(dest => dest.DataFim, opt => opt.MapFrom(src => src.Continuo ? (DateTime?)null : src.DataFim))
                 .ForMember(dest => dest.Hora, opt => opt.MapFrom(src => src.Hora))
                 .ForMember(dest => dest.IntervaloExecucao, opt => opt.MapFrom(src => src.IntervaloExecucao != default ? src.IntervaloExecucao : TimeSpan.FromHours(8)))
                 .ForMember(dest => dest.Dosagem, opt => opt.MapFrom(src => src.Dosagem))
@@ -42,7 +42,7 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.Ativo, opt => opt.MapFrom(_ => "S"))
                 .ReverseMap()
                 .ForMember(dest => dest.Unidade, opt => opt.MapFrom(src => ParseEnum<UnidadeDosagem>(src.UnidadeDosagem)))
-                .ForMember(dest => dest.Continuo, opt => opt.MapFrom(src => src.DataFim.Year > 9000));
+                .ForMember(dest => dest.Continuo, opt => opt.MapFrom(src => src.DataFim == null || src.DataFim.Value.Year > 9000));
 
             CreateMap<Planejamento, PlanejamentoDetailsDto>()
                 .ForMember(dest => dest.NomePaciente, opt => opt.MapFrom(src => src.IdPacienteNavigation.Nome))
@@ -57,7 +57,7 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.Execucoes, opt => opt.MapFrom(src => src.Execucaos));
 
             CreateMap<Execucao, PlanejamentoDetailsDto.ExecucaoDto>()
-                .ForMember(dest => dest.DataConfirmacao, opt => opt.MapFrom(src => src.DataConfirmacao.ToString("dd/MM/yyyy")))
+                .ForMember(dest => dest.DataConfirmacao, opt => opt.MapFrom(src => src.DataConfirmacao != default ? src.DataConfirmacao.ToString("dd/MM/yyyy") : null))
                 .ForMember(dest => dest.HoraConfirmacao, opt => opt.MapFrom(src => src.HoraConfirmacao.HasValue ? src.HoraConfirmacao.Value.ToString(@"hh\:mm") : null))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => ParseEnum<Core.Enum.Execucao.Status>(src.Status)));
 
@@ -76,9 +76,9 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.MedicamentoNome, opt => opt.MapFrom(src => src.IdMedicamentoNavigation.Nome))
                 .ForMember(dest => dest.DataInicioFormatada, opt => opt.MapFrom(src => src.DataInicio.ToString("dd/MM/yyyy")))
                 .ForMember(dest => dest.DataInicioIso, opt => opt.MapFrom(src => src.DataInicio.ToString("yyyy-MM-dd")))
-                .ForMember(dest => dest.DataFimFormatada, opt => opt.MapFrom(src => src.DataFim.Year > 9000 ? "Contínuo" : src.DataFim.ToString("dd/MM/yyyy")))
-                .ForMember(dest => dest.DataFimIso, opt => opt.MapFrom(src => src.DataFim.Year > 9000 ? "" : src.DataFim.ToString("yyyy-MM-dd")))
-                .ForMember(dest => dest.Continuo, opt => opt.MapFrom(src => src.DataFim.Year > 9000))
+                .ForMember(dest => dest.DataFimFormatada, opt => opt.MapFrom(src => src.DataFim == null || src.DataFim.Value.Year > 9000 ? "Contínuo" : src.DataFim.Value.ToString("dd/MM/yyyy")))
+                .ForMember(dest => dest.DataFimIso, opt => opt.MapFrom(src => src.DataFim == null || src.DataFim.Value.Year > 9000 ? "" : src.DataFim.Value.ToString("yyyy-MM-dd")))
+                .ForMember(dest => dest.Continuo, opt => opt.MapFrom(src => src.DataFim == null || src.DataFim.Value.Year > 9000))
                 .ForMember(dest => dest.Hora, opt => opt.MapFrom(src => src.Hora.ToString(@"hh\:mm")))
                 .ForMember(dest => dest.IntervaloFormatado, opt => opt.MapFrom(src => src.IntervaloExecucao.ToString(@"hh\:mm")))
                 .ForMember(dest => dest.DiaSemana, opt => opt.MapFrom(src => src.DiaSemana))

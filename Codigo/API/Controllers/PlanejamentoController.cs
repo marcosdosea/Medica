@@ -1,6 +1,7 @@
 using AutoMapper;
 using Core.Dto.Planejamento;
 using Core.Service;
+using MedicaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -18,31 +19,30 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("mobile/{id}")]
-        public async Task<IActionResult> GetPlanejamentoAlarme(uint id)
+        [HttpGet("paciente/{idPaciente}")]
+        public async Task<IActionResult> SincronizarPlanejamentos(uint idPaciente, [FromQuery] DateTime? ultimaSincronizacao)
+        {
+            var planejamentos = await _planejamentoService.GetAllByPaciente(idPaciente, ultimaSincronizacao);
+            var idsParaExcluir = await _planejamentoService.GetIdsExcluidosByPaciente(idPaciente, ultimaSincronizacao);
+            var responseDto = new PlanejamentoMobileDto
+            {
+                Planejamentos = _mapper.Map<List<PlanejamentoMobileResponseDto>>(planejamentos),
+                Excluir = [.. idsParaExcluir],
+                Sincronizacao = DateTime.UtcNow
+            };
+            return Ok(DefaultGenericResponse<PlanejamentoMobileDto>.Success(
+                responseDto,
+                "Planejamentos recuperados com sucesso."));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> BuscarPorId(uint id)
         {
             var planejamento = await _planejamentoService.Get(id);
-
-            if (planejamento == null || planejamento.Ativo == "N")
-            {
-                return NotFound(new
-                {
-                    sucesso = false,
-                    mensagem = "Planejamento não encontrado.",
-                    timestamp = DateTime.UtcNow
-                });
-            }
-
-            // Mapeia para o DTO focado no mobile (com ícones, quantidade, etc.)
-            var planejamentoDto = _mapper.Map<PlanejamentoMobileDto>(planejamento);
-
-            return Ok(new
-            {
-                sucesso = true,
-                mensagem = "Planejamento encontrado com sucesso.",
-                timestamp = DateTime.UtcNow,
-                data = planejamentoDto
-            });
+            var planejamentoDto = _mapper.Map<PlanejamentoMobileDetailsDto>(planejamento);
+            return Ok(DefaultGenericResponse<PlanejamentoMobileDetailsDto>.Success(
+                planejamentoDto,
+                "Planejamento encontrado com sucesso."));
         }
     }
 }

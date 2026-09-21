@@ -35,12 +35,8 @@ namespace Service
         /// <param name="id">id do planejamento</param>
         public async Task Delete(uint id)
         {
-            var planejamento = await context.Planejamentos.FindAsync((int)id);
-
-            if (planejamento == null)
-            {
-                throw new ServiceException("Planejamento não encontrado.");
-            }
+            var planejamento = await context.Planejamentos.FindAsync((int)id)
+                ?? throw new ServiceException("Planejamento não encontrado.");
 
             bool possuiExecucao = await context.Execucaos.AnyAsync(e => e.IdPlanejamento == id);
             if (possuiExecucao)
@@ -87,21 +83,62 @@ namespace Service
         }
 
         /// <summary>
-        /// Buscar todos os planejamentos cadastrados (com filtro opcional por paciente)
+        /// Buscar todos os planejamentos cadastrados
         /// </summary>
         /// <returns>Lista de planejamentos</returns>
-        public async Task<IEnumerable<Planejamento>> GetAll(uint idCuidador, uint? idPaciente = null)
+        public async Task<IEnumerable<Planejamento>> GetAll(uint idCuidador)
+        {
+            return await context.Planejamentos
+                .AsNoTracking()
+                .Include(p => p.IdPacienteNavigation)
+                .Include(p => p.IdMedicamentoNavigation)
+                .Where(p => p.IdMedicamentoNavigation.IdCuidador == idCuidador)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Buscar todos os planejamentos ativos de um paciente específico.
+        /// Se informado 'ultimaSincronizacao', retorna apenas os modificados ou criados a partir da data.
+        /// </summary>
+        /// <param name="idPaciente">Id do paciente</param>
+        /// <param name="ultimaSincronizacao">Data da última sincronização do app</param>
+        /// <returns>Lista de planejamentos ativos para salvar ou editar no app</returns>
+        public async Task<IEnumerable<Planejamento>> GetAllByPaciente(uint idPaciente, DateTime? ultimaSincronizacao = null)
         {
             var query = context.Planejamentos
                 .AsNoTracking()
                 .Include(p => p.IdPacienteNavigation)
                 .Include(p => p.IdMedicamentoNavigation)
-                .Where(p => p.IdMedicamentoNavigation.IdCuidador == idCuidador);
+                .Where(p => p.IdPaciente == idPaciente && p.Ativo == StatusAtivo.S.ToString());
 
-            if (idPaciente.HasValue)
-                query = query.Where(p => p.IdPaciente == idPaciente.Value);
+            if (ultimaSincronizacao.HasValue)
+            {
+                query = query.Where(p => p.DataAtualizacao >= ultimaSincronizacao.Value);
+            }
 
             return await query.ToListAsync();
+        }
+
+        /// <summary>
+        /// Buscar apenas os IDs dos planejamentos excluídos de um paciente após a data informada.
+        /// </summary>
+        /// <param name="idPaciente">Id do paciente</param>
+        /// <param name="ultimaSincronizacao">Data da última sincronização do app</param>
+        /// <returns>Lista de IDs que o app deve excluir</returns>
+        public async Task<IEnumerable<int>> GetIdsExcluidosByPaciente(uint idPaciente, DateTime? ultimaSincronizacao = null)
+        {
+            if (!ultimaSincronizacao.HasValue)
+            {
+                return [];
+            }
+
+            return await context.Planejamentos
+                .AsNoTracking()
+                .Where(p => p.IdPaciente == idPaciente 
+                         && p.Ativo == StatusAtivo.N.ToString() 
+                         && p.DataAtualizacao >= ultimaSincronizacao.Value)
+                .Select(p => p.Id)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -110,12 +147,8 @@ namespace Service
         /// <param name="id">id do planejamento</param>
         public async Task Activate(uint id)
         {
-            var planejamento = await this.Get(id);
-
-            if (planejamento == null)
-            {
-                throw new ServiceException("Planejamento não encontrado.");
-            }
+            var planejamento = await this.Get(id) 
+                ?? throw new ServiceException("Planejamento não encontrado.");
 
             if (planejamento.Ativo == StatusAtivo.S.ToString())
             {
@@ -123,7 +156,7 @@ namespace Service
             }
 
             var agora = DateTime.Now;
-            bool isContinuo = planejamento.DataFim.Date == DateTime.MaxValue.Date;
+            bool isContinuo = planejamento.DataFim == null;
             if (!isContinuo && planejamento.DataFim < agora)
             {
                 throw new ServiceException("Não é possível reativar um planejamento com período encerrado.");
