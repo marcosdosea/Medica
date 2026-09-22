@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+﻿import 'package:shared_preferences/shared_preferences.dart';
 
 /// Gerencia a sessão do usuário logado usando SharedPreferences.
 ///
@@ -8,6 +8,7 @@ class SessionManager {
   static const String _keyToken = 'jwt_token';
   static const String _keyIdGrupo = 'id_grupo';
   static const String _keyIdPessoa = 'id_pessoa';
+  static const String _keyUltimaSincronizacao = 'ultima_sincronizacao';
 
   /// Salva os dados de sessão após login bem-sucedido.
   static Future<void> saveSession(
@@ -50,5 +51,21 @@ class SessionManager {
   static Future<bool> isLoggedIn() async {
     final token = await getToken();
     return token != null && token.isNotEmpty;
+  }
+
+  /// Salva a data/hora da última sincronização bem-sucedida.
+  static Future<void> saveUltimaSincronizacao(DateTime data) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyUltimaSincronizacao, data.toIso8601String());
+  }
+
+  /// Retorna a data/hora da última sincronização, ou null se nunca sincronizou.
+  static Future<DateTime?> getUltimaSincronizacao() async {
+    final prefs = await SharedPreferences.getInstance();
+    final dataStr = prefs.getString(_keyUltimaSincronizacao);
+    if (dataStr != null && dataStr.isNotEmpty) {
+      return DateTime.tryParse(dataStr);
+    }
+    return null;
   }
 }
