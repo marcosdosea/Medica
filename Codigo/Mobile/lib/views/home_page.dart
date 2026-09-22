@@ -65,13 +65,15 @@ class _HomePageState extends State<HomePage> {
         _erro = 'Não foi possível carregar os medicamentos.';
       });
     } finally {
-      if (!mounted) return;
-
-      setState(() {
-        _carregando = false;
-        _atualizando = false;
-      });
+      // Nothing needed here right now
     }
+
+    if (!mounted) return;
+
+    setState(() {
+      _carregando = false;
+      _atualizando = false;
+    });
   }
 
   Future<void> _abrirExecucao(
