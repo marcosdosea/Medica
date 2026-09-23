@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MedicaWeb</title>
+    <title>Medica</title>
+    <link rel="icon" type="image/x-icon" href="~/icon.ico" asp-append-version="true" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home/home.css" asp-append-version="true" />
@@ -18,9 +20,14 @@
 </head>
 <body>
     <header class="topbar">
-        <a class="topbar-title" asp-controller="Home" asp-action="Index">
-            Medica
-        </a>
+        <div class="topbar-brand">
+            <a class="topbar-title" asp-controller="Home" asp-action="Index">
+                <span class="topbar-logo-wrapper">
+                    <img src="~/img/logo.svg" alt="Logo Medica" class="topbar-logo" />
+                </span>
+                <span class="topbar-text">Medica</span>
+            </a>
+        </div>
     </header>
     <aside class="sidebar" id="sidebar">
         <button id="toggleSidebar" class="btn-floating-toggle">
@@ -29,42 +36,87 @@
         <nav class="nav-menu">
             @{
                 var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+                var isCadastrosActive = controller == "Paciente" || controller == "Medicamento" || controller == "Planejamento";
+                var isGerenciamentoActive = controller == "Cuidador";
             }
 
             <a class="nav-item @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-house"></i> <span>Início</span>
             </a>
-
-            <a class="nav-item @(controller == "Paciente" ? "active" : "")" asp-controller="Paciente" asp-action="Index">
-                <i class="bi bi-person"></i> <span>Paciente</span>
-            </a>
-
-            <a class="nav-item @(controller == "Medicamento" ? "active" : "")" asp-controller="Medicamento" asp-action="Index">
-                <i class="bi bi-clipboard-pulse"></i> <span>Medicamento</span>
-            </a>
-
-            <a class="nav-item @(controller == "Planejamento" ? "active" : "")" asp-controller="Planejamento" asp-action="Create">
-                <i class="bi bi-calendar3"></i> <span>Planejamento</span>
-            </a>
-
-            @if (User.IsInRole("Administrador"))
-            {
-                <span class="nav-label"></span>
-                <a class="nav-item @(controller == "Cuidador" ? "active" : "")" asp-controller="Cuidador" asp-action="Index">
-                    <i class="bi bi-people"></i> <span>Usuários</span>
-                </a>
-            }
-
-            <span class="nav-label"></span>
-            <a class="nav-item" href="#"><i class="bi bi-bell"></i> <span>Notificações</span></a>
-            <a class="nav-item" href="#"><i class="bi bi-gear"></i> <span>Configuração</span></a>
-            <form class="d-inline w-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
-                <button type="submit" class="nav-item border-0 bg-transparent w-100 text-start text-inherit" style="cursor: pointer; font-family: inherit;">
+            <div class="nav-group">
+                <button class="nav-item nav-group-btn w-100 border-0 bg-transparent text-start @(isCadastrosActive ? "group-active" : "")"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#menuCadastros" aria-expanded="true" aria-controls="menuCadastros">
+                    <i class="bi bi-folder2-open"></i>
+                    <span>Cadastros</span>
+                    <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
+                </button>
+                <div class="collapse show nav-sub-menu" id="menuCadastros">
+                    <a class="nav-sub-item @(controller == "Paciente" ? "active" : "")" asp-controller="Paciente" asp-action="Index">
+                        <i class="bi bi-person"></i> <span>Paciente</span>
+                    </a>
+                    <a class="nav-sub-item @(controller == "Medicamento" ? "active" : "")" asp-controller="Medicamento" asp-action="Index">
+                        <i class="bi bi-clipboard-pulse"></i> <span>Medicamento</span>
+                    </a>
+                    <a class="nav-sub-item @(controller == "Planejamento" ? "active" : "")" asp-controller="Planejamento" asp-action="Create">
+                        <i class="bi bi-calendar3"></i> <span>Planejamento</span>
+                    </a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <button class="nav-item nav-group-btn w-100 border-0 bg-transparent text-start @(isGerenciamentoActive ? "group-active" : "")"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#menuGerenciamento" aria-expanded="true" aria-controls="menuGerenciamento">
+                    <i class="bi bi-sliders"></i>
+                    <span>Gerenciamento</span>
+                    <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
+                </button>
+                <div class="collapse show nav-sub-menu" id="menuGerenciamento">
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a class="nav-sub-item @(controller == "Cuidador" ? "active" : "")" asp-controller="Cuidador" asp-action="Index">
+                            <i class="bi bi-people"></i> <span>Usuários</span>
+                        </a>
+                    }
+                    <a class="nav-sub-item" href="#">
+                        <i class="bi bi-box-seam"></i> <span>Estoque</span>
+                    </a>
+                    <a class="nav-sub-item" href="#">
+                        <i class="bi bi-bell"></i> <span>Notificações</span>
+                    </a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <button class="nav-item nav-group-btn w-100 border-0 bg-transparent text-start"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#menuDispositivo" aria-expanded="true" aria-controls="menuDispositivo">
+                    <i class="bi bi-phone"></i>
+                    <span>Dispositivo</span>
+                    <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
+                </button>
+                <div class="collapse show nav-sub-menu" id="menuDispositivo">
+                    <a class="nav-sub-item" href="#">
+                        <i class="bi bi-qr-code-scan"></i> <span>Associar Dispositivo</span>
+                    </a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <button class="nav-item nav-group-btn w-100 border-0 bg-transparent text-start"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#menuConfiguracao" aria-expanded="true" aria-controls="menuConfiguracao">
+                    <i class="bi bi-gear"></i>
+                    <span>Configuração</span>
+                    <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
+                </button>
+                <div class="collapse show nav-sub-menu" id="menuConfiguracao">
+                    <a class="nav-sub-item" href="#">
+                        <i class="bi bi-sliders2"></i> <span>Configuração</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <footer class="sidebar-footer">
+            <form class="w-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                <button type="submit" class="nav-item border-0 bg-transparent w-100 text-start text-inherit mb-2" title="Sair" style="cursor: pointer; font-family: inherit;">
                     <i class="bi bi-box-arrow-right"></i> <span>Sair</span>
                 </button>
             </form>
-        </nav>
-        <footer class="sidebar-footer">
             <div class="theme-switch">
                 <button id="lightBtn" onclick="setTheme('light')"><i class="bi bi-sun"></i> Light</button>
                 <button id="darkBtn" onclick="setTheme('dark')"><i class="bi bi-moon"></i> Dark</button>

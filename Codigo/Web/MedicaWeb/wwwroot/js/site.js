@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (window.innerWidth > 780) {
             sidebar.classList.remove("collapsed");
             main.classList.remove("expanded");
+            document.body.classList.remove("sidebar-collapsed");
 
             if (toggleBtn) {
                 toggleBtn.style.display = 'none';
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             sidebar.classList.add("collapsed");
             main.classList.add("expanded");
+            document.body.classList.add("sidebar-collapsed");
         }
     }
 
@@ -49,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
             main.classList.toggle("expanded");
 
             const isCollapsed = sidebar.classList.contains("collapsed");
+            document.body.classList.toggle("sidebar-collapsed", isCollapsed);
             localStorage.setItem("sidebar-collapsed", isCollapsed);
         });
     }

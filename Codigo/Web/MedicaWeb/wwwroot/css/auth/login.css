@@ -1,4 +1,4 @@
-﻿html, body {
+html, body {
     margin: 0 !important;
     padding: 0 !important;
     height: 100vh !important;
@@ -68,7 +68,7 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
-        transform: scale(1.6);
+        transform: scale(1.25);
     }
 
 .custom-input-group {
