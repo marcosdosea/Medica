@@ -8,27 +8,27 @@ import '../models/planejamento_model.dart';
 import '../services/execucao_service.dart';
 
 /*
- * ATENÇÃO — PRÉ-REQUISITO PARA A IMAGEM CENTRAL APARECER CORRETAMENTE
- * =====================================================================
- * A imagem central (café da manhã, almoço, lanche, jantar, noite) é local,
- * ou seja, não vem do servidor. Ela precisa existir dentro do projeto em:
- *
- *   assets/images/instrucoes/cafe_manha.png
- *   assets/images/instrucoes/almoco.png
- *   assets/images/instrucoes/lanche.png
- *   assets/images/instrucoes/jantar.png
- *   assets/images/instrucoes/noite.png
- *
- * E o pubspec.yaml precisa declarar a pasta:
+ * IMAGENS DE INSTRUÇÃO — escolhidas pelo horário cadastrado no planejamento
+ * =========================================================================
+ * As imagens abaixo devem existir em assets/images/instrucoes/.
+ * O pubspec.yaml já declara a pasta:
  *
  *   flutter:
  *     assets:
  *       - assets/images/instrucoes/
  *
- * Se algum desses PNGs não existir (ou o pubspec não tiver sido
- * atualizado + rodado `flutter pub get`), a tela cai automaticamente
- * no fallback (_ImagemInstrucaoPadrao) — que foi o motivo mais provável
- * de a tela aparecer "diferente" do esperado.
+ * Mapeamento por faixa de horário:
+ *   05h–09h → depois_cafe.png        (após café da manhã)
+ *   10h–11h → antes_almoco.png       (antes do almoço)
+ *   12h–14h → durante_refeicao.png   (durante o almoço)
+ *   15h–17h → depois_almoco.png      (após almoço / tarde)
+ *   18h–19h → antes_jantar.png       (antes do jantar)
+ *   20h–21h → depois_jantar.png      (após jantar)
+ *   06h ou manhã sem refeição → inalavel_manhã.png
+ *   22h–04h → inalavel_noite.png     (período noturno)
+ *   injetável → seringa.png
+ *
+ * Se a imagem não existir, o fallback (_ImagemInstrucaoPadrao) é exibido.
  */
 
 class ExecucaoView extends StatefulWidget {
@@ -130,7 +130,7 @@ class _ExecucaoViewState extends State<ExecucaoView> {
      * Exemplo esperado:
      * planejamento.medicamento.foto
      */
-    return planejamento.medicamento.foto ?? '';
+    return planejamento.medicamento.foto;
   }
 
   // =========================================================
@@ -139,32 +139,78 @@ class _ExecucaoViewState extends State<ExecucaoView> {
 
   String get _imagemInstrucao {
     final hora = _horaPlanejamento;
+    final instrucao = planejamento.instrucaoConsumo.trim().toUpperCase();
 
-    /*
-     * 05:00 até 09:59  -> café da manhã
-     * 10:00 até 14:59  -> almoço
-     * 15:00 até 17:59  -> lanche
-     * 18:00 até 21:59  -> jantar
-     * 22:00 até 04:59  -> noite
-     */
-
-    if (hora >= 5 && hora < 10) {
-      return 'assets/images/instrucoes/cafe_manha.png';
+    // Injetável — independente do horário
+    if (instrucao.contains('INJET') ||
+        instrucao.contains('SUBCUTANE') ||
+        instrucao.contains('SERINGA')) {
+      return 'assets/images/instrucoes/seringa.png';
     }
 
-    if (hora >= 10 && hora < 15) {
-      return 'assets/images/instrucoes/almoco.png';
+    // Durante / com refeição
+    if (instrucao == 'COM_ALIMENTO' || instrucao == 'COM_REFEICAO') {
+      return 'assets/images/instrucoes/durante_refeicao.png';
     }
 
+    // Antes da refeição — escolha por horário
+    if (instrucao == 'ANTES_REFEICAO' || instrucao == 'ANTES_DA_REFEICAO') {
+      if (hora >= 18) {
+        return 'assets/images/instrucoes/antes_jantar.png';
+      }
+      return 'assets/images/instrucoes/antes_almoco.png';
+    }
+
+    // Após refeição — escolha por horário
+    if (instrucao == 'APOS_REFEICAO' ||
+        instrucao == 'APÓS_REFEIÇÃO' ||
+        instrucao == 'APOS_REFEICAO') {
+      if (hora >= 18) {
+        return 'assets/images/instrucoes/depois_jantar.png';
+      }
+      if (hora >= 12) {
+        return 'assets/images/instrucoes/depois_almoco.png';
+      }
+      return 'assets/images/instrucoes/depois_cafe.png';
+    }
+
+    // Sem instrução específica — decidir só pelo horário
+    // 05h–11h: período de manhã / café
+    if (hora >= 5 && hora < 12) {
+      return 'assets/images/instrucoes/depois_cafe.png';
+    }
+
+    // 10h–11h: pré-almoço
+    if (hora >= 10 && hora < 12) {
+      return 'assets/images/instrucoes/antes_almoco.png';
+    }
+
+    // 12h–14h: durante almoço
+    if (hora >= 12 && hora < 15) {
+      return 'assets/images/instrucoes/durante_refeicao.png';
+    }
+
+    // 15h–17h: período da tarde / após almoço
     if (hora >= 15 && hora < 18) {
-      return 'assets/images/instrucoes/lanche.png';
+      return 'assets/images/instrucoes/depois_almoco.png';
     }
 
-    if (hora >= 18 && hora < 22) {
-      return 'assets/images/instrucoes/jantar.png';
+    // 18h–19h: antes do jantar
+    if (hora >= 18 && hora < 20) {
+      return 'assets/images/instrucoes/antes_jantar.png';
     }
 
-    return 'assets/images/instrucoes/noite.png';
+    // 20h–21h: após jantar
+    if (hora >= 20 && hora < 22) {
+      return 'assets/images/instrucoes/depois_jantar.png';
+    }
+
+    // 22h–04h: período noturno
+    if (hora >= 6 && hora < 8) {
+      return 'assets/images/instrucoes/inalavel_manhã.png';
+    }
+
+    return 'assets/images/instrucoes/inalavel_noite.png';
   }
 
   // =========================================================
