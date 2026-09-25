@@ -1,20 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../config/session_manager.dart';
 
 /// Utilitário compartilhado de HTTP para os services do app.
-///
-/// Centraliza:
-/// - Montagem de headers padrão (Content-Type + Authorization)
-/// - Tratamento comum de erros e timeouts
-/// - Decodificação do envelope padrão da API: { "sucesso": bool, "data": ... }
-///
-/// Os services específicos ([PlanejamentoService], [ExecucaoService],
-/// [PacienteService]) usam este utilitário internamente.
 class ApiService {
   /// Monta os headers padrão para requisições à MedicaAPI.
-  /// Inclui o token JWT da sessão se disponível.
   static Future<Map<String, String>> headers() async {
     final token = await SessionManager.getToken();
     return {
@@ -24,41 +16,59 @@ class ApiService {
   }
 
   /// Executa um GET autenticado e retorna o mapa JSON da resposta.
-  /// Retorna `null` em caso de erro ou status != 200.
   static Future<Map<String, dynamic>?> get(String endpoint) async {
+    final url = '${ApiConfig.baseUrl}$endpoint';
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}$endpoint'),
+        Uri.parse(url),
         headers: await headers(),
       ).timeout(ApiConfig.timeout);
 
+      debugPrint('GET $url -> Status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        debugPrint('--- ERRO NA RESPOSTA GET ($url) ---');
+        debugPrint('Status Code: ${response.statusCode}');
+        debugPrint('Corpo da Resposta: ${response.body}');
+        debugPrint('----------------------------------');
       }
-    } catch (_) {
-      // Erro de rede ou timeout — retorna null para acionar fallback de cache
+    } catch (e) {
+      debugPrint('Exceção ao fazer GET ($url): $e');
     }
     return null;
   }
 
   /// Executa um POST autenticado com o [body] como JSON.
-  /// Retorna o status code da resposta, ou -1 em caso de exceção.
   static Future<int> post(String endpoint, Map<String, dynamic> body) async {
+    final url = '${ApiConfig.baseUrl}$endpoint';
     try {
       final response = await http.post(
-        Uri.parse('${ApiConfig.baseUrl}$endpoint'),
+        Uri.parse(url),
         headers: await headers(),
         body: jsonEncode(body),
       ).timeout(ApiConfig.timeout);
 
+      debugPrint('POST $url -> Status: ${response.statusCode}');
+
+      // Se for diferente de 200/201 (por exemplo, 400 Bad Request), imprime os detalhes
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        debugPrint('--- ERRO NA RESPOSTA POST ($url) ---');
+        debugPrint('Status Code: ${response.statusCode}');
+        debugPrint('Payload Enviado: ${jsonEncode(body)}');
+        debugPrint('Corpo do Erro (API): ${response.body}');
+        debugPrint('------------------------------------');
+      }
+
       return response.statusCode;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Exceção ao fazer POST ($url): $e');
       return -1; // Indica falha de rede
     }
   }
 
   /// Extrai o campo [data] do envelope padrão da API.
-  /// Retorna null se o campo não existir ou [sucesso] for false.
   static dynamic extrairData(Map<String, dynamic>? envelope) {
     if (envelope == null) return null;
     if (envelope['sucesso'] != true) return null;

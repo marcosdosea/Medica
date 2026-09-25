@@ -92,8 +92,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
+else
+{
+    // Redireciona para HTTPS apenas fora do ambiente de desenvolvimento
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

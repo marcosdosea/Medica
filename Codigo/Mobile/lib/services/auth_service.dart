@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../config/session_manager.dart';
@@ -21,38 +22,49 @@ class AuthResult {
 }
 
 /// Serviço de autenticação do dispositivo.
-///
-/// Fluxo:
-/// 1. Envia `POST /api/Auth/associar-dispositivo` com o token de pareamento
-///    (digitado como PIN ou lido via QR Code) e o FCM Token do aparelho.
-/// 2. Recebe o JWT de volta.
-/// 3. Decodifica o payload Base64 do JWT para extrair [IdPaciente].
-/// 4. Persiste o token e o ID do paciente via [SessionManager].
 class AuthService {
   /// Associa este dispositivo ao paciente cujo [tokenPareamento] foi fornecido.
   ///
-  /// [tokenPareamento] pode vir de um QR Code ou de um PIN digitado pelo usuário.
-  /// [fcmToken] é o token do Firebase Cloud Messaging — pode ser `null` enquanto
-  /// o Firebase não estiver configurado; a API aceita string vazia.
+  /// [tokenPareamento] pode vir de um QR Code (JSON ou String) ou de um PIN digitado pelo usuário.
   static Future<AuthResult> associarDispositivo({
     required String tokenPareamento,
   }) async {
-    if (tokenPareamento.trim().isEmpty) {
+    final rawInput = tokenPareamento.trim();
+    if (rawInput.isEmpty) {
       return AuthResult.falha('Informe um token ou PIN válido.');
     }
 
+    // 1. Trata se o valor lido do QR Code veio em formato JSON
+    String tokenExtraido = rawInput;
     try {
-      final uri = Uri.parse(
-        '${ApiConfig.baseUrl}/api/Auth/associar-dispositivo',
-      );
+      final jsonQr = jsonDecode(rawInput);
+      if (jsonQr is Map) {
+        tokenExtraido = jsonQr['TokenAcesso'] ??
+            jsonQr['tokenAcesso'] ??
+            jsonQr['tokenPareamento'] ??
+            rawInput;
+      }
+    } catch (_) {
+      // O valor enviado é uma String pura (ex: PIN digitado)
+    }
 
-      // Busca o token do Firebase Cloud Messaging para enviar ao servidor
+    // 📍 LOG DE VERIFICAÇÃO DO TOKEN NO CONSOLE DO FLUTTER
+    debugPrint('--------------------------------------------------');
+    debugPrint('Token final a ser enviado para a API: $tokenExtraido');
+    debugPrint('--------------------------------------------------');
+
+    try {
+      // Constrói a URL apontando para a MedicaAPI
+      final uri = Uri.parse('${ApiConfig.baseUrl}/Auth/associar-dispositivo');
+
+      // Busca o token do Firebase Cloud Messaging (FCM)
       final fcmToken = await FcmService.getToken();
 
-      final body = jsonEncode({
-        'tokenPareamento': tokenPareamento.trim(),
+      final bodyMap = {
+        'tokenPareamento': tokenExtraido,
         'fcmToken': fcmToken ?? '',
-      });
+      };
+      final body = jsonEncode(bodyMap);
 
       final response = await http
           .post(
@@ -62,21 +74,20 @@ class AuthService {
           )
           .timeout(ApiConfig.timeout);
 
+      // --- SUCESSO (200) ---
       if (response.statusCode == 200) {
-        // A API retorna o JWT diretamente como string ou dentro de um envelope.
         final jwt = _extrairJwt(response.body);
 
         if (jwt == null || jwt.isEmpty) {
           return AuthResult.falha('Resposta inválida do servidor.');
         }
 
-        // Decodifica o payload do JWT para extrair IdPaciente.
         final payload = _decodificarPayload(jwt);
         if (payload == null) {
           return AuthResult.falha('Token inválido recebido do servidor.');
         }
 
-        final idPacienteRaw = payload['IdPaciente'];
+        final idPacienteRaw = payload['IdPaciente'] ?? payload['idPaciente'];
         final idPaciente = idPacienteRaw is int
             ? idPacienteRaw
             : int.tryParse(idPacienteRaw?.toString() ?? '');
@@ -85,10 +96,18 @@ class AuthService {
           return AuthResult.falha('Não foi possível identificar o paciente.');
         }
 
-        // idGrupo não está no payload — usamos 0 como placeholder.
+        // Persiste a sessão local via SessionManager
         await SessionManager.saveSession(jwt, 0, idPaciente);
-
         return AuthResult.ok();
+      }
+
+      // --- TRATAMENTO DE ERROS HTTP ---
+      if (response.statusCode == 400) {
+        debugPrint('--- ERRO 400 DA API ---');
+        debugPrint('Payload enviado: $body');
+        debugPrint('Resposta da API: ${response.body}');
+        debugPrint('------------------------');
+        return AuthResult.falha('Dados de pareamento inválidos ou expirados.');
       }
 
       if (response.statusCode == 401 || response.statusCode == 403) {
@@ -106,27 +125,23 @@ class AuthService {
       final msg = e.toString();
       if (msg.contains('TimeoutException') || msg.contains('SocketException')) {
         return AuthResult.falha(
-          'Sem conexão com a internet. Verifique sua rede e tente novamente.',
+          'Sem conexão com a API. Verifique a rede e o adb reverse.',
         );
       }
       return AuthResult.falha('Erro inesperado. Tente novamente.');
     }
   }
 
-  // ── Helpers privados ────────────────────────────────────────────────────────
+  // ── HELPERS PRIVADOS ────────────────────────────────────────────────────────
 
-  /// Extrai o JWT string do corpo da resposta, suportando dois formatos:
-  /// - String pura: `eyJhbGciOiJ...`
-  /// - Envelope JSON: `{ "token": "eyJ...", ... }` ou `{ "data": "eyJ..." }`
+  /// Extrai o JWT string do corpo da resposta (String pura ou Envelope JSON).
   static String? _extrairJwt(String responseBody) {
     final body = responseBody.trim();
 
-    // Formato 1: JWT direto como string
     if (body.startsWith('eyJ')) {
       return body;
     }
 
-    // Formato 2: JSON envelope
     try {
       final json = jsonDecode(body);
       if (json is Map) {

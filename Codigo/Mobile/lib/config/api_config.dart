@@ -10,15 +10,17 @@ class ApiConfig {
   static const Duration timeout = Duration(seconds: 10);
 
   static Future<void> inicializarConfiguracoes() async {
+    // Porta HTTP da sua API .NET (C:\dev\medica\Codigo\API)
+    const String apiPorta = "5066";
     
     if (kIsWeb) {
-      baseUrl = "http://localhost:5153";
+      baseUrl = "http://localhost:$apiPorta";
       return;
     }
 
     if (Platform.isWindows) {
-       baseUrl = "http://localhost:5153";
-       webBaseUrl = "https://batala.itatechjr.com.br";
+      baseUrl = "http://localhost:$apiPorta";
+      webBaseUrl = "https://batala.itatechjr.com.br";
       return;
     }
 
@@ -27,19 +29,20 @@ class ApiConfig {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 
       if (androidInfo.isPhysicalDevice) {
-        // Se for um aparelho físico (Celular na mão via Wi-Fi ou Cabo)
-        baseUrl = "http://192.168.0.109:5153";
+        // Se estiver depurando via CABO USB com 'adb reverse tcp:5066 tcp:5066', use localhost.
+        // Se estiver depurando via Wi-Fi sem ADB, use o IP da sua máquina: "http://192.168.0.109:$apiPorta"
+        baseUrl = "http://localhost:$apiPorta";
         webBaseUrl = "http://192.168.0.109:5051";
       } else {
         // Se for o Emulador do Android Studio
-        baseUrl = "http://10.0.2.2:5153";
+        baseUrl = "http://10.0.2.2:$apiPorta";
         webBaseUrl = "http://10.0.2.2:5051";
       }
       return;
     }
     
     // Fallback padrão de segurança
-    baseUrl = "http://localhost:5153";
-    webBaseUrl = "https://localhost:7242";
+    baseUrl = "http://localhost:$apiPorta";
+    webBaseUrl = "https://localhost:7112";
   }
 }
