@@ -23,8 +23,8 @@ namespace Service
 
         public async Task<string> GerarTokenPareamento(uint idPaciente)
         {
-            var paciente = await context.Pacientes.FindAsync(idPaciente)
-                ?? throw new ServiceException("Paciente não encontrado no sistema.");
+            _ = await context.Pacientes.FindAsync(idPaciente)
+               ?? throw new ServiceException("Paciente não encontrado no sistema.");
 
             var secretKey = ObterChaveSecreta();
             var key = Encoding.ASCII.GetBytes(secretKey);
@@ -40,7 +40,7 @@ namespace Service
                     new Claim("IdPaciente", idPaciente.ToString()),
                     new Claim("Tipo", "PAREAMENTO")
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(15), // Aumentado para 15min para dar margem no escaneamento
+                Expires = DateTime.UtcNow.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = emissor,
                 Audience = audiencia
@@ -60,53 +60,35 @@ namespace Service
             var secretKey = ObterChaveSecreta();
             var key = Encoding.ASCII.GetBytes(secretKey);
             var tokenHandler = new JwtSecurityTokenHandler();
-
             ClaimsPrincipal principal;
-            try
+            principal = tokenHandler.ValidateToken(tokenPareamento, new TokenValidationParameters
             {
-                // Validação tolerante a pequenos desvios de relógio
-                principal = tokenHandler.ValidateToken(tokenPareamento, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.FromMinutes(2) // Permite até 2 min de diferença no relógio do celular
-                }, out _);
-            }
-            catch (SecurityTokenExpiredException)
-            {
-                throw new ArgumentException("O QR Code expirou. Gere um novo QR Code na tela da aplicação web e tente novamente.");
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Token de pareamento inválido ou corrompido: {ex.Message}");
-            }
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.FromMinutes(2)
+            }, out _);
 
-            // 1. Valida se é um token do tipo PAREAMENTO
+
             var tipo = principal.FindFirst("Tipo")?.Value;
             if (!string.Equals(tipo, "PAREAMENTO", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("O token fornecido não é um token de pareamento válido.");
+                throw new ServiceException("O token fornecido não é um token de pareamento válido.");
             }
 
-            // 2. Extrai o ID do paciente do JWT
             var idPacienteStr = principal.FindFirst("IdPaciente")?.Value;
             if (!uint.TryParse(idPacienteStr, out var idPaciente))
             {
-                throw new ArgumentException("Token de pareamento sem identificador de paciente válido.");
+                throw new ServiceException("Token de pareamento sem identificador de paciente válido.");
             }
 
-            // 3. Verifica se o paciente (ID = 5) existe na base MySQL
             var paciente = await context.Pacientes.FindAsync(idPaciente)
                 ?? throw new ServiceException("Paciente não encontrado no sistema.");
 
-            // 4. Trata o registro do FCM Token no banco (mesmo que venha vazio em testes locais)
-            fcmToken ??= string.Empty;
 
             var dispositivoExistente = await context.Dispositivopacientes
-                .FirstOrDefaultAsync(d => d.FcmToken == fcmToken && d.FcmToken != "");
-
+                .FirstOrDefaultAsync(d => d.FcmToken == fcmToken);
             if (dispositivoExistente != null)
             {
                 dispositivoExistente.IdPaciente = idPaciente;
@@ -126,16 +108,14 @@ namespace Service
 
             await context.SaveChangesAsync();
 
-            // 5. Gera o Token JWT de Sessão estendida para o aplicativo mobile
             var claims = new List<Claim>
             {
-                new Claim("IdPaciente", paciente.Id.ToString()),
-                new Claim(ClaimTypes.Name, paciente.Nome),
-                new Claim(ClaimTypes.Role, "Paciente")
+                new("IdPaciente", paciente.Id.ToString()),
+                new(ClaimTypes.Name, paciente.Nome),
+                new(ClaimTypes.Role, "Paciente")
             };
 
             var expiracaoDias = int.TryParse(configuration["Jwt:ExpiracaoDias"], out var dias) ? dias : 365;
-
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -147,7 +127,6 @@ namespace Service
 
             var jwtToken = tokenHandler.CreateToken(tokenDescriptor);
             var jwtString = tokenHandler.WriteToken(jwtToken);
-
             return new AuthResponseDto
             {
                 TokenJwt = jwtString
