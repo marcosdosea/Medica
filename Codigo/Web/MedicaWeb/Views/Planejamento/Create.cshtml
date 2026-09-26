@@ -93,8 +93,8 @@
         <div class="row g-3 mb-3">
             <div class="col-12 col-md-3 form-group-custom">
                 <label class="label-custom">Medicamento</label>
-                <select class="form-input-custom" id="inputMedicamento">
-                    <option value="">Selecione um medicamento</option>
+                <select class="form-input-custom" id="inputMedicamento" @(Model?.IdPaciente > 0 ? "" : "disabled")>
+                    <option value="">@(Model?.IdPaciente > 0 ? "Medicamento" : "Selecione um paciente")</option>
                 </select>
             </div>
 
@@ -218,6 +218,7 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
     <script src="~/js/form/formPlanejamento.js" asp-append-version="true"></script>
 
     <script>

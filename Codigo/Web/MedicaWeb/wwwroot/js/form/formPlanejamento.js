@@ -18,10 +18,18 @@ const FormPlanejamento = {
     init: function (planejamentosJson, estoqueJson, todosEstoqueJson) {
         todosPlanejamentos = planejamentosJson || [];
         estoqueMedicamentos = estoqueJson || [];
-        todosMedicamentosEstoque = todosEstoqueJson || [];
-
+        const temPacienteInicial = Boolean($('#IdPaciente').val() && $('#IdPaciente').val() !== "0");
+        $('#inputMedicamento').prop('disabled', !temPacienteInicial);
         $('#inputMedicamento').select2({
-            placeholder: "Selecione um medicamento",
+            placeholder: temPacienteInicial ? "Medicamento" : "Selecione um paciente",
+            language: {
+                noResults: function () {
+                    return "Nenhum resultado encontrado";
+                },
+                searching: function () {
+                    return "Buscando...";
+                }
+            },
             allowClear: true,
             width: '100%'
         });
@@ -205,24 +213,30 @@ const FormPlanejamento = {
         const selectMed = $('#inputMedicamento');
         const valorAtual = selectMed.val();
         selectMed.empty();
-        selectMed.append('<option value="">Selecione um medicamento</option>');
 
-        let meds = [];
-        if (idPaciente && idPaciente !== "0") {
-            meds = estoqueMedicamentos.filter(m => (m.idPaciente ?? m.IdPaciente) == idPaciente);
-        } else if (todosMedicamentosEstoque && todosMedicamentosEstoque.length > 0) {
-            meds = todosMedicamentosEstoque;
-        } else {
-            const vistos = new Set();
-            meds = estoqueMedicamentos.filter(m => {
-                const idMed = m.idMedicamento ?? m.IdMedicamento;
-                if (!vistos.has(idMed)) {
-                    vistos.add(idMed);
-                    return true;
-                }
-                return false;
+        if (!idPaciente || idPaciente === "0") {
+            selectMed.append('<option value="">Selecione um paciente</option>');
+            selectMed.prop('disabled', true);
+            selectMed.select2({
+                placeholder: "Selecione um paciente",
+                language: {
+                    noResults: function () {
+                        return "Selecione um paciente";
+                    },
+                    searching: function () {
+                        return "Buscando...";
+                    }
+                },
+                allowClear: false,
+                width: '100%'
             });
+            selectMed.val('').trigger('change');
+            return;
         }
+
+        selectMed.append('<option value="">Medicamento</option>');
+
+        const meds = estoqueMedicamentos.filter(m => (m.idPaciente ?? m.IdPaciente) == idPaciente);
 
         meds.forEach(m => {
             const idMed = m.idMedicamento ?? m.IdMedicamento;
@@ -232,7 +246,15 @@ const FormPlanejamento = {
 
         selectMed.prop('disabled', false);
         selectMed.select2({
-            placeholder: "Selecione um medicamento",
+            placeholder: "Medicamento",
+            language: {
+                noResults: function () {
+                    return "Nenhum resultado encontrado";
+                },
+                searching: function () {
+                    return "Buscando...";
+                }
+            },
             allowClear: true,
             width: '100%'
         });

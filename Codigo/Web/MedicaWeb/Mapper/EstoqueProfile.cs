@@ -34,22 +34,27 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "REGULAR"));
 
             CreateMap<IEnumerable<Estoque>, IEnumerable<MedicamentoEstoqueDto>>()
-                .ConvertUsing((src, _, ctx) => src
-                    .Where(e => e.Quantidade > 0)
-                    .SelectMany(e => e.IdPacientes.Select(p => new MedicamentoEstoqueDto
-                    {
-                        IdPaciente = p.Id,
-                        IdMedicamento = e.IdMedicamento,
-                        NomeMedicamento = e.IdMedicamentoNavigation != null ? e.IdMedicamentoNavigation.Nome : string.Empty,
-                        FormaFarmaceutica = e.IdMedicamentoNavigation != null ? e.IdMedicamentoNavigation.FormaFarmaceutica : string.Empty
-                    }))
-                    .GroupBy(x => new { x.IdPaciente, x.IdMedicamento, x.NomeMedicamento, x.FormaFarmaceutica })
-                    .Select(g => g.First())
-                    .OrderBy(x => x.NomeMedicamento)
-                    .ToList());
+                .ConvertUsing((src, _, _) => MapEstoquesParaMedicamentos(src));
 
             CreateMap<List<Estoque>, IEnumerable<MedicamentoEstoqueDto>>()
-                .ConvertUsing((src, _, ctx) => ctx.Mapper.Map<IEnumerable<MedicamentoEstoqueDto>>((IEnumerable<Estoque>)src));
+                .ConvertUsing((src, _, _) => MapEstoquesParaMedicamentos(src));
+        }
+
+        private static List<MedicamentoEstoqueDto> MapEstoquesParaMedicamentos(IEnumerable<Estoque> src)
+        {
+            return src
+                .Where(e => e.Quantidade > 0)
+                .SelectMany(e => e.IdPacientes.Select(p => new MedicamentoEstoqueDto
+                {
+                    IdPaciente = p.Id,
+                    IdMedicamento = e.IdMedicamento,
+                    NomeMedicamento = e.IdMedicamentoNavigation != null ? e.IdMedicamentoNavigation.Nome : string.Empty,
+                    FormaFarmaceutica = e.IdMedicamentoNavigation != null ? e.IdMedicamentoNavigation.FormaFarmaceutica : string.Empty
+                }))
+                .GroupBy(x => new { x.IdPaciente, x.IdMedicamento, x.NomeMedicamento, x.FormaFarmaceutica })
+                .Select(g => g.First())
+                .OrderBy(x => x.NomeMedicamento)
+                .ToList();
         }
     }
 }
