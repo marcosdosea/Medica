@@ -1,19 +1,42 @@
+using Core;
 using Core.Service;
+using Microsoft.EntityFrameworkCore;
 
 namespace Service
 {
     public class DispositivoService : IDispositivoService
     {
-        private readonly IAuthService authService;
+        private readonly MedicaContext context;
 
-        public DispositivoService(IAuthService authService)
+        public DispositivoService(MedicaContext context)
         {
-            this.authService = authService;
+            this.context = context;
         }
 
-        public async Task<string?> ObterToken(uint idPaciente)
+        public async Task<IEnumerable<Dispositivopaciente>> GetAll(uint idCuidador)
         {
-            return await authService.GerarTokenPareamento(idPaciente);
+            var pacientes = await context.Pacientes
+                .AsNoTracking()
+                .Where(p => p.Vinculos.Any(v => v.IdCuidador == idCuidador))
+                .Include(p => p.Dispositivopacientes)
+                .OrderBy(p => p.Nome)
+                .ToListAsync();
+
+            var lista = new List<Dispositivopaciente>();
+            foreach (var paciente in pacientes)
+            {
+                var dispositivo = paciente.Dispositivopacientes.FirstOrDefault()
+                    ?? new Dispositivopaciente
+                    {
+                        IdPaciente = paciente.Id,
+                        IdPacienteNavigation = paciente
+                    };
+
+                dispositivo.IdPacienteNavigation = paciente;
+                lista.Add(dispositivo);
+            }
+
+            return lista;
         }
     }
 }

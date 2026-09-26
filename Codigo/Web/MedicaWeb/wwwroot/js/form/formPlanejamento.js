@@ -1,6 +1,8 @@
 let dtPlanejamentos = null;
 let todosPlanejamentos = [];
 let listaPlanejamentos = [];
+let estoqueMedicamentos = [];
+let todosMedicamentosEstoque = [];
 
 const mapaPosicionalDias = [
     { sigla: 'DOM', letra: 'D' },
@@ -13,14 +15,18 @@ const mapaPosicionalDias = [
 ];
 
 const FormPlanejamento = {
-    init: function (planejamentosJson) {
+    init: function (planejamentosJson, estoqueJson, todosEstoqueJson) {
         todosPlanejamentos = planejamentosJson || [];
+        estoqueMedicamentos = estoqueJson || [];
+        todosMedicamentosEstoque = todosEstoqueJson || [];
 
         $('#inputMedicamento').select2({
-            placeholder: "Medicamento",
+            placeholder: "Selecione um medicamento",
             allowClear: true,
             width: '100%'
-        }).on('change select2:select select2:clear', function () {
+        });
+
+        $(document).off('change select2:select select2:clear', '#inputMedicamento').on('change select2:select select2:clear', '#inputMedicamento', function () {
             FormPlanejamento.validarCamposAdicionar();
         });
 
@@ -68,7 +74,7 @@ const FormPlanejamento = {
             FormPlanejamento._filtroRegistrado = true;
         }
 
-        $('#inputDataInicio, #inputDataFim, #inputHora, #inputIntervalo, #inputDosagem, #inputUnidade').on('input change', function () {
+        $('#inputDataInicio, #inputDataFim, #inputHora, #inputIntervalo, #inputDosagem').on('input change', function () {
             FormPlanejamento.validarCamposAdicionar();
         });
 
@@ -126,7 +132,6 @@ const FormPlanejamento = {
                         <input type="hidden" name="Itens[${index}].Hora" value="${horaFmt}" />
                         <input type="hidden" name="Itens[${index}].IntervaloExecucao" value="${intervaloFmt}" />
                         <input type="hidden" name="Itens[${index}].Dosagem" value="${item.dosagem}" />
-                        <input type="hidden" name="Itens[${index}].Unidade" value="${item.unidade}" />
                         <input type="hidden" name="Itens[${index}].DiaSemana" value="${item.diaSemana}" />
                     `;
                 });
@@ -137,10 +142,13 @@ const FormPlanejamento = {
         if (idInicial && idInicial !== "0") {
             const box = document.getElementById(`box-paciente-${idInicial}`);
             const nome = box ? box.querySelector('.paciente-nome').innerText : '';
+            FormPlanejamento.carregarMedicamentosEstoque(idInicial);
             FormPlanejamento.carregarPlanejamentosMemoria(idInicial);
             if (nome) {
                 $('#tituloSecaoTabela').text(`Planejamentos atuais de ${nome}`);
             }
+        } else {
+            FormPlanejamento.carregarMedicamentosEstoque(null);
         }
 
         FormPlanejamento.validarCamposAdicionar();
@@ -171,6 +179,7 @@ const FormPlanejamento = {
             if (dtPlanejamentos) {
                 dtPlanejamentos.clear().draw();
             }
+            FormPlanejamento.carregarMedicamentosEstoque(null);
             FormPlanejamento.validarCamposAdicionar();
             return;
         }
@@ -187,8 +196,52 @@ const FormPlanejamento = {
         btn.innerText = 'Desmarcar';
         document.getElementById('tituloSecaoTabela').innerText = `Planejamentos atuais de ${nome}`;
 
+        FormPlanejamento.carregarMedicamentosEstoque(id);
         FormPlanejamento.carregarPlanejamentosMemoria(id);
         FormPlanejamento.validarCamposAdicionar();
+    },
+
+    carregarMedicamentosEstoque: function (idPaciente) {
+        const selectMed = $('#inputMedicamento');
+        const valorAtual = selectMed.val();
+        selectMed.empty();
+        selectMed.append('<option value="">Selecione um medicamento</option>');
+
+        let meds = [];
+        if (idPaciente && idPaciente !== "0") {
+            meds = estoqueMedicamentos.filter(m => (m.idPaciente ?? m.IdPaciente) == idPaciente);
+        } else if (todosMedicamentosEstoque && todosMedicamentosEstoque.length > 0) {
+            meds = todosMedicamentosEstoque;
+        } else {
+            const vistos = new Set();
+            meds = estoqueMedicamentos.filter(m => {
+                const idMed = m.idMedicamento ?? m.IdMedicamento;
+                if (!vistos.has(idMed)) {
+                    vistos.add(idMed);
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        meds.forEach(m => {
+            const idMed = m.idMedicamento ?? m.IdMedicamento;
+            const nomeMed = m.nomeMedicamento ?? m.NomeMedicamento;
+            selectMed.append(new Option(nomeMed, idMed));
+        });
+
+        selectMed.prop('disabled', false);
+        selectMed.select2({
+            placeholder: "Selecione um medicamento",
+            allowClear: true,
+            width: '100%'
+        });
+
+        if (valorAtual && selectMed.find(`option[value='${valorAtual}']`).length > 0) {
+            selectMed.val(valorAtual).trigger('change');
+        } else {
+            selectMed.val('').trigger('change');
+        }
     },
 
     carregarPlanejamentosMemoria: function (idPaciente) {
@@ -257,8 +310,6 @@ const FormPlanejamento = {
         const temIntervalo = Boolean(intervalo && intervalo.trim() !== "");
         const dosagem = $('#inputDosagem').val();
         const temDosagem = Boolean(dosagem && parseInt(dosagem, 10) >= 1);
-        const unidade = $('#inputUnidade').val();
-        const temUnidade = Boolean(unidade && unidade.trim() !== "");
         const temDias = $('.chk-dia:checked').length > 0;
 
         const todosPreenchidos = Boolean(
@@ -269,7 +320,6 @@ const FormPlanejamento = {
             temHora &&
             temIntervalo &&
             temDosagem &&
-            temUnidade &&
             temDias
         );
 
@@ -325,8 +375,6 @@ const FormPlanejamento = {
         const hora = $('#inputHora').val();
         const intervalo = $('#inputIntervalo').val() || '08:00';
         const dosagem = $('#inputDosagem').val();
-        const unidade = $('#inputUnidade').val();
-        const unidadeTexto = $('#inputUnidade option:selected').text();
         const dias = FormPlanejamento.obterMascaraDias();
 
         if (FormPlanejamento.estaEditando()) {
@@ -344,7 +392,6 @@ const FormPlanejamento = {
             $('#editFormHora').val(hora && hora.length === 5 ? `${hora}:00` : hora);
             $('#editFormIntervalo').val(intervalo && intervalo.length === 5 ? `${intervalo}:00` : intervalo);
             $('#editFormDosagem').val(dosagem);
-            $('#editFormUnidade').val(unidade);
             $('#editFormDiaSemana').val(dias);
 
             FormPlanejamento.cancelarEdicao();
@@ -362,7 +409,6 @@ const FormPlanejamento = {
             hora: hora,
             intervalo: intervalo,
             dosagem: dosagem,
-            unidade: unidade,
             diaSemana: dias
         });
 
@@ -384,7 +430,7 @@ const FormPlanejamento = {
             hora,
             intervalo || '08:00',
             FormPlanejamento.formatarDias(dias),
-            `${dosagem} ${unidadeTexto}`,
+            dosagem,
             acoesPreviewHtml
         ]).draw().node();
 
@@ -443,7 +489,6 @@ const FormPlanejamento = {
         const pIntervalo = (item.intervaloFormatado ?? item.IntervaloFormatado ?? '').trim();
         
         let pDosagemValor = item.dosagemValor ?? item.DosagemValor;
-        let pUnidadeDosagem = (item.unidadeDosagem ?? item.UnidadeDosagem ?? '').trim();
         const dosagemTexto = (item.dosagem ?? item.Dosagem ?? '').trim();
 
         if (!pDosagemValor || pDosagemValor === 0) {
@@ -453,23 +498,18 @@ const FormPlanejamento = {
             }
         }
 
-        if (!pUnidadeDosagem && dosagemTexto) {
-            const matchUnid = dosagemTexto.match(/([a-zA-Z]+)/);
-            if (matchUnid) {
-                pUnidadeDosagem = matchUnid[1];
-            }
-        }
-        if (!pUnidadeDosagem) {
-            pUnidadeDosagem = 'ML';
-        }
-
         const pDiaSemana = (item.diaSemana ?? item.DiaSemana ?? '').trim();
         $('#idPlanejamentoEdit').val(pId);
 
         if (pIdMedicamento) {
-            $('#inputMedicamento').val(String(pIdMedicamento)).trigger('change');
-        }
-        if (!$('#inputMedicamento').val() && (item.medicamentoNome || item.MedicamentoNome)) {
+            if ($(`#inputMedicamento option[value='${pIdMedicamento}']`).length === 0 && (item.medicamentoNome || item.MedicamentoNome)) {
+                const medNome = item.medicamentoNome || item.MedicamentoNome;
+                const novaOpcao = new Option(medNome, pIdMedicamento, true, true);
+                $('#inputMedicamento').append(novaOpcao).trigger('change');
+            } else {
+                $('#inputMedicamento').val(String(pIdMedicamento)).trigger('change');
+            }
+        } else if (item.medicamentoNome || item.MedicamentoNome) {
             const nomeMed = (item.medicamentoNome || item.MedicamentoNome).trim().toLowerCase();
             $("#inputMedicamento option").each(function () {
                 if ($(this).text().trim().toLowerCase() === nomeMed) {
@@ -518,24 +558,6 @@ const FormPlanejamento = {
             $('#inputDosagem').val(pDosagemValor);
         }
 
-        const unidUpper = pUnidadeDosagem.toUpperCase().trim();
-        let encontrou = false;
-        $('#inputUnidade option').each(function () {
-            const optVal = $(this).val().toUpperCase();
-            const optTxt = $(this).text().toUpperCase();
-            if (optVal && (optVal === unidUpper || optTxt.includes(unidUpper) || unidUpper.includes(optVal))) {
-                $('#inputUnidade').val($(this).val()).trigger('change');
-                encontrou = true;
-                return false;
-            }
-        });
-        if (!encontrou) {
-            const primeiraOpcao = $('#inputUnidade option:not([value=""])').first().val();
-            if (primeiraOpcao) {
-                $('#inputUnidade').val(primeiraOpcao).trigger('change');
-            }
-        }
-
         $('.chk-dia').prop('checked', false);
         if (pDiaSemana && pDiaSemana.length === 7) {
             mapaPosicionalDias.forEach((d, i) => {
@@ -575,7 +597,6 @@ const FormPlanejamento = {
         $('#inputHora').val('');
         $('#inputIntervalo').val('');
         $('#inputDosagem').val('');
-        $('#inputUnidade').val('').trigger('change');
         $('.chk-dia').prop('checked', false);
     },
 

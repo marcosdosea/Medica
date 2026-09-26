@@ -56,12 +56,24 @@
     font-weight: 600;
     font-size: 20px;
     transition: 0.3s;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
     .btn-novo:hover {
         filter: brightness(1.1);
         box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+.btn-estoque {
+    background-color: #7A7C81;
+}
+
+    .btn-estoque:hover {
+        background-color: #67696e;
+        box-shadow: 0 4px 12px rgba(122, 124, 129, 0.3);
     }
 
 .dataTables_wrapper .bottom {

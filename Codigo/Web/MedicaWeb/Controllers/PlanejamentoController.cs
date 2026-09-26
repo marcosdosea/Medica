@@ -1,5 +1,6 @@
 using AutoMapper;
 using Core;
+using Core.Dto.Estoque;
 using Core.Dto.Paciente;
 using Core.Dto.Planejamento;
 using Core.Helper;
@@ -18,15 +19,18 @@ namespace MedicaWeb.Controllers
     {
         private readonly IPlanejamentoService planejamentoService;
         private readonly IPacienteService pacienteService;
-        private readonly IMedicamentoService medicamentoService;
+        private readonly IEstoqueService estoqueService;
         private readonly IMapper mapper;
 
         public PlanejamentoController(
-            IPlanejamentoService planejamentoService, IPacienteService pacienteService, IMedicamentoService medicamentoService, IMapper mapper)
+            IPlanejamentoService planejamentoService,
+            IPacienteService pacienteService,
+            IEstoqueService estoqueService,
+            IMapper mapper)
         {
             this.planejamentoService = planejamentoService;
             this.pacienteService = pacienteService;
-            this.medicamentoService = medicamentoService;
+            this.estoqueService = estoqueService;
             this.mapper = mapper;
         }
 
@@ -34,11 +38,11 @@ namespace MedicaWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(uint? idPaciente = null)
         {
-            uint idCuidador = User.GetId();
+            var idCuidador = User.GetId();
             var pacientesEntidades = await pacienteService.GetAll(idCuidador);
             ViewBag.Pacientes = mapper.Map<IEnumerable<PacienteDto>>(pacientesEntidades);
-            var medicamentos = await medicamentoService.GetAll(idCuidador);
-            ViewBag.Medicamentos = new SelectList(medicamentos, "Id", "Nome");
+            var estoques = await estoqueService.GetAllByCuidador(idCuidador);
+            ViewBag.MedicamentosEstoque = mapper.Map<IEnumerable<MedicamentoEstoqueDto>>(estoques);
             var planejamentos = await planejamentoService.GetAll(idCuidador);
             var planejamentosAtivos = planejamentos.Where(p => p.Ativo == "S");
             ViewBag.PlanejamentosExistentes = mapper.Map<IEnumerable<PlanejamentoItemDto>>(planejamentosAtivos);

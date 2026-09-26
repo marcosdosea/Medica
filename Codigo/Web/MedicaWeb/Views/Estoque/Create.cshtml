@@ -1,0 +1,204 @@
+@model MedicaWeb.Models.GerenciarEstoqueViewModel
+@using System.Text.Json
+@using Core.Dto.Paciente
+@using Core.Dto.Estoque
+@using Core
+
+@{
+    ViewData["Title"] = "Gerenciar Estoque";
+    var pacientes = (ViewBag.Pacientes as IEnumerable<PacienteDto> ?? Enumerable.Empty<PacienteDto>()).Where(p => p.Ativo == "S");
+    var medicamentos = (ViewBag.Medicamentos as IEnumerable<Medicamento> ?? Enumerable.Empty<Medicamento>()).Where(m => m.Ativo == "S");
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/form/formPaciente.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/form/formPlanejamento.css" asp-append-version="true" />
+}
+
+<div class="header-inline mb-4 d-flex align-items-center gap-3">
+    <a asp-controller="Medicamento" asp-action="Index" class="btn-voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h2 style="margin: 0; font-weight: bold; font-size: 26px;">Gerenciar Estoque</h2>
+</div>
+
+<form asp-controller="Estoque" asp-action="Create" method="post" id="formEstoque">
+    @Html.AntiForgeryToken()
+    <div id="hiddenPacientesContainer"></div>
+    <input type="hidden" asp-for="Id" id="idEstoqueEdit" value="@(Model?.Id ?? 0)" />
+    <input type="hidden" asp-for="IdMedicamento" id="IdMedicamento" value="@(Model?.IdMedicamento ?? 0)" />
+
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-person-fill" style="color: var(--text-muted); font-size: 20px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;">Pacientes</span>
+    </div>
+    @if (pacientes.Any())
+    {
+        <div class="cards-grid mb-3">
+            @foreach (var paciente in pacientes)
+            {
+                var isSelected = Model?.IdsPacientes != null && Model.IdsPacientes.Contains(paciente.Id);
+                var nomeExibicao = paciente.NomePrimeiroUltimo;
+
+                <div class="paciente-card-wrapper">
+                    <div class="paciente-card @(isSelected ? "active" : "")"
+                         id="box-paciente-@paciente.Id"
+                         onclick="FormEstoque.alternarPaciente('@paciente.Id', '@nomeExibicao')">
+                        <div class="foto-wrapper">
+                            @if (paciente.Foto != null && paciente.Foto.Length > 0)
+                            {
+                                var base64 = Convert.ToBase64String(paciente.Foto);
+                                <img src="data:image/png;base64,@base64" alt="@nomeExibicao" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-person" style="font-size: 48px; color: var(--text-muted);"></i>
+                            }
+                        </div>
+                        <div class="paciente-info">
+                            <h3 class="paciente-nome" title="@paciente.Nome">@nomeExibicao</h3>
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            class="btn-card-toggle @(isSelected ? "selected" : "")"
+                            id="btn-paciente-@paciente.Id"
+                            onclick="FormEstoque.alternarPaciente('@paciente.Id', '@nomeExibicao')">
+                        @(isSelected ? "Desmarcar" : "Selecionar")
+                    </button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="sem-pacientes-box mb-4">
+            <i class="bi bi-people" style="font-size: 42px; color: var(--text-muted);"></i>
+            <p>Nenhum paciente cadastrado.</p>
+        </div>
+    }
+    <span asp-validation-for="IdsPacientes" class="text-danger d-block mb-4" style="font-size: 13px;"></span>
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-capsule" style="color: var(--text-muted); font-size: 18px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;">Medicamentos</span>
+    </div>
+    @if (medicamentos.Any())
+    {
+        <div class="cards-grid mb-3">
+            @foreach (var med in medicamentos)
+            {
+                var isSelected = Model?.IdMedicamento == med.Id;
+                var nomeExibicao = med.Nome;
+
+                <div class="paciente-card-wrapper">
+                    <div class="paciente-card @(isSelected ? "active" : "")"
+                         id="box-medicamento-@med.Id"
+                         onclick="FormEstoque.alternarMedicamento('@med.Id', '@nomeExibicao')">
+                        <div class="foto-wrapper">
+                            @if (med.Foto != null && med.Foto.Length > 0)
+                            {
+                                var base64 = Convert.ToBase64String(med.Foto);
+                                <img src="data:image/png;base64,@base64" alt="@nomeExibicao" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-capsule" style="font-size: 48px; color: var(--text-muted);"></i>
+                            }
+                        </div>
+                        <div class="paciente-info">
+                            <h3 class="paciente-nome" title="@med.Nome">@nomeExibicao</h3>
+                            @if (!string.IsNullOrWhiteSpace(med.FormaFarmaceutica))
+                            {
+                                <span class="text-muted d-block mt-1" style="font-size: 13px; font-weight: 500;">@med.FormaFarmaceutica</span>
+                            }
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            class="btn-card-toggle @(isSelected ? "selected" : "")"
+                            id="btn-medicamento-@med.Id"
+                            onclick="FormEstoque.alternarMedicamento('@med.Id', '@nomeExibicao')">
+                        @(isSelected ? "Desmarcar" : "Selecionar")
+                    </button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="sem-pacientes-box mb-4">
+            <i class="bi bi-capsule" style="font-size: 42px; color: var(--text-muted);"></i>
+            <p>Nenhum medicamento cadastrado.</p>
+        </div>
+    }
+    <span asp-validation-for="IdMedicamento" class="text-danger d-block mb-4" style="font-size: 13px;"></span>
+
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-box-seam" style="color: var(--text-muted); font-size: 18px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;" id="tituloSecaoForm">Novo estoque</span>
+    </div>
+    <div class="form-section mb-4">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-6 col-md-2 form-group-custom">
+                <label class="label-custom" asp-for="Quantidade">Quantidade</label>
+                <input asp-for="Quantidade" type="number" min="1" class="form-input-custom" id="inputQuantidade" />
+                <span asp-validation-for="Quantidade" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-2 form-group-custom">
+                <label class="label-custom" asp-for="QuantidadeMinima">Quantidade mínima</label>
+                <input asp-for="QuantidadeMinima" type="number" min="0" class="form-input-custom" id="inputQuantidadeMinima" />
+                <span asp-validation-for="QuantidadeMinima" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-3 form-group-custom">
+                <label class="label-custom" asp-for="DataValidade">Data de validade</label>
+                <input asp-for="DataValidade" type="date" class="form-input-custom" id="inputDataValidade" value="@(Model?.DataValidade?.ToString("yyyy-MM-dd") ?? "")" />
+                <span asp-validation-for="DataValidade" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="actions-container d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+            <button type="button" id="btnCancelarEdicao" class="btn btn-outline-secondary" style="display: none; padding: 9px 24px; border-radius: 6px; font-weight: 600;" onclick="FormEstoque.cancelarEdicao()">Cancelar</button>
+            <button type="submit" id="btnSalvarEstoque" class="btn-med btn-med-primary btn-salvar" disabled>Salvar</button>
+        </div>
+    </div>
+    <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-boxes" style="color: var(--text-muted); font-size: 18px;"></i>
+        <span style="font-weight: 700; color: #495057; font-size: 18px;" id="tituloSecaoTabela">Estoques</span>
+    </div>
+    <div class="calendario-container mt-3 table-responsive" style="padding: 0; margin-bottom: 25px;">
+        <table id="tabelaEstoques" class="custom-table" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Medicamento</th>
+                    <th>Paciente</th>
+                    <th>Forma Farmacêutica</th>
+                    <th>Quantidade</th>
+                    <th>Qtd. Mínima</th>
+                    <th>Validade</th>
+                    <th>Status</th>
+                    <th style="text-align: center; width: 90px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<form id="formExcluirEstoque" method="post" style="display: none;">
+    @Html.AntiForgeryToken()
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/form/form.js" asp-append-version="true"></script>
+    <script src="~/js/form/formEstoque.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            const dadosEstoques = @Html.Raw(JsonSerializer.Serialize(ViewBag.EstoquesExistentes as IEnumerable<EstoqueItemDto> ?? Enumerable.Empty<EstoqueItemDto>(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            const initialPacientes = @Html.Raw(JsonSerializer.Serialize(Model?.IdsPacientes ?? new List<uint>()));
+            const initialMedicamento = @Html.Raw(JsonSerializer.Serialize(Model?.IdMedicamento ?? 0));
+            FormEstoque.init(dadosEstoques, initialPacientes, initialMedicamento);
+        });
+    </script>
+}

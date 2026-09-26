@@ -34,21 +34,12 @@
                     </div>
                     <div class="col-md-6 form-group-custom">
                         <label class="label-custom">Forma farmacêutica</label>
-                        <select asp-for="FormaFarmaceutica" class="form-input-custom select-custom">
-                            <option value="Creme">Creme</option>
-                            <option value="Inalante">Inalante</option>
-                            <option value="Ingerir">Ingerir</option>
-                            <option value="Injetável">Injetável</option>
-                            <option value="Líquido">Líquido</option>
-                            <option value="Supositório">Supositório</option>
+                        <select asp-for="FormaFarmaceutica"
+                                asp-items="Html.GetEnumSelectList<Core.Enum.Medicamento.FormaFarmaceutica>()"
+                                class="form-input-custom select-custom">
                         </select>
                         <span asp-validation-for="FormaFarmaceutica" class="text-danger" style="display: block; min-height: 20px; margin-top: 5px; font-size: 13px;"></span>
                     </div>
-                </div>
-                <div class="col-md-3 form-group-custom">
-                    <label class="label-custom">Quantidade</label>
-                    <input asp-for="Quantidade" type="number" min="1" class="form-input-custom" placeholder="0" />
-                    <span asp-validation-for="Quantidade" class="text-danger" style="display: block; min-height: 20px; margin-top: 5px; font-size: 13px;"></span>
                 </div>
             </div>
             <div class="col-lg-5">

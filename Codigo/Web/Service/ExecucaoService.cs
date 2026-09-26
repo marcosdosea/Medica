@@ -77,10 +77,29 @@ namespace Service
                         : nameof(Status.ATRASO);
                 execucao.DataConfirmacao = momentoPrevisto.Date;
 
-                if (execucao.Status != nameof(Status.FALHA) && planejamento.IdMedicamentoNavigation is { } med)
+                if (execucao.Status != nameof(Status.FALHA))
                 {
-                    med.Quantidade = Math.Max(0, med.Quantidade - planejamento.Dosagem);
-                    context.Medicamentos.Update(med);
+                    var estoque = await context.Estoques
+                        .FirstOrDefaultAsync(e => e.IdMedicamento == planejamento.IdMedicamento 
+                                               && e.IdPacientes.Any(p => p.Id == planejamento.IdPaciente));
+
+                    if (estoque != null)
+                    {
+                        estoque.Quantidade = Math.Max(0, estoque.Quantidade - planejamento.Dosagem);
+                        if (estoque.Quantidade == 0)
+                        {
+                            estoque.Status = "INSUFICIENTE";
+                        }
+                        else if (estoque.Quantidade <= estoque.QuantidadeMinima)
+                        {
+                            estoque.Status = "BAIXO";
+                        }
+                        else
+                        {
+                            estoque.Status = "REGULAR";
+                        }
+                        context.Estoques.Update(estoque);
+                    }
                 }
             }
 

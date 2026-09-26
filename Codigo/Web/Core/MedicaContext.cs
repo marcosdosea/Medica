@@ -21,6 +21,8 @@ public partial class MedicaContext : DbContext
 
     public virtual DbSet<Dispositivopaciente> Dispositivopacientes { get; set; }
 
+    public virtual DbSet<Estoque> Estoques { get; set; }
+
     public virtual DbSet<Execucao> Execucaos { get; set; }
 
     public virtual DbSet<Medicamento> Medicamentos { get; set; }
@@ -102,6 +104,9 @@ public partial class MedicaContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.DataAtualizacao)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasComment("Utilizado para saber quando um dispositivo foi cadastrado ou alterado.")
                 .HasColumnType("datetime")
                 .HasColumnName("dataAtualizacao");
             entity.Property(e => e.FcmToken)
@@ -113,6 +118,53 @@ public partial class MedicaContext : DbContext
                 .HasForeignKey(d => d.IdPaciente)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_dispositivopaciente_paciente1");
+        });
+
+        modelBuilder.Entity<Estoque>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("estoque");
+
+            entity.HasIndex(e => e.IdMedicamento, "fk_medicamento_has_paciente_medicamento1_idx");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.DataValidade)
+                .HasColumnType("date")
+                .HasColumnName("dataValidade");
+            entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
+            entity.Property(e => e.Quantidade).HasColumnName("quantidade");
+            entity.Property(e => e.QuantidadeMinima).HasColumnName("quantidadeMinima");
+            entity.Property(e => e.Status)
+                .HasComment("INSUFICIENTE = Acabou; BAIXO = ACABANDO; REGULAR = DA PARA O PLANEJAMENTO.")
+                .HasColumnType("enum('INSUFICIENTE','BAIXO','REGULAR')")
+                .HasColumnName("status");
+
+            entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.Estoques)
+                .HasForeignKey(d => d.IdMedicamento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_medicamento_has_paciente_medicamento1");
+
+            entity.HasMany(d => d.IdPacientes).WithMany(p => p.IdEstoques)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Estoquepaciente",
+                    r => r.HasOne<Paciente>().WithMany()
+                        .HasForeignKey("IdPaciente")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("fk_estoque_has_paciente_paciente1"),
+                    l => l.HasOne<Estoque>().WithMany()
+                        .HasForeignKey("IdEstoque")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("fk_estoque_has_paciente_estoque1"),
+                    j =>
+                    {
+                        j.HasKey("IdEstoque", "IdPaciente").HasName("PRIMARY");
+                        j.ToTable("estoquepaciente");
+                        j.HasIndex(new[] { "IdEstoque" }, "fk_estoque_has_paciente_estoque1_idx");
+                        j.HasIndex(new[] { "IdPaciente" }, "fk_estoque_has_paciente_paciente1_idx");
+                        j.IndexerProperty<int>("IdEstoque").HasColumnName("idEstoque");
+                        j.IndexerProperty<uint>("IdPaciente").HasColumnName("idPaciente");
+                    });
         });
 
         modelBuilder.Entity<Execucao>(entity =>
@@ -159,7 +211,7 @@ public partial class MedicaContext : DbContext
 
             entity.HasIndex(e => e.IdCuidador, "fk_Medicamento_Cuidador1_idx");
 
-            entity.HasIndex(e => new { e.Nome, e.IdCuidador }, "uq_medicamento_cuidador_nome").IsUnique();
+            entity.HasIndex(e => new { e.Nome, e.IdCuidador, e.FormaFarmaceutica }, "uq_medicamento_cuidador_nome").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Apelido)
@@ -170,7 +222,7 @@ public partial class MedicaContext : DbContext
                 .HasColumnType("enum('S','N')")
                 .HasColumnName("ativo");
             entity.Property(e => e.FormaFarmaceutica)
-                .HasColumnType("enum('COMPRIMIDO','CAPSULA','SOLUCAO_ORAL','CREME','POMADA','INJETAVEL','SUPOSITORIO')")
+                .HasColumnType("enum('COMPRIMIDO','CAPSULA','GOTA','SOLUCAO_ORAL','INJETAVEL','CREME_POMADA','COLIRIO','SPRAY_INALATORIO','ADESIVO','SUPOSITORIO')")
                 .HasColumnName("formaFarmaceutica");
             entity.Property(e => e.Foto)
                 .HasColumnType("blob")
@@ -179,7 +231,6 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.Nome)
                 .HasMaxLength(60)
                 .HasColumnName("nome");
-            entity.Property(e => e.Quantidade).HasColumnName("quantidade");
 
             entity.HasOne(d => d.IdCuidadorNavigation).WithMany(p => p.Medicamentos)
                 .HasForeignKey(d => d.IdCuidador)
@@ -300,7 +351,7 @@ public partial class MedicaContext : DbContext
             entity.Property(e => e.DataAtualizacao)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasComment("Guarda a data da última modificação do registro.")
+                .HasComment("Guarda a data da última modificação do registro, utilizado para sincronização.")
                 .HasColumnType("datetime")
                 .HasColumnName("dataAtualizacao");
             entity.Property(e => e.DataFim)
@@ -326,9 +377,6 @@ public partial class MedicaContext : DbContext
                 .HasDefaultValueSql("'NAO_INICIADO'")
                 .HasColumnType("enum('NAO_INICIADO','EM_ANDAMENTO','CONCLUIDO','INTERROMPIDO')")
                 .HasColumnName("status");
-            entity.Property(e => e.UnidadeDosagem)
-                .HasColumnType("enum('ML','MG','G','UI')")
-                .HasColumnName("unidadeDosagem");
 
             entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.Planejamentos)
                 .HasForeignKey(d => d.IdMedicamento)

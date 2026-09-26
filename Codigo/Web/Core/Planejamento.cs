@@ -26,14 +26,12 @@ public partial class Planejamento
 
     public int Dosagem { get; set; }
 
-    public string UnidadeDosagem { get; set; } = null!;
-
     public string? Ativo { get; set; }
 
     public string Status { get; set; } = null!;
 
     /// <summary>
-    /// Guarda a data da última modificação do registro.
+    /// Guarda a data da última modificação do registro, utilizado para sincronização.
     /// </summary>
     public DateTime DataAtualizacao { get; set; }
 

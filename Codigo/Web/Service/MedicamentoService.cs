@@ -1,4 +1,4 @@
-﻿using Core;
+using Core;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -71,9 +71,24 @@ namespace Service
         /// <returns>Lista de medicamentos</returns>
         public async Task<IEnumerable<Medicamento>> GetAll(uint idCuidador)
         {
+            var idsPacientes = await context.Vinculos
+                .Where(v => v.IdCuidador == idCuidador)
+                .Select(v => v.IdPaciente)
+                .ToListAsync();
+
+            var idsCuidadores = await context.Vinculos
+                .Where(v => idsPacientes.Contains(v.IdPaciente))
+                .Select(v => v.IdCuidador)
+                .Distinct()
+                .ToListAsync();
+
             return await context.Medicamentos
                 .AsNoTracking()
-                .Where(m => m.IdCuidador == idCuidador)
+                .Where(m => m.IdCuidador == idCuidador
+                         || idsCuidadores.Contains(m.IdCuidador)
+                         || m.Planejamentos.Any(p => idsPacientes.Contains(p.IdPaciente))
+                         || m.Estoques.Any(e => e.IdPacientes.Any(p => idsPacientes.Contains(p.Id))))
+                .Distinct()
                 .OrderBy(m => m.Nome)
                 .ToListAsync();
         }

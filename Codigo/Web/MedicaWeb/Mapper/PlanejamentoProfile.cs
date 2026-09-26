@@ -36,12 +36,11 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.Hora, opt => opt.MapFrom(src => src.Hora))
                 .ForMember(dest => dest.IntervaloExecucao, opt => opt.MapFrom(src => src.IntervaloExecucao != default ? src.IntervaloExecucao : TimeSpan.FromHours(8)))
                 .ForMember(dest => dest.Dosagem, opt => opt.MapFrom(src => src.Dosagem))
-                .ForMember(dest => dest.UnidadeDosagem, opt => opt.MapFrom(src => src.Unidade.ToString()))
                 .ForMember(dest => dest.DiaSemana, opt => opt.MapFrom(src => src.DiaSemana))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "NAO_INICIADO"))
                 .ForMember(dest => dest.Ativo, opt => opt.MapFrom(_ => "S"))
                 .ReverseMap()
-                .ForMember(dest => dest.Unidade, opt => opt.MapFrom(src => ParseEnum<UnidadeDosagem>(src.UnidadeDosagem)))
+                .ForMember(dest => dest.Unidade, opt => opt.Ignore())
                 .ForMember(dest => dest.Continuo, opt => opt.MapFrom(src => src.DataFim == null || src.DataFim.Value.Year > 9000));
 
             CreateMap<Planejamento, PlanejamentoDetailsDto>()
@@ -52,7 +51,7 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.Hora, opt => opt.MapFrom(src => src.Hora))
                 .ForMember(dest => dest.IntervaloExecucao, opt => opt.MapFrom(src => src.IntervaloExecucao))
                 .ForMember(dest => dest.DiaSemana, opt => opt.MapFrom(src => src.DiaSemana))
-                .ForMember(dest => dest.Unidade, opt => opt.MapFrom(src => ParseEnum<UnidadeDosagem>(src.UnidadeDosagem)))
+                .ForMember(dest => dest.Unidade, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => ParseEnum<Status>(src.Status)))
                 .ForMember(dest => dest.Execucoes, opt => opt.MapFrom(src => src.Execucaos));
 
@@ -65,6 +64,7 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.NomePaciente, opt => opt.MapFrom(src => src.IdPacienteNavigation.Nome))
                 .ForMember(dest => dest.NomeMedicamento, opt => opt.MapFrom(src => src.IdMedicamentoNavigation.Nome))
                 .ForMember(dest => dest.ApelidoMedicamento, opt => opt.MapFrom(src => src.IdMedicamentoNavigation.Apelido))
+                .ForMember(dest => dest.UnidadeDosagem, opt => opt.MapFrom(src => src.IdMedicamentoNavigation != null ? src.IdMedicamentoNavigation.FormaFarmaceutica : string.Empty))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => ObterStatusDisplay(src.Status)));
 
             CreateMap<PlanejamentoDto, Planejamento>();
@@ -82,9 +82,9 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.Hora, opt => opt.MapFrom(src => src.Hora.ToString(@"hh\:mm")))
                 .ForMember(dest => dest.IntervaloFormatado, opt => opt.MapFrom(src => src.IntervaloExecucao.ToString(@"hh\:mm")))
                 .ForMember(dest => dest.DiaSemana, opt => opt.MapFrom(src => src.DiaSemana))
-                .ForMember(dest => dest.Dosagem, opt => opt.MapFrom(src => $"{src.Dosagem} {src.UnidadeDosagem}"))
+                .ForMember(dest => dest.Dosagem, opt => opt.MapFrom(src => src.Dosagem.ToString()))
                 .ForMember(dest => dest.DosagemValor, opt => opt.MapFrom(src => src.Dosagem))
-                .ForMember(dest => dest.UnidadeDosagem, opt => opt.MapFrom(src => src.UnidadeDosagem));
+                .ForMember(dest => dest.UnidadeDosagem, opt => opt.MapFrom(src => src.IdMedicamentoNavigation != null ? src.IdMedicamentoNavigation.FormaFarmaceutica : string.Empty));
         }
 
         private static TEnum ParseEnum<TEnum>(string? valor) where TEnum : struct, System.Enum =>

@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using Core.Dto.Paciente
 @using Core.Dto.Planejamento
+@using Core.Dto.Estoque
 
 @{
     ViewData["Title"] = "Cadastro de planejamento";
@@ -92,8 +93,8 @@
         <div class="row g-3 mb-3">
             <div class="col-12 col-md-3 form-group-custom">
                 <label class="label-custom">Medicamento</label>
-                <select class="form-input-custom" asp-items="ViewBag.Medicamentos" id="inputMedicamento">
-                    <option value="">Medicamento</option>
+                <select class="form-input-custom" id="inputMedicamento">
+                    <option value="">Selecione um medicamento</option>
                 </select>
             </div>
 
@@ -132,18 +133,7 @@
                 <input type="number" min="1" class="form-input-custom" id="inputDosagem" />
             </div>
 
-            <div class="col-12 col-md-2 form-group-custom">
-                <label class="label-custom">Unidade</label>
-                <select class="form-input-custom" id="inputUnidade">
-                    <option value="" disabled selected hidden>Selecionar</option>
-                    <option value="ML">Mililitro (mL)</option>
-                    <option value="MG">Miligrama (mg)</option>
-                    <option value="G">Gramas (g)</option>
-                    <option value="UI">Unidades (UI)</option>
-                </select>
-            </div>
-
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-6">
                 <label class="label-custom d-block">Dias da semana</label>
                 <div class="dias-semana-container">
                     <label class="dia-checkbox-label"><input type="checkbox" class="chk-dia" value="SEG"> Seg</label>
@@ -222,7 +212,6 @@
     <input type="hidden" name="Hora" id="editFormHora" />
     <input type="hidden" name="IntervaloExecucao" id="editFormIntervalo" />
     <input type="hidden" name="Dosagem" id="editFormDosagem" />
-    <input type="hidden" name="Unidade" id="editFormUnidade" />
     <input type="hidden" name="DiaSemana" id="editFormDiaSemana" />
 </form>
 
@@ -234,7 +223,8 @@
     <script>
         $(document).ready(function () {
             const dadosPlanejamentos = @Html.Raw(JsonSerializer.Serialize(ViewBag.PlanejamentosExistentes as IEnumerable<PlanejamentoItemDto> ?? Enumerable.Empty<PlanejamentoItemDto>(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-            FormPlanejamento.init(dadosPlanejamentos);
+            const estoqueMedicamentos = @Html.Raw(JsonSerializer.Serialize(ViewBag.MedicamentosEstoque as IEnumerable<MedicamentoEstoqueDto> ?? Enumerable.Empty<MedicamentoEstoqueDto>(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            FormPlanejamento.init(dadosPlanejamentos, estoqueMedicamentos);
         });
     </script>
 }

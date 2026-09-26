@@ -37,7 +37,7 @@
             @{
                 var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
                 var isCadastrosActive = controller == "Paciente" || controller == "Medicamento" || controller == "Planejamento";
-                var isGerenciamentoActive = controller == "Cuidador";
+                var isGerenciamentoActive = controller == "Cuidador" || controller == "Dispositivo";
             }
 
             <a class="nav-item @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
@@ -77,41 +77,18 @@
                         </a>
                     }
                     <a class="nav-sub-item" href="#">
-                        <i class="bi bi-box-seam"></i> <span>Estoque</span>
-                    </a>
-                    <a class="nav-sub-item" href="#">
                         <i class="bi bi-bell"></i> <span>Notificações</span>
                     </a>
-                </div>
-            </div>
-            <div class="nav-group">
-                <button class="nav-item nav-group-btn w-100 border-0 bg-transparent text-start"
-                        type="button" data-bs-toggle="collapse" data-bs-target="#menuDispositivo" aria-expanded="true" aria-controls="menuDispositivo">
-                    <i class="bi bi-phone"></i>
-                    <span>Dispositivo</span>
-                    <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
-                </button>
-                <div class="collapse show nav-sub-menu" id="menuDispositivo">
-                    <a class="nav-sub-item" href="#">
+                    <a class="nav-sub-item @(controller == "Dispositivo" ? "active" : "")" asp-controller="Dispositivo" asp-action="Index">
                         <i class="bi bi-qr-code-scan"></i> <span>Associar Dispositivo</span>
-                    </a>
-                </div>
-            </div>
-            <div class="nav-group">
-                <button class="nav-item nav-group-btn w-100 border-0 bg-transparent text-start"
-                        type="button" data-bs-toggle="collapse" data-bs-target="#menuConfiguracao" aria-expanded="true" aria-controls="menuConfiguracao">
-                    <i class="bi bi-gear"></i>
-                    <span>Configuração</span>
-                    <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
-                </button>
-                <div class="collapse show nav-sub-menu" id="menuConfiguracao">
-                    <a class="nav-sub-item" href="#">
-                        <i class="bi bi-sliders2"></i> <span>Configuração</span>
                     </a>
                 </div>
             </div>
         </nav>
         <footer class="sidebar-footer">
+            <a class="nav-item mb-2 @(controller == "Configuracao" ? "active" : "")" href="#" title="Configuração">
+                <i class="bi bi-gear"></i> <span>Configuração</span>
+            </a>
             <form class="w-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
                 <button type="submit" class="nav-item border-0 bg-transparent w-100 text-start text-inherit mb-2" title="Sair" style="cursor: pointer; font-family: inherit;">
                     <i class="bi bi-box-arrow-right"></i> <span>Sair</span>

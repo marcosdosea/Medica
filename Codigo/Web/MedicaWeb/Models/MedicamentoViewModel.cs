@@ -18,9 +18,6 @@ namespace MedicaWeb.Models
         [Display(Name = "Apelido")]
         public string? Apelido { get; set; }
 
-        [Required(ErrorMessage = "Campo obrigatório.")]
-        public int Quantidade { get; set; }
-
         [Display(Name = "Forma Farmacêutica")]
         [Required(ErrorMessage = "Campo obrigatório.")]
         public FormaFarmaceutica FormaFarmaceutica { get; set; }

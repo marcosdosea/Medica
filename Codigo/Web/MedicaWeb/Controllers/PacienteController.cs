@@ -17,7 +17,7 @@ namespace MedicaWeb.Controllers
         private readonly IPacienteService pacienteService;
         private readonly IVinculoService vinculoService;
         private readonly IMedicamentoService medicamentoService;
-        private readonly IDispositivoService dispositivoService;
+        private readonly IAuthService authService;
         private readonly IMapper mapper;
 
         public PacienteController(
@@ -25,14 +25,14 @@ namespace MedicaWeb.Controllers
             IVinculoService vinculoService,
             IMedicamentoService medicamentoService,
             IMapper mapper,
-            IDispositivoService dispositivoService
+            IAuthService authService
         )
         {
             this.pacienteService = pacienteService;
             this.vinculoService = vinculoService;
             this.medicamentoService = medicamentoService;
             this.mapper = mapper;
-            this.dispositivoService = dispositivoService;
+            this.authService = authService;
         }
 
         // GET: PacienteController
@@ -54,7 +54,7 @@ namespace MedicaWeb.Controllers
         // GET: PacienteController/ObterToken/5
         public async Task<IActionResult> ObterToken(uint id)
         {
-            var token = await dispositivoService.ObterToken(id);
+            var token = await authService.GerarTokenPareamento(id);
 
             if (Request.Headers.Accept.ToString().Contains("application/json"))
             {

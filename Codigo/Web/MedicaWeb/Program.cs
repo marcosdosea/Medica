@@ -93,6 +93,7 @@ namespace MedicaWeb
             builder.Services.AddScoped<INotificacaoService, NotificacaoService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IDispositivoService, DispositivoService>();
+            builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

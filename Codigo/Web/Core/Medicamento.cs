@@ -11,8 +11,6 @@ public partial class Medicamento
 
     public string? Apelido { get; set; }
 
-    public int Quantidade { get; set; }
-
     public string FormaFarmaceutica { get; set; } = null!;
 
     public byte[]? Foto { get; set; }
@@ -22,6 +20,8 @@ public partial class Medicamento
     public string Ativo { get; set; } = null!;
 
     public virtual ICollection<Alergium> Alergia { get; set; } = new List<Alergium>();
+
+    public virtual ICollection<Estoque> Estoques { get; set; } = new List<Estoque>();
 
     public virtual Cuidador IdCuidadorNavigation { get; set; } = null!;
 

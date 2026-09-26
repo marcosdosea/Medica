@@ -16,7 +16,9 @@ namespace MedicaWeb.Controllers
         private readonly IMedicamentoService medicamentoService;
         private readonly IMapper mapper;
 
-        public MedicamentoController(IMedicamentoService medicamentoService, IMapper mapper)
+        public MedicamentoController(
+            IMedicamentoService medicamentoService,
+            IMapper mapper)
         {
             this.medicamentoService = medicamentoService;
             this.mapper = mapper;
@@ -104,3 +106,4 @@ namespace MedicaWeb.Controllers
         }
     }
 }
+

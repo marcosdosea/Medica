@@ -2,6 +2,6 @@ namespace Core.Service
 {
     public interface IDispositivoService
     {
-        Task<string?> ObterToken(uint idPaciente);
+        Task<IEnumerable<Dispositivopaciente>> GetAll(uint idCuidador);
     }
 }

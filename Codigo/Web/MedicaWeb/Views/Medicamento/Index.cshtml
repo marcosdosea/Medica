@@ -3,7 +3,13 @@
 <div class="calendario-container">
     <div class="table-header">
         <h2 class="titulo-sessao">Medicamentos</h2>
-        <a asp-action="Create" class="btn-novo">Novo</a>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Estoque" asp-action="Create" class="btn-novo btn-estoque">
+                <i class="bi bi-box-seam"></i>
+                <span>Estoque</span>
+            </a>
+            <a asp-action="Create" class="btn-novo">Novo</a>
+        </div>
     </div>
 
     <table id="tabelaMedicamentos" class="custom-table">
