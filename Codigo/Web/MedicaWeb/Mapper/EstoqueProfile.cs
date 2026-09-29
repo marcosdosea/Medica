@@ -16,8 +16,10 @@ namespace MedicaWeb.Mapper
                 .ForMember(dest => dest.IdMedicamento, opt => opt.MapFrom(src => src.IdMedicamento))
                 .ForMember(dest => dest.NomeMedicamento, opt => opt.MapFrom(src => src.IdMedicamentoNavigation != null ? src.IdMedicamentoNavigation.Nome : string.Empty))
                 .ForMember(dest => dest.FormaFarmaceutica, opt => opt.MapFrom(src => src.IdMedicamentoNavigation != null ? src.IdMedicamentoNavigation.FormaFarmaceutica : string.Empty))
-                .ForMember(dest => dest.IdsPacientes, opt => opt.MapFrom(src => src.IdPacientes.Select(p => p.Id).ToList()))
-                .ForMember(dest => dest.PacientesNomes, opt => opt.MapFrom(src => string.Join(", ", src.IdPacientes.Select(p => PacienteHelper.FormatarPrimeiroEUltimoNome(p.Nome)))))
+                .ForMember(dest => dest.IdPaciente, opt => opt.MapFrom(src => src.IdPaciente))
+                .ForMember(dest => dest.NomePaciente, opt => opt.MapFrom(src => src.IdPacienteNavigation != null ? PacienteHelper.FormatarPrimeiroEUltimoNome(src.IdPacienteNavigation.Nome) : string.Empty))
+                .ForMember(dest => dest.IdsPacientes, opt => opt.MapFrom(src => new List<uint> { src.IdPaciente }))
+                .ForMember(dest => dest.PacientesNomes, opt => opt.MapFrom(src => src.IdPacienteNavigation != null ? PacienteHelper.FormatarPrimeiroEUltimoNome(src.IdPacienteNavigation.Nome) : string.Empty))
                 .ForMember(dest => dest.Quantidade, opt => opt.MapFrom(src => src.Quantidade))
                 .ForMember(dest => dest.QuantidadeMinima, opt => opt.MapFrom(src => src.QuantidadeMinima))
                 .ForMember(dest => dest.DataValidade, opt => opt.MapFrom(src => src.DataValidade))
@@ -27,6 +29,7 @@ namespace MedicaWeb.Mapper
 
             CreateMap<GerenciarEstoqueViewModel, Estoque>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.IdPaciente, opt => opt.MapFrom(src => src.IdPaciente))
                 .ForMember(dest => dest.IdMedicamento, opt => opt.MapFrom(src => src.IdMedicamento))
                 .ForMember(dest => dest.Quantidade, opt => opt.MapFrom(src => src.Quantidade ?? 0))
                 .ForMember(dest => dest.QuantidadeMinima, opt => opt.MapFrom(src => src.QuantidadeMinima ?? 0))
@@ -44,13 +47,13 @@ namespace MedicaWeb.Mapper
         {
             return src
                 .Where(e => e.Quantidade > 0)
-                .SelectMany(e => e.IdPacientes.Select(p => new MedicamentoEstoqueDto
+                .Select(e => new MedicamentoEstoqueDto
                 {
-                    IdPaciente = p.Id,
+                    IdPaciente = e.IdPaciente,
                     IdMedicamento = e.IdMedicamento,
                     NomeMedicamento = e.IdMedicamentoNavigation != null ? e.IdMedicamentoNavigation.Nome : string.Empty,
                     FormaFarmaceutica = e.IdMedicamentoNavigation != null ? e.IdMedicamentoNavigation.FormaFarmaceutica : string.Empty
-                }))
+                })
                 .GroupBy(x => new { x.IdPaciente, x.IdMedicamento, x.NomeMedicamento, x.FormaFarmaceutica })
                 .Select(g => g.First())
                 .OrderBy(x => x.NomeMedicamento)

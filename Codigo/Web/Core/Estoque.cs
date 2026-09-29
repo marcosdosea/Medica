@@ -9,6 +9,8 @@ public partial class Estoque
 
     public uint IdMedicamento { get; set; }
 
+    public uint IdPaciente { get; set; }
+
     public int Quantidade { get; set; }
 
     public int QuantidadeMinima { get; set; }
@@ -22,5 +24,5 @@ public partial class Estoque
 
     public virtual Medicamento IdMedicamentoNavigation { get; set; } = null!;
 
-    public virtual ICollection<Paciente> IdPacientes { get; set; } = new List<Paciente>();
+    public virtual Paciente IdPacienteNavigation { get; set; } = null!;
 }

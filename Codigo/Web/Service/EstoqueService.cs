@@ -17,24 +17,13 @@ namespace Service
             this.context = context;
         }
 
-        public async Task<int> Create(Estoque estoque, IEnumerable<uint> idsPacientes)
+        public async Task<int> Create(Estoque estoque)
         {
-            var ids = idsPacientes?.ToList() ?? new List<uint>();
-            if (!ids.Any())
+            var pacienteExiste = await context.Pacientes.AnyAsync(p => p.Id == estoque.IdPaciente);
+            if (!pacienteExiste)
             {
-                throw new ServiceException("Selecione ao menos um paciente para associar ao estoque.");
+                throw new ServiceException("Selecione um paciente válido para associar ao estoque.");
             }
-
-            var pacientes = await context.Pacientes
-                .Where(p => ids.Contains(p.Id))
-                .ToListAsync();
-
-            if (!pacientes.Any())
-            {
-                throw new ServiceException("Nenhum paciente válido encontrado.");
-            }
-
-            estoque.IdPacientes = pacientes;
 
             if (estoque.Quantidade == 0)
             {
@@ -54,10 +43,9 @@ namespace Service
             return estoque.Id;
         }
 
-        public async Task Edit(Estoque estoque, IEnumerable<uint> idsPacientes)
+        public async Task Edit(Estoque estoque)
         {
             var existing = await context.Estoques
-                .Include(e => e.IdPacientes)
                 .FirstOrDefaultAsync(e => e.Id == estoque.Id);
 
             if (existing == null)
@@ -65,22 +53,14 @@ namespace Service
                 throw new ServiceException("Estoque não encontrado.");
             }
 
-            var ids = idsPacientes?.ToList() ?? new List<uint>();
-            if (!ids.Any())
+            var pacienteExiste = await context.Pacientes.AnyAsync(p => p.Id == estoque.IdPaciente);
+            if (!pacienteExiste)
             {
-                throw new ServiceException("Selecione ao menos um paciente para associar ao estoque.");
-            }
-
-            var pacientes = await context.Pacientes
-                .Where(p => ids.Contains(p.Id))
-                .ToListAsync();
-
-            if (!pacientes.Any())
-            {
-                throw new ServiceException("Nenhum paciente válido encontrado.");
+                throw new ServiceException("Selecione um paciente válido para associar ao estoque.");
             }
 
             existing.IdMedicamento = estoque.IdMedicamento;
+            existing.IdPaciente = estoque.IdPaciente;
             existing.Quantidade = estoque.Quantidade;
             existing.QuantidadeMinima = estoque.QuantidadeMinima;
             existing.DataValidade = estoque.DataValidade;
@@ -98,12 +78,6 @@ namespace Service
                 existing.Status = "REGULAR";
             }
 
-            existing.IdPacientes.Clear();
-            foreach (var p in pacientes)
-            {
-                existing.IdPacientes.Add(p);
-            }
-
             await context.SaveChangesAsync();
         }
 
@@ -117,8 +91,8 @@ namespace Service
             return await context.Estoques
                 .AsNoTracking()
                 .Include(e => e.IdMedicamentoNavigation)
-                .Include(e => e.IdPacientes)
-                .Where(e => e.IdPacientes.Any(p => idsPacientes.Contains(p.Id)))
+                .Include(e => e.IdPacienteNavigation)
+                .Where(e => idsPacientes.Contains(e.IdPaciente))
                 .OrderByDescending(e => e.Id)
                 .ToListAsync();
         }
@@ -127,19 +101,17 @@ namespace Service
         {
             return await context.Estoques
                 .Include(e => e.IdMedicamentoNavigation)
-                .Include(e => e.IdPacientes)
+                .Include(e => e.IdPacienteNavigation)
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task Delete(int id)
         {
             var estoque = await context.Estoques
-                .Include(e => e.IdPacientes)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (estoque != null)
             {
-                estoque.IdPacientes.Clear();
                 context.Estoques.Remove(estoque);
                 await context.SaveChangesAsync();
             }

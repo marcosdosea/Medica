@@ -8,10 +8,20 @@ namespace MedicaWeb.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Selecione ao menos um paciente.")]
-        [MinLength(1, ErrorMessage = "Selecione ao menos um paciente.")]
-        [Display(Name = "Pacientes")]
-        public List<uint> IdsPacientes { get; set; } = new();
+        [Required(ErrorMessage = "Selecione um paciente.")]
+        [Range(1, uint.MaxValue, ErrorMessage = "Selecione um paciente.")]
+        [Display(Name = "Paciente")]
+        public uint IdPaciente { get; set; }
+
+        public List<uint> IdsPacientes
+        {
+            get => IdPaciente > 0 ? new List<uint> { IdPaciente } : new List<uint>();
+            set
+            {
+                if (value != null && value.Count > 0)
+                    IdPaciente = value[0];
+            }
+        }
 
         [Required(ErrorMessage = "Selecione um medicamento.")]
         [Range(1, uint.MaxValue, ErrorMessage = "Selecione um medicamento.")]

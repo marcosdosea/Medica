@@ -87,7 +87,7 @@ namespace Service
                 .Where(m => m.IdCuidador == idCuidador
                          || idsCuidadores.Contains(m.IdCuidador)
                          || m.Planejamentos.Any(p => idsPacientes.Contains(p.IdPaciente))
-                         || m.Estoques.Any(e => e.IdPacientes.Any(p => idsPacientes.Contains(p.Id))))
+                         || m.Estoques.Any(e => idsPacientes.Contains(e.IdPaciente)))
                 .Distinct()
                 .OrderBy(m => m.Nome)
                 .ToListAsync();

@@ -9,6 +9,8 @@ namespace Core.Dto.Estoque
         public uint IdMedicamento { get; set; }
         public string NomeMedicamento { get; set; } = string.Empty;
         public string FormaFarmaceutica { get; set; } = string.Empty;
+        public uint IdPaciente { get; set; }
+        public string NomePaciente { get; set; } = string.Empty;
         public List<uint> IdsPacientes { get; set; } = new();
         public string PacientesNomes { get; set; } = string.Empty;
         public int Quantidade { get; set; }

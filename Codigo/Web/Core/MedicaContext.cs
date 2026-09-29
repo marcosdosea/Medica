@@ -126,6 +126,8 @@ public partial class MedicaContext : DbContext
 
             entity.ToTable("estoque");
 
+            entity.HasIndex(e => e.IdPaciente, "fk_estoque_paciente1_idx");
+
             entity.HasIndex(e => e.IdMedicamento, "fk_medicamento_has_paciente_medicamento1_idx");
 
             entity.Property(e => e.Id).HasColumnName("id");
@@ -133,6 +135,7 @@ public partial class MedicaContext : DbContext
                 .HasColumnType("date")
                 .HasColumnName("dataValidade");
             entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
             entity.Property(e => e.Quantidade).HasColumnName("quantidade");
             entity.Property(e => e.QuantidadeMinima).HasColumnName("quantidadeMinima");
             entity.Property(e => e.Status)
@@ -145,26 +148,10 @@ public partial class MedicaContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_medicamento_has_paciente_medicamento1");
 
-            entity.HasMany(d => d.IdPacientes).WithMany(p => p.IdEstoques)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Estoquepaciente",
-                    r => r.HasOne<Paciente>().WithMany()
-                        .HasForeignKey("IdPaciente")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("fk_estoque_has_paciente_paciente1"),
-                    l => l.HasOne<Estoque>().WithMany()
-                        .HasForeignKey("IdEstoque")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("fk_estoque_has_paciente_estoque1"),
-                    j =>
-                    {
-                        j.HasKey("IdEstoque", "IdPaciente").HasName("PRIMARY");
-                        j.ToTable("estoquepaciente");
-                        j.HasIndex(new[] { "IdEstoque" }, "fk_estoque_has_paciente_estoque1_idx");
-                        j.HasIndex(new[] { "IdPaciente" }, "fk_estoque_has_paciente_paciente1_idx");
-                        j.IndexerProperty<int>("IdEstoque").HasColumnName("idEstoque");
-                        j.IndexerProperty<uint>("IdPaciente").HasColumnName("idPaciente");
-                    });
+            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.Estoques)
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_estoque_paciente1");
         });
 
         modelBuilder.Entity<Execucao>(entity =>

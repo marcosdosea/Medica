@@ -61,7 +61,7 @@ namespace MedicaWeb.Controllers
                 return View(model);
             }
             var estoque = mapper.Map<Estoque>(model);
-            await estoqueService.Create(estoque, model.IdsPacientes);
+            await estoqueService.Create(estoque);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
             return RedirectToAction(nameof(Create));
         }
@@ -83,7 +83,7 @@ namespace MedicaWeb.Controllers
             }
             model.Id = id;
             var estoque = mapper.Map<Estoque>(model);
-            await estoqueService.Edit(estoque, model.IdsPacientes);
+            await estoqueService.Edit(estoque);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
             return RedirectToAction(nameof(Create));
         }

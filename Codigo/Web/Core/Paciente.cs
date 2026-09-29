@@ -71,9 +71,9 @@ public partial class Paciente
 
     public virtual ICollection<Dispositivopaciente> Dispositivopacientes { get; set; } = new List<Dispositivopaciente>();
 
+    public virtual ICollection<Estoque> Estoques { get; set; } = new List<Estoque>();
+
     public virtual ICollection<Planejamento> Planejamentos { get; set; } = new List<Planejamento>();
 
     public virtual ICollection<Vinculo> Vinculos { get; set; } = new List<Vinculo>();
-
-    public virtual ICollection<Estoque> IdEstoques { get; set; } = new List<Estoque>();
 }

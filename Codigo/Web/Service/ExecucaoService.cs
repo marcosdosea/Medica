@@ -81,7 +81,7 @@ namespace Service
                 {
                     var estoque = await context.Estoques
                         .FirstOrDefaultAsync(e => e.IdMedicamento == planejamento.IdMedicamento 
-                                               && e.IdPacientes.Any(p => p.Id == planejamento.IdPaciente));
+                                               && e.IdPaciente == planejamento.IdPaciente);
 
                     if (estoque != null)
                     {

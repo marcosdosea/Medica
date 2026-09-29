@@ -24,7 +24,7 @@
 
 <form asp-controller="Estoque" asp-action="Create" method="post" id="formEstoque">
     @Html.AntiForgeryToken()
-    <div id="hiddenPacientesContainer"></div>
+    <input type="hidden" asp-for="IdPaciente" id="IdPaciente" value="@(Model?.IdPaciente ?? 0)" />
     <input type="hidden" asp-for="Id" id="idEstoqueEdit" value="@(Model?.Id ?? 0)" />
     <input type="hidden" asp-for="IdMedicamento" id="IdMedicamento" value="@(Model?.IdMedicamento ?? 0)" />
 
@@ -37,7 +37,7 @@
         <div class="cards-grid mb-3">
             @foreach (var paciente in pacientes)
             {
-                var isSelected = Model?.IdsPacientes != null && Model.IdsPacientes.Contains(paciente.Id);
+                var isSelected = Model?.IdPaciente == paciente.Id;
                 var nomeExibicao = paciente.NomePrimeiroUltimo;
 
                 <div class="paciente-card-wrapper">
@@ -77,7 +77,7 @@
             <p>Nenhum paciente cadastrado.</p>
         </div>
     }
-    <span asp-validation-for="IdsPacientes" class="text-danger d-block mb-4" style="font-size: 13px;"></span>
+    <span asp-validation-for="IdPaciente" class="text-danger d-block mb-4" style="font-size: 13px;"></span>
     <div class="secao-header mb-3" style="border:none; display: flex; align-items: center; gap: 10px;">
         <i class="bi bi-capsule" style="color: var(--text-muted); font-size: 18px;"></i>
         <span style="font-weight: 700; color: #495057; font-size: 18px;">Medicamentos</span>
@@ -196,9 +196,9 @@
     <script>
         $(document).ready(function () {
             const dadosEstoques = @Html.Raw(JsonSerializer.Serialize(ViewBag.EstoquesExistentes as IEnumerable<EstoqueItemDto> ?? Enumerable.Empty<EstoqueItemDto>(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-            const initialPacientes = @Html.Raw(JsonSerializer.Serialize(Model?.IdsPacientes ?? new List<uint>()));
+            const initialPaciente = @Html.Raw(JsonSerializer.Serialize(Model?.IdPaciente ?? 0));
             const initialMedicamento = @Html.Raw(JsonSerializer.Serialize(Model?.IdMedicamento ?? 0));
-            FormEstoque.init(dadosEstoques, initialPacientes, initialMedicamento);
+            FormEstoque.init(dadosEstoques, initialPaciente, initialMedicamento);
         });
     </script>
 }

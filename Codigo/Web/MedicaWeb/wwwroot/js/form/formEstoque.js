@@ -1,16 +1,14 @@
 let dtEstoques = null;
 let todosEstoques = [];
-const selectedPacientes = new Set();
+let selectedPaciente = null;
 let selectedMedicamento = null;
 
 const FormEstoque = {
-    init: function (estoquesJson, initialPacientes, initialMedicamento) {
+    init: function (estoquesJson, initialPaciente, initialMedicamento) {
         todosEstoques = estoquesJson || [];
 
-        if (initialPacientes && Array.isArray(initialPacientes)) {
-            initialPacientes.forEach(id => {
-                if (id) selectedPacientes.add(String(id));
-            });
+        if (initialPaciente && initialPaciente !== "0" && initialPaciente !== 0) {
+            selectedPaciente = String(initialPaciente);
         }
 
         if (initialMedicamento && initialMedicamento !== "0" && initialMedicamento !== 0) {
@@ -39,7 +37,6 @@ const FormEstoque = {
         $('#inputQuantidade, #inputQuantidadeMinima, #inputDataValidade').on('input change', function () {
             FormEstoque.validarFormulario();
         });
-        FormEstoque.sincronizarHiddenPacientes();
         FormEstoque.atualizarTabela();
         FormEstoque.validarFormulario();
     },
@@ -49,23 +46,34 @@ const FormEstoque = {
         const box = document.getElementById(`box-paciente-${idStr}`);
         const btn = document.getElementById(`btn-paciente-${idStr}`);
 
-        if (selectedPacientes.has(idStr)) {
-            selectedPacientes.delete(idStr);
+        if (selectedPaciente === idStr) {
+            selectedPaciente = null;
             if (box) box.classList.remove('active');
             if (btn) {
                 btn.classList.remove('selected');
                 btn.innerText = 'Selecionar';
             }
+            $('#IdPaciente').val(0);
         } else {
-            selectedPacientes.add(idStr);
+            if (selectedPaciente) {
+                const oldBox = document.getElementById(`box-paciente-${selectedPaciente}`);
+                const oldBtn = document.getElementById(`btn-paciente-${selectedPaciente}`);
+                if (oldBox) oldBox.classList.remove('active');
+                if (oldBtn) {
+                    oldBtn.classList.remove('selected');
+                    oldBtn.innerText = 'Selecionar';
+                }
+            }
+
+            selectedPaciente = idStr;
             if (box) box.classList.add('active');
             if (btn) {
                 btn.classList.add('selected');
                 btn.innerText = 'Desmarcar';
             }
+            $('#IdPaciente').val(idStr);
         }
 
-        FormEstoque.sincronizarHiddenPacientes();
         FormEstoque.validarFormulario();
     },
 
@@ -105,14 +113,6 @@ const FormEstoque = {
         FormEstoque.validarFormulario();
     },
 
-    sincronizarHiddenPacientes: function () {
-        const container = $('#hiddenPacientesContainer');
-        container.empty();
-        selectedPacientes.forEach(id => {
-            container.append(`<input type="hidden" name="IdsPacientes" value="${id}" />`);
-        });
-    },
-
     atualizarTabela: function () {
         if (!dtEstoques) return;
         dtEstoques.clear();
@@ -121,16 +121,7 @@ const FormEstoque = {
             const id = item.id ?? item.Id;
             const nomeMed = item.nomeMedicamento ?? item.NomeMedicamento ?? '';
             const formaFarm = item.formaFarmaceutica ?? item.FormaFarmaceutica ?? '';
-            const pacientesRaw = item.pacientesNomes ?? item.PacientesNomes ?? '-';
-            let pacientesDisplay = pacientesRaw;
-            if (pacientesRaw && pacientesRaw !== '-') {
-                const nomes = pacientesRaw.split(',').map(n => n.trim()).filter(n => n.length > 0);
-                if (nomes.length > 2) {
-                    pacientesDisplay = `<span title="${pacientesRaw.replace(/"/g, '&quot;')}">${nomes[0]}, ${nomes[1]}, outros</span>`;
-                } else if (nomes.length > 0) {
-                    pacientesDisplay = nomes.join(', ');
-                }
-            }
+            const nomePaciente = item.nomePaciente ?? item.NomePaciente ?? item.pacientesNomes ?? item.PacientesNomes ?? '-';
 
             const qtd = item.quantidade ?? item.Quantidade ?? 0;
             const qtdMin = item.quantidadeMinima ?? item.QuantidadeMinima ?? 0;
@@ -156,7 +147,7 @@ const FormEstoque = {
 
             dtEstoques.row.add([
                 nomeMed,
-                pacientesDisplay,
+                nomePaciente,
                 formaFarm || '-',
                 qtd,
                 qtdMin,
@@ -170,7 +161,7 @@ const FormEstoque = {
     },
 
     validarFormulario: function () {
-        const temPaciente = selectedPacientes.size > 0;
+        const temPaciente = Boolean(selectedPaciente && selectedPaciente !== "0");
         const temMed = Boolean(selectedMedicamento && selectedMedicamento !== "0");
         const qtdStr = $('#inputQuantidade').val();
         const qtdVal = parseInt(qtdStr, 10);
@@ -199,16 +190,18 @@ const FormEstoque = {
         const btnCancelar = document.getElementById('btnCancelarEdicao');
         if (btnCancelar) btnCancelar.style.display = 'inline-block';
 
-        selectedPacientes.clear();
-        document.querySelectorAll('.paciente-card').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.btn-card-toggle').forEach(b => {
+        selectedPaciente = null;
+        document.querySelectorAll('[id^="box-paciente-"]').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('[id^="btn-paciente-"]').forEach(b => {
             b.classList.remove('selected');
             b.innerText = 'Selecionar';
         });
-        const ids = item.idsPacientes || item.IdsPacientes || [];
-        ids.forEach(pId => {
+
+        const pId = item.idPaciente ?? item.IdPaciente ?? (item.idsPacientes && item.idsPacientes.length > 0 ? item.idsPacientes[0] : null);
+        if (pId && pId !== 0) {
             const pIdStr = String(pId);
-            selectedPacientes.add(pIdStr);
+            selectedPaciente = pIdStr;
+            $('#IdPaciente').val(pIdStr);
             const box = document.getElementById(`box-paciente-${pIdStr}`);
             const btn = document.getElementById(`btn-paciente-${pIdStr}`);
             if (box) box.classList.add('active');
@@ -216,8 +209,8 @@ const FormEstoque = {
                 btn.classList.add('selected');
                 btn.innerText = 'Desmarcar';
             }
-        });
-        FormEstoque.sincronizarHiddenPacientes();
+        }
+
         const medId = item.idMedicamento ?? item.IdMedicamento;
         if (medId) {
             const medIdStr = String(medId);
@@ -253,14 +246,14 @@ const FormEstoque = {
         if (titulo) titulo.innerText = 'Novo estoque';
         const btnCancelar = document.getElementById('btnCancelarEdicao');
         if (btnCancelar) btnCancelar.style.display = 'none';
-        selectedPacientes.clear();
+        selectedPaciente = null;
         selectedMedicamento = null;
         document.querySelectorAll('.paciente-card').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.btn-card-toggle').forEach(b => {
             b.classList.remove('selected');
             b.innerText = 'Selecionar';
         });
-        $('#hiddenPacientesContainer').empty();
+        $('#IdPaciente').val(0);
         $('#IdMedicamento').val(0);
         $('#inputQuantidade').val('');
         $('#inputQuantidadeMinima').val('');
