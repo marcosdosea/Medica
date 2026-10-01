@@ -1,4 +1,4 @@
-﻿using Core;
+using Core;
 using Core.Enum;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
@@ -34,16 +34,17 @@ namespace Service
         /// <param name="id">Id do paciente</param>
         public async Task Delete(uint id)
         {
-            var paciente = await context.Pacientes.FindAsync((int)id);
-            if (paciente == null)
-            {
-                throw new ServiceException("Paciente não encontrado.");
-            }
+            var paciente = await context.Pacientes.FindAsync(id)
+                ?? throw new ServiceException("Paciente não encontrado.");
 
             var planejamentos = await context.Planejamentos
                 .Where(p => p.IdPaciente == id)
                 .ToListAsync();
-            bool possuiHistorico = planejamentos.Any();
+
+            var possuiEstoque = await context.Estoques
+                .AnyAsync(e => e.IdPaciente == id);
+
+            bool possuiHistorico = planejamentos.Any() || possuiEstoque;
 
             if (possuiHistorico)
             {
@@ -97,6 +98,7 @@ namespace Service
         {
             return await context.Pacientes
                                 .AsNoTracking()
+                                .AsSplitQuery()
                                 .Include(p => p.Alergia)
                                     .ThenInclude(a => a.IdMedicamentoNavigation)
                                 .Include(p => p.Vinculos)
