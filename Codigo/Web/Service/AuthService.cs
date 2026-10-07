@@ -6,6 +6,7 @@ using Core.Dto.Auth;
 using Core.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Service
@@ -14,11 +15,13 @@ namespace Service
     {
         private readonly MedicaContext context;
         private readonly IConfiguration configuration;
+        private readonly ILogger<AuthService> logger;
 
-        public AuthService(MedicaContext context, IConfiguration configuration)
+        public AuthService(MedicaContext context, IConfiguration configuration, ILogger<AuthService> logger)
         {
             this.context = context;
             this.configuration = configuration;
+            this.logger = logger;
         }
 
         public async Task<string> GerarTokenPareamento(uint idPaciente)
@@ -47,7 +50,11 @@ namespace Service
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            logger.LogInformation("Token de pareamento gerado com sucesso para o paciente com código: {IdPaciente}.", idPaciente);
+
+            return tokenString;
         }
 
         public async Task<AuthResponseDto> AssociarDispositivo(string tokenPareamento, string fcmToken)
@@ -70,7 +77,6 @@ namespace Service
                 ClockSkew = TimeSpan.FromMinutes(2)
             }, out _);
 
-
             var tipo = principal.FindFirst("Tipo")?.Value;
             if (!string.Equals(tipo, "PAREAMENTO", StringComparison.OrdinalIgnoreCase))
             {
@@ -85,7 +91,6 @@ namespace Service
 
             var paciente = await context.Pacientes.FindAsync(idPaciente)
                 ?? throw new ServiceException("Paciente não encontrado no sistema.");
-
 
             var dispositivoExistente = await context.Dispositivopacientes
                 .FirstOrDefaultAsync(d => d.FcmToken == fcmToken);
@@ -127,6 +132,9 @@ namespace Service
 
             var jwtToken = tokenHandler.CreateToken(tokenDescriptor);
             var jwtString = tokenHandler.WriteToken(jwtToken);
+
+            logger.LogInformation("Dispositivo do paciente com código {IdPaciente} associado com sucesso.", idPaciente);
+
             return new AuthResponseDto
             {
                 TokenJwt = jwtString

@@ -41,3 +41,5 @@ Thumbs.db
 
 firebase-key.json
 *firebase-key.json
+google-services.json
+**/google-services.json

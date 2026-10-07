@@ -1,31 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../config/session_manager.dart';
+import '../models/auth_result.dart';
 import 'fcm_service.dart';
 
-/// Resultado da tentativa de login (associar dispositivo).
-class AuthResult {
-  /// `true` quando o login foi bem-sucedido.
-  final bool sucesso;
-
-  /// Mensagem de erro legível pelo usuário (null quando [sucesso] == true).
-  final String? erro;
-
-  const AuthResult._({required this.sucesso, this.erro});
-
-  factory AuthResult.ok() => const AuthResult._(sucesso: true);
-
-  factory AuthResult.falha(String mensagem) =>
-      AuthResult._(sucesso: false, erro: mensagem);
-}
-
-/// Serviço de autenticação do dispositivo.
 class AuthService {
-  /// Associa este dispositivo ao paciente cujo [tokenPareamento] foi fornecido.
-  ///
-  /// [tokenPareamento] pode vir de um QR Code (JSON ou String) ou de um PIN digitado pelo usuário.
   static Future<AuthResult> associarDispositivo({
     required String tokenPareamento,
   }) async {
@@ -34,7 +16,6 @@ class AuthService {
       return AuthResult.falha('Informe um token ou PIN válido.');
     }
 
-    // 1. Trata se o valor lido do QR Code veio em formato JSON
     String tokenExtraido = rawInput;
     try {
       final jsonQr = jsonDecode(rawInput);
@@ -42,29 +23,34 @@ class AuthService {
         tokenExtraido = jsonQr['TokenAcesso'] ??
             jsonQr['tokenAcesso'] ??
             jsonQr['tokenPareamento'] ??
+            jsonQr['token'] ??
             rawInput;
       }
-    } catch (_) {
-      // O valor enviado é uma String pura (ex: PIN digitado)
-    }
+    } catch (_) {}
 
-    // 📍 LOG DE VERIFICAÇÃO DO TOKEN NO CONSOLE DO FLUTTER
-    debugPrint('--------------------------------------------------');
-    debugPrint('Token final a ser enviado para a API: $tokenExtraido');
-    debugPrint('--------------------------------------------------');
+    debugPrint('Token para login extraído');
 
     try {
-      // Constrói a URL apontando para a MedicaAPI
-      final uri = Uri.parse('${ApiConfig.baseUrl}/Auth/associar-dispositivo');
+      final baseUrl = ApiConfig.medicApiUrl.endsWith('/api')
+          ? ApiConfig.medicApiUrl
+          : '${ApiConfig.medicApiUrl}/api';
+      final uri = Uri.parse('$baseUrl/Auth/associar-dispositivo');
 
-      // Busca o token do Firebase Cloud Messaging (FCM)
       final fcmToken = await FcmService.getToken();
+      final bool fcmValido = fcmToken != null && fcmToken.isNotEmpty;
+      final debugToken = dotenv.env['DEBUG_FCM_TOKEN'] ?? 'device_fcm_token_placeholder';
+      final fcmFinal = fcmValido ? fcmToken : debugToken;
 
-      final bodyMap = {
+      if (fcmValido) {
+        debugPrint('[AuthService] Enviando Token FCM REAL do dispositivo.');
+      } else {
+        debugPrint('[AuthService] AVISO: FCM Token nulo/indisponível. Enviando fallback do .env (DEBUG_FCM_TOKEN): $fcmFinal');
+      }
+
+      final body = jsonEncode({
         'tokenPareamento': tokenExtraido,
-        'fcmToken': fcmToken ?? '',
-      };
-      final body = jsonEncode(bodyMap);
+        'fcmToken': fcmFinal,
+      });
 
       final response = await http
           .post(
@@ -74,12 +60,14 @@ class AuthService {
           )
           .timeout(ApiConfig.timeout);
 
-      // --- SUCESSO (200) ---
+      debugPrint('Status da resposta: ${response.statusCode}');
+      debugPrint('Corpo da resposta: ${response.body}');
+
       if (response.statusCode == 200) {
         final jwt = _extrairJwt(response.body);
 
         if (jwt == null || jwt.isEmpty) {
-          return AuthResult.falha('Resposta inválida do servidor.');
+          return AuthResult.falha('Resposta inválida do servidor (JWT não encontrado).');
         }
 
         final payload = _decodificarPayload(jwt);
@@ -93,48 +81,47 @@ class AuthService {
             : int.tryParse(idPacienteRaw?.toString() ?? '');
 
         if (idPaciente == null) {
-          return AuthResult.falha('Não foi possível identificar o paciente.');
+          return AuthResult.falha('Não foi possível identificar o paciente no token.');
         }
 
-        // Persiste a sessão local via SessionManager
         await SessionManager.saveSession(jwt, 0, idPaciente);
         return AuthResult.ok();
       }
 
-      // --- TRATAMENTO DE ERROS HTTP ---
       if (response.statusCode == 400) {
-        debugPrint('--- ERRO 400 DA API ---');
-        debugPrint('Payload enviado: $body');
-        debugPrint('Resposta da API: ${response.body}');
-        debugPrint('------------------------');
+        try {
+          final erroJson = jsonDecode(response.body);
+          if (erroJson is Map && erroJson['mensagem'] != null) {
+            return AuthResult.falha(erroJson['mensagem']);
+          }
+        } catch (_) {}
         return AuthResult.falha('Dados de pareamento inválidos ou expirados.');
       }
 
       if (response.statusCode == 401 || response.statusCode == 403) {
-        return AuthResult.falha('Token ou PIN inválido. Verifique e tente novamente.');
+        return AuthResult.falha('Token inválido ou não autorizado.');
       }
 
       if (response.statusCode == 404) {
-        return AuthResult.falha('Nenhum paciente encontrado para este token.');
+        return AuthResult.falha('Serviço não encontrado. Verifique a URL da API');
       }
 
       return AuthResult.falha(
-        'Erro do servidor (${response.statusCode}). Tente novamente.',
+        'Erro do servidor (${response.statusCode}): ${response.body}',
       );
     } on Exception catch (e) {
+      debugPrint('Erro em associarDispositivo: $e');
       final msg = e.toString();
-      if (msg.contains('TimeoutException') || msg.contains('SocketException')) {
-        return AuthResult.falha(
-          'Sem conexão com a API. Verifique a rede e o adb reverse.',
-        );
+      if (msg.contains('TimeoutException')) {
+        return AuthResult.falha('Tempo limite esgotado ao conectar com a API');
       }
-      return AuthResult.falha('Erro inesperado. Tente novamente.');
+      if (msg.contains('SocketException') || msg.contains('Connection refused') || msg.contains('Failed host lookup')) {
+        return AuthResult.falha('Sem conexão com a API');
+      }
+      return AuthResult.falha('Falha na conexão');
     }
   }
 
-  // ── HELPERS PRIVADOS ────────────────────────────────────────────────────────
-
-  /// Extrai o JWT string do corpo da resposta (String pura ou Envelope JSON).
   static String? _extrairJwt(String responseBody) {
     final body = responseBody.trim();
 
@@ -145,12 +132,21 @@ class AuthService {
     try {
       final json = jsonDecode(body);
       if (json is Map) {
-        for (final chave in ['token', 'Token', 'data', 'jwt', 'accessToken']) {
-          final valor = json[chave];
-          if (valor is String && valor.startsWith('eyJ')) {
-            return valor;
+        final data = json['data'];
+        if (data is Map) {
+          final token = data['tokenJwt'];
+          if (token is String && token.isNotEmpty) {
+            return token;
           }
+        } else if (data is String && data.startsWith('eyJ')) {
+          return data;
         }
+
+        final valor = json['tokenJwt'];
+        if (valor is String && valor.isNotEmpty) {
+          return valor;
+        }
+        
       }
       if (json is String && json.startsWith('eyJ')) {
         return json;
@@ -162,7 +158,6 @@ class AuthService {
     return null;
   }
 
-  /// Decodifica o payload (2ª parte) do JWT sem validar a assinatura.
   static Map<String, dynamic>? _decodificarPayload(String jwt) {
     try {
       final partes = jwt.split('.');
