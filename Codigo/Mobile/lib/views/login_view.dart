@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import '../config/api_config.dart';
 import '../config/app_colors.dart';
+import '../services/fcm_service.dart';
 import '../viewmodels/login_viewmodel.dart';
 import 'placeholder_view.dart';
 import 'qr_scanner_view.dart';
@@ -19,6 +20,8 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     super.initState();
     _viewModel = LoginViewModel();
+    ApiConfig.inicializarConfiguracoes();
+    FcmService.inicializar();
   }
 
   @override
@@ -122,11 +125,13 @@ class _LoginViewState extends State<LoginView> {
                               ),
                             ],
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: SvgPicture.asset(
-                              'assets/imgs/logo.svg',
-                              fit: BoxFit.contain,
+                          child: ClipOval(
+                            child: Padding(
+                              padding: const EdgeInsets.all(18),
+                              child: Image.asset(
+                                'assets/imgs/logo_splash.png',
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),

@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../config/session_manager.dart';
+import '../services/fcm_service.dart';
 import 'login_view.dart';
 
-class PlaceholderView extends StatelessWidget {
+class PlaceholderView extends StatefulWidget {
   const PlaceholderView({super.key});
+
+  @override
+  State<PlaceholderView> createState() => _PlaceholderViewState();
+}
+
+class _PlaceholderViewState extends State<PlaceholderView> {
+  @override
+  void initState() {
+    super.initState();
+    FcmService.inicializar();
+  }
 
   Future<void> _logout(BuildContext context) async {
     await SessionManager.clear();

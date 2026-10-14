@@ -1,54 +1,32 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'config/api_config.dart';
 import 'config/app_colors.dart';
 import 'config/http_overrides.dart';
-import 'config/session_manager.dart';
-import 'services/fcm_service.dart';
-import 'views/login_view.dart';
-import 'views/placeholder_view.dart';
+import 'views/splash_view.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (!kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS)) {
-    try {
-      await Firebase.initializeApp();
-      await FcmService.inicializar();
-    } catch (e) {
-      debugPrint('Erro ao inicializar Firebase: $e');
-    }
-  }
-
-  await ApiConfig.inicializarConfiguracoes();
 
   if (!kIsWeb) {
     MyHttpOverrides.apply();
   }
 
-  final logado = await SessionManager.isLoggedIn();
-
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,
-      builder: (context) => MedicaMobileApp(logado: logado),
+      builder: (context) => const App(),
     ),
   );
 }
 
-class MedicaMobileApp extends StatelessWidget {
-  final bool logado;
-
-  const MedicaMobileApp({super.key, required this.logado});
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Medica Mobile',
+      title: 'Medica',
       debugShowCheckedModeBanner: false,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
@@ -61,7 +39,7 @@ class MedicaMobileApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: AppColors.background,
       ),
-      home: logado ? const PlaceholderView() : const LoginView(),
+      home: const SplashView(),
     );
   }
 }

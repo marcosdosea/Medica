@@ -10,12 +10,10 @@ class ApiConfig {
   static const Duration timeout = Duration(seconds: 10);
 
   static Future<void> inicializarConfiguracoes() async {
-    try {
-      await dotenv.load(fileName: ".env");
-    } catch (_) {}
-
+    await dotenv.load(fileName: ".env");
+    
     final porta = dotenv.env['API_PORT'] ?? "5066";
-    final configuredUrl = dotenv.env['MEDICAPI_URL'] ?? dotenv.env['API_BASE_URL'];
+    final configuredUrl = dotenv.env['MEDICAPI_URL'];
 
     if (configuredUrl != null && configuredUrl.isNotEmpty) {
       medicApiUrl = configuredUrl;

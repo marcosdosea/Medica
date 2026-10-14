@@ -9,58 +9,76 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class FcmService {
-  static final _firebaseMessaging = FirebaseMessaging.instance;
+  static FirebaseMessaging get _firebaseMessaging => FirebaseMessaging.instance;
   static final _localNotifications = FlutterLocalNotificationsPlugin();
+  static Future<void>? _initFuture;
 
-  static Future<void> inicializar() async {
-    await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  static Future<void> inicializar() {
+    _initFuture ??= _executarInicializacao();
+    return _initFuture!;
+  }
 
-    const channel = AndroidNotificationChannel(
-      'medica_high_importance_channel',
-      'Avisos Importantes',
-      description: 'Canal usado para lembretes de medicação e atualizações.',
-      importance: Importance.high,
-    );
+  static Future<void> _executarInicializacao() async {
+    if (kIsWeb) return;
+    if (defaultTargetPlatform != TargetPlatform.android &&
+        defaultTargetPlatform != TargetPlatform.iOS) {
+      return;
+    }
 
-    final androidPlugin = _localNotifications
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    await androidPlugin?.createNotificationChannel(channel);
+    try {
+      await Firebase.initializeApp();
 
-    const initSettings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(),
-    );
-    await _localNotifications.initialize(settings: initSettings);
+      await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      const channel = AndroidNotificationChannel(
+        'medica_high_importance_channel',
+        'Avisos Importantes',
+        description: 'Canal usado para lembretes de planejamentos.',
+        importance: Importance.high,
+      );
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      final notification = message.notification;
-      final android = message.notification?.android;
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      await androidPlugin?.createNotificationChannel(channel);
 
-      if (notification != null && android != null) {
-        _localNotifications.show(
-          id: notification.hashCode,
-          title: notification.title,
-          body: notification.body,
-          notificationDetails: NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channelDescription: channel.description,
-              icon: '@mipmap/ic_launcher',
-              priority: Priority.high,
-              importance: Importance.high,
+      const initSettings = InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(),
+      );
+      await _localNotifications.initialize(settings: initSettings);
+
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+        final notification = message.notification;
+        final android = message.notification?.android;
+
+        if (notification != null && android != null) {
+          _localNotifications.show(
+            id: notification.hashCode,
+            title: notification.title,
+            body: notification.body,
+            notificationDetails: NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channelDescription: channel.description,
+                icon: '@mipmap/ic_launcher',
+                priority: Priority.high,
+                importance: Importance.high,
+              ),
             ),
-          ),
-        );
-      }
-    });
+          );
+        }
+      });
+    } catch (e) {
+      debugPrint('Erro ao inicializar FcmService: $e');
+    }
   }
 
   static Future<String?> getToken() async {
@@ -69,6 +87,7 @@ class FcmService {
         debugPrint('FcmService: Plataforma Web detectada (FCM nativo não suportado sem VAPID)');
         return null;
       }
+      await inicializar();
       final token = await _firebaseMessaging.getToken();
       debugPrint('FcmService: Token FCM real obtido do aparelho: $token');
       return token;
