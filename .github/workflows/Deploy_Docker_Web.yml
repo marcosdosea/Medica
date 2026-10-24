@@ -1,0 +1,54 @@
+name: MedicaWeb CI/CD Pipeline
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login no ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extrair versão da release
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=latest" >> $GITHUB_ENV
+          fi
+
+      - name: Build e push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Codigo/Web
+          file: ./Codigo/Web/MedicaWeb/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/medica-web:latest
+            ghcr.io/${{ github.repository_owner }}/medica-web:${{ env.VERSION }}
+
+      - name: Deploy na VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            export PATH=$HOME/bin:$PATH
+            export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock
+            cd ${{ secrets.COMPOSER_DIR }}
+            docker compose pull medica-web
+            docker compose up -d medica-web
