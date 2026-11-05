@@ -3,7 +3,7 @@ import '../config/api_config.dart';
 import '../config/app_colors.dart';
 import '../config/session_manager.dart';
 import 'login_view.dart';
-import 'placeholder_view.dart';
+import 'home_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -89,7 +89,7 @@ class _SplashViewState extends State<SplashView>
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, _, _) =>
-            logado ? const PlaceholderView() : const LoginView(),
+            logado ? const HomeView() : const LoginView(),
         transitionsBuilder: (context, animation, _, child) =>
             FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 350),

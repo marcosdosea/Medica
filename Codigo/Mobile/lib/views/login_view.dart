@@ -3,7 +3,7 @@ import '../config/api_config.dart';
 import '../config/app_colors.dart';
 import '../services/fcm_service.dart';
 import '../viewmodels/login_viewmodel.dart';
-import 'placeholder_view.dart';
+import 'home_view.dart';
 import 'qr_scanner_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -37,7 +37,7 @@ class _LoginViewState extends State<LoginView> {
 
     if (sucesso) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PlaceholderView()),
+        MaterialPageRoute(builder: (_) => const HomeView()),
       );
     } else if (_viewModel.errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(

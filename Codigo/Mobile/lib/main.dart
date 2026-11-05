@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'config/app_colors.dart';
 import 'config/http_overrides.dart';
 import 'views/splash_view.dart';
+import 'views/splash_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
