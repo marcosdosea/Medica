@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY API/MedicaAPI.csproj MedicaAPI/
+COPY API/MedicaAPI.csproj API/
 COPY Web/Core/Core.csproj Web/Core/
 COPY Web/Service/Service.csproj Web/Service/
 COPY Web/Util/Util.csproj Web/Util/
