@@ -1,16 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY API/MedicaAPI.csproj MedicaAPI/
-COPY Web/Core/Core.csproj Web/Core/
-COPY Web/Service/Service.csproj Web/Service/
-RUN dotnet restore MedicaAPI/MedicaAPI.csproj
+COPY ["Codigo/API/MedicaAPI.csproj", "API/"]
+COPY ["Codigo/Web/Core/Core.csproj", "Web/Core/"]
+COPY ["Codigo/Web/Service/Service.csproj", "Web/Service/"]
+RUN dotnet restore "API/MedicaAPI.csproj"
 
-COPY API/ API/
-COPY Web/Core/ Web/Core/
-COPY Web/Service/ Web/Service/
-
-RUN dotnet publish MedicaAPI/MedicaAPI.csproj -c Release -o /app/publish
+COPY Codigo/ .
+WORKDIR "/src/API"
+RUN dotnet publish "MedicaAPI.csproj" -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
