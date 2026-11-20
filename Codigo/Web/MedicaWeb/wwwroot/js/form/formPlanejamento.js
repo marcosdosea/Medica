@@ -710,7 +710,8 @@ const FormPlanejamento = {
         const formExcluir = document.getElementById('formExcluirPlanejamento');
         if (!formExcluir) return;
 
-        formExcluir.action = `/Planejamento/Delete/${id}`;
+        const idPaciente = $('#IdPaciente').val() || 0;
+        formExcluir.action = `/Planejamento/Delete/${id}?idPaciente=${idPaciente}`;
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({

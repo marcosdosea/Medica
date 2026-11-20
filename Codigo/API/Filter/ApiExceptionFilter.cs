@@ -8,9 +8,17 @@ namespace MedicaAPI.Filter
 {
     public class ApiExceptionFilter : IExceptionFilter
     {
+        private readonly ILogger<ApiExceptionFilter> logger;
+
+        public ApiExceptionFilter(ILogger<ApiExceptionFilter> logger)
+        {
+            this.logger = logger;
+        }
+
         public void OnException(ExceptionContext context)
         {
             var exception = context.Exception;
+            logger.LogError(exception, "Erro na API: {Mensagem}", exception.Message);
 
             if (exception is SecurityTokenExpiredException)
             {
@@ -22,7 +30,17 @@ namespace MedicaAPI.Filter
                 return;
             }
 
-            if (exception is ServiceException or ArgumentException or InvalidOperationException or SecurityTokenException)
+            if (exception is SecurityTokenException)
+            {
+                context.Result = new ObjectResult(DefaultGenericResponse.Error(null, "Código de pareamento inválido."))
+                {
+                    StatusCode = StatusCodes.Status422UnprocessableEntity
+                };
+                context.ExceptionHandled = true;
+                return;
+            }
+
+            if (exception is ServiceException or ArgumentException or InvalidOperationException)
             {
                 context.Result = new ObjectResult(DefaultGenericResponse.Error(null, exception.Message))
                 {

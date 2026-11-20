@@ -14,11 +14,6 @@ namespace Service
             this.context = context;
         }
 
-        /// <summary>
-        /// Criar uma lista de novos planejamentos na base de dados em lote
-        /// </summary>
-        /// <param name="planejamentos">Coleção de planejamentos a serem persistidos</param>
-        /// <returns>True se gravou com sucesso</returns>
         public async Task<bool> Create(IEnumerable<Planejamento> planejamentos)
         {
             if (planejamentos == null || !planejamentos.Any())
@@ -29,10 +24,6 @@ namespace Service
             return true;
         }
 
-        /// <summary>
-        /// Remover dados de um planejamento da base de dados
-        /// </summary>
-        /// <param name="id">id do planejamento</param>
         public async Task Delete(uint id)
         {
             var planejamento = await context.Planejamentos.FindAsync((int)id)
@@ -53,11 +44,6 @@ namespace Service
             await context.SaveChangesAsync();
         }
 
-        /// <summary>
-        /// Buscar um planejamento na base de dados
-        /// </summary>
-        /// <param name="id">id do planejamento</param>
-        /// <returns>Dados do planejamento</returns>
         public async Task Edit(Planejamento planejamento)
         {
             bool possuiExecucao = await context.Execucaos
@@ -82,10 +68,6 @@ namespace Service
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        /// <summary>
-        /// Buscar todos os planejamentos cadastrados
-        /// </summary>
-        /// <returns>Lista de planejamentos</returns>
         public async Task<IEnumerable<Planejamento>> GetAll(uint idCuidador)
         {
             return await context.Planejamentos
@@ -96,13 +78,6 @@ namespace Service
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Buscar todos os planejamentos ativos de um paciente específico.
-        /// Se informado 'ultimaSincronizacao', retorna apenas os modificados ou criados a partir da data.
-        /// </summary>
-        /// <param name="idPaciente">Id do paciente</param>
-        /// <param name="ultimaSincronizacao">Data da última sincronização do app</param>
-        /// <returns>Lista de planejamentos ativos para salvar ou editar no app</returns>
         public async Task<IEnumerable<Planejamento>> GetAllByPaciente(uint idPaciente, DateTime? ultimaSincronizacao = null)
         {
             var query = context.Planejamentos
@@ -119,12 +94,6 @@ namespace Service
             return await query.ToListAsync();
         }
 
-        /// <summary>
-        /// Buscar apenas os IDs dos planejamentos excluídos de um paciente após a data informada.
-        /// </summary>
-        /// <param name="idPaciente">Id do paciente</param>
-        /// <param name="ultimaSincronizacao">Data da última sincronização do app</param>
-        /// <returns>Lista de IDs que o app deve excluir</returns>
         public async Task<IEnumerable<int>> GetIdsExcluidosByPaciente(uint idPaciente, DateTime? ultimaSincronizacao = null)
         {
             if (!ultimaSincronizacao.HasValue)
@@ -134,20 +103,16 @@ namespace Service
 
             return await context.Planejamentos
                 .AsNoTracking()
-                .Where(p => p.IdPaciente == idPaciente 
-                         && p.Ativo == StatusAtivo.N.ToString() 
+                .Where(p => p.IdPaciente == idPaciente
+                         && p.Ativo == StatusAtivo.N.ToString()
                          && p.DataAtualizacao >= ultimaSincronizacao.Value)
                 .Select(p => p.Id)
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Reativa um planejamento com status inativo
-        /// </summary>
-        /// <param name="id">id do planejamento</param>
         public async Task Activate(uint id)
         {
-            var planejamento = await this.Get(id) 
+            var planejamento = await this.Get(id)
                 ?? throw new ServiceException("Planejamento não encontrado.");
 
             if (planejamento.Ativo == StatusAtivo.S.ToString())

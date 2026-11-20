@@ -9,7 +9,6 @@ using Core.Service;
 using MedicaWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Util;
 
 namespace MedicaWeb.Controllers
@@ -20,21 +19,23 @@ namespace MedicaWeb.Controllers
         private readonly IPlanejamentoService planejamentoService;
         private readonly IPacienteService pacienteService;
         private readonly IEstoqueService estoqueService;
+        private readonly INotificacaoService notificacaoService;
         private readonly IMapper mapper;
 
         public PlanejamentoController(
             IPlanejamentoService planejamentoService,
             IPacienteService pacienteService,
             IEstoqueService estoqueService,
+            INotificacaoService notificacaoService,
             IMapper mapper)
         {
             this.planejamentoService = planejamentoService;
             this.pacienteService = pacienteService;
             this.estoqueService = estoqueService;
+            this.notificacaoService = notificacaoService;
             this.mapper = mapper;
         }
 
-        // GET: PlanejamentoController/Create
         [HttpGet]
         public async Task<IActionResult> Create(uint? idPaciente = null)
         {
@@ -49,18 +50,17 @@ namespace MedicaWeb.Controllers
             return View(new PlanejamentoViewModel { IdPaciente = idPaciente ?? 0 });
         }
 
-        // POST: PlanejamentoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PlanejamentoViewModel planejamentoViewModel)
         {
             var planejamentos = mapper.Map<IEnumerable<Planejamento>>(planejamentoViewModel);
             await planejamentoService.Create(planejamentos);
+            await notificacaoService.NotificarDispositivosPaciente(planejamentoViewModel.IdPaciente);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.CadastroSucesso);
             return RedirectToAction(nameof(Create), new { idPaciente = planejamentoViewModel.IdPaciente });
         }
 
-        // POST: PlanejamentoController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(uint id, PlanejamentoViewModel planejamentoViewModel)
@@ -68,16 +68,17 @@ namespace MedicaWeb.Controllers
             planejamentoViewModel.Id = id;
             var planejamentoModel = mapper.Map<Planejamento>(planejamentoViewModel);
             await planejamentoService.Edit(planejamentoModel);
+            await notificacaoService.NotificarDispositivosPaciente(planejamentoViewModel.IdPaciente);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.EdicaoSucesso);
             return RedirectToAction(nameof(Create), new { idPaciente = planejamentoViewModel.IdPaciente });
         }
 
-        // POST: PlanejamentoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(uint id, uint? idPaciente = null)
+        public async Task<IActionResult> Delete(uint id, uint idPaciente)
         {
             await planejamentoService.Delete(id);
+            await notificacaoService.NotificarDispositivosPaciente(idPaciente);
             NotificacaoHelper.AlertaSucesso(TempData, MensagemHelper.DelecaoSucesso);
             return RedirectToAction(nameof(Create), new { idPaciente });
         }

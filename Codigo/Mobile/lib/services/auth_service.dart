@@ -88,11 +88,15 @@ class AuthService {
         return AuthResult.ok();
       }
 
-      if (response.statusCode == 400) {
+      if (response.statusCode == 400 || response.statusCode == 422) {
         try {
           final erroJson = jsonDecode(response.body);
           if (erroJson is Map && erroJson['mensagem'] != null) {
-            return AuthResult.falha(erroJson['mensagem']);
+            final msg = erroJson['mensagem'].toString();
+            if (msg.contains('IDX') || msg.contains('SecurityToken')) {
+              return AuthResult.falha('QR Code inválido ou incompatível com o servidor.');
+            }
+            return AuthResult.falha(msg);
           }
         } catch (_) {}
         return AuthResult.falha('Dados de pareamento inválidos ou expirados.');
@@ -106,9 +110,7 @@ class AuthService {
         return AuthResult.falha('Serviço não encontrado. Verifique a URL da API');
       }
 
-      return AuthResult.falha(
-        'Erro do servidor (${response.statusCode}): ${response.body}',
-      );
+      return AuthResult.falha('Não foi possível conectar ao servidor. Tente novamente.');
     } on Exception catch (e) {
       debugPrint('Erro em associarDispositivo: $e');
       final msg = e.toString();
