@@ -32,7 +32,9 @@ namespace MedicaAPI.Filter
 
             if (exception is SecurityTokenException)
             {
-                context.Result = new ObjectResult(DefaultGenericResponse.Error(null, "Código de pareamento inválido."))
+                context.Result = new ObjectResult(DefaultGenericResponse.Error(
+                    new { erro = exception.Message },
+                    "Código de pareamento inválido."))
                 {
                     StatusCode = StatusCodes.Status422UnprocessableEntity
                 };
@@ -50,7 +52,14 @@ namespace MedicaAPI.Filter
                 return;
             }
 
-            context.Result = new ObjectResult(DefaultGenericResponse.Error(null, "Ocorreu um erro interno no servidor."))
+            var detalhesErro = new
+            {
+                tipo = exception.GetType().FullName,
+                erro = exception.Message,
+                inner = exception.InnerException?.Message
+            };
+
+            context.Result = new ObjectResult(DefaultGenericResponse.Error(detalhesErro, "Ocorreu um erro interno no servidor."))
             {
                 StatusCode = StatusCodes.Status500InternalServerError
             };
