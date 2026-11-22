@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../config/api_config.dart';
 import '../config/app_colors.dart';
@@ -180,6 +181,31 @@ class _LoginViewState extends State<LoginView> {
                             ),
                           ],
                         ),
+                        if (kDebugMode) ...[
+                          const SizedBox(height: 32),
+                          TextButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (_) => const HomeView(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.bug_report_outlined,
+                              color: Colors.white70,
+                              size: 20,
+                            ),
+                            label: const Text(
+                              'Entrar com Mock (Debug)',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 40),
                       ],
                     );
