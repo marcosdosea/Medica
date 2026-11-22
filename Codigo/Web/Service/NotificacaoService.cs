@@ -33,7 +33,7 @@ namespace Service
 
             var message = new Message
             {
-                Fid = token,
+                Token = token,
                 Notification = new Notification
                 {
                     Title = titulo,
@@ -46,8 +46,15 @@ namespace Service
                 }
             };
 
-            string resposta = await FirebaseMessaging.DefaultInstance.SendAsync(message);
-            logger.LogInformation("Notificação Firebase enviada com sucesso. Resposta: {Resposta}", resposta);
+            try
+            {
+                string resposta = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+                logger.LogInformation("Notificação Firebase enviada com sucesso. Resposta: {Resposta}", resposta);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Erro ao enviar notificação Firebase para o token {Token}", token);
+            }
         }
 
         public async Task NotificarDispositivosPaciente(uint idPaciente)

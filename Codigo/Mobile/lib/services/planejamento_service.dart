@@ -5,10 +5,10 @@ import '../config/medica_api_config.dart';
 import '../config/session_manager.dart';
 import '../dtos/default_generic_response.dart';
 import '../dtos/planejamento_dto.dart';
-import 'database_service.dart';
+import 'sqflite_service.dart';
 
 class PlanejamentoService {
-  final DatabaseService _databaseService = DatabaseService();
+  final SqfliteService _sqfliteService = SqfliteService();
   final String _baseUrl = MedicaApiConfig.baseUrl;
 
   Future<List<PlanejamentoResponseDto>> sincronizarPlanejamentos() async {
@@ -53,10 +53,10 @@ class PlanejamentoService {
           if (apiResponse.sucesso && apiResponse.data != null) {
             final dto = apiResponse.data!;
             if (dto.excluir.isNotEmpty) {
-              await _databaseService.excluirPlanejamentos(dto.excluir);
+              await _sqfliteService.excluirPlanejamentos(dto.excluir);
             }
             if (dto.planejamentos.isNotEmpty) {
-              await _databaseService.salvarPlanejamentos(dto.planejamentos);
+              await _sqfliteService.salvarPlanejamentos(dto.planejamentos);
             }
             await SessionManager.saveUltimaSincronizacao(dto.sincronizacao);
           }
@@ -66,7 +66,7 @@ class PlanejamentoService {
       debugPrint('[PlanejamentoService] Erro ao sincronizar com API: $e');
     }
 
-    return _databaseService.listarPlanejamentos();
+    return _sqfliteService.listarPlanejamentos();
   }
 
   Future<PlanejamentoDetailsDto?> buscarPorId(int id) async {

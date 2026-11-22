@@ -2,14 +2,22 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../config/app_mocks.dart';
+import '../services/sqflite_service.dart';
 
-class AguardaMedicamentoView extends StatelessWidget {
+class AguardaMedicamentoView extends StatefulWidget {
   final VoidCallback onSimularSincronizacao;
 
   const AguardaMedicamentoView({
     super.key,
     required this.onSimularSincronizacao,
   });
+
+  @override
+  State<AguardaMedicamentoView> createState() => _AguardaMedicamentoViewState();
+}
+
+class _AguardaMedicamentoViewState extends State<AguardaMedicamentoView> {
+  int _cliquesMedica = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -20,26 +28,27 @@ class AguardaMedicamentoView extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [
-            Color(0xFF1E78EB),
-            Color(0xFF3E35E1),
-          ],
+          colors: [Color(0xFF1E78EB), Color(0xFF3E35E1)],
         ),
       ),
       child: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               child: Center(
-                child: Text(
-                  'Medica',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
+                child: GestureDetector(
+                  onTap: _aoClicarTituloMedica,
+                  behavior: HitTestBehavior.opaque,
+                  child: const Text(
+                    'Medica',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
                   ),
                 ),
               ),
@@ -49,9 +58,7 @@ class AguardaMedicamentoView extends StatelessWidget {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Color(0xFFE5E5E5),
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(28),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                 ),
                 child: SafeArea(
                   top: false,
@@ -98,7 +105,7 @@ class AguardaMedicamentoView extends StatelessWidget {
                           const Spacer(),
                           if (kDebugMode)
                             TextButton.icon(
-                              onPressed: onSimularSincronizacao,
+                              onPressed: widget.onSimularSincronizacao,
                               icon: const Icon(Icons.sync_rounded, size: 20),
                               label: const Text(
                                 'Simular chegada de planejamento (Alarme em 5s)',
@@ -117,6 +124,50 @@ class AguardaMedicamentoView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _aoClicarTituloMedica() async {
+    _cliquesMedica++;
+    if (_cliquesMedica < 20) return;
+
+    _cliquesMedica = 0;
+    final planejamentos = await SqfliteService().listarPlanejamentos();
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          titlePadding: const EdgeInsets.only(top: 6, right: 6),
+          title: Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: const Icon(Icons.close_rounded),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
+          ),
+          content: Text(
+            '${planejamentos.length} planejamentos salvos',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text(
+                'OK',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

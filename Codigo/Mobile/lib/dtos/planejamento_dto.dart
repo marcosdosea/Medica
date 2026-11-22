@@ -68,7 +68,7 @@ class PlanejamentoResponseDto {
       hora: json['hora'] as String,
       intervaloExecucao: json['intervaloExecucao'] as String,
       dosagem: json['dosagem'] as int,
-      unidadeDosagem: json['unidadeDosagem'] as String,
+      unidadeDosagem: (json['unidadeDosagem'] as String?) ?? '',
     );
   }
 

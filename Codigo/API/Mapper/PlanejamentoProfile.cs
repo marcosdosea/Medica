@@ -8,7 +8,9 @@ namespace MedicaAPI.Mapper
     {
         public PlanejamentoProfile()
         {
-            CreateMap<Planejamento, PlanejamentoMobileResponseDto>();
+            CreateMap<Planejamento, PlanejamentoMobileResponseDto>()
+                .ForMember(dest => dest.UnidadeDosagem,
+                    opt => opt.MapFrom(src => src.IdMedicamentoNavigation.FormaFarmaceutica));
 
             CreateMap<Planejamento, PlanejamentoMobileDetailsDto>()
                 .ForMember(dest => dest.NomeMedicamento,

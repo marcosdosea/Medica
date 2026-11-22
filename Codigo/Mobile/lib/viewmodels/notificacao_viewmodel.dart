@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../config/app_mocks.dart';
 import '../services/fcm_service.dart';
+import '../services/planejamento_service.dart';
 
 class NotificacaoViewModel extends ChangeNotifier {
   bool _sincronizando = false;
@@ -24,6 +25,7 @@ class NotificacaoViewModel extends ChangeNotifier {
     };
 
     await FcmService.inicializar();
+    await PlanejamentoService().sincronizarPlanejamentos();
   }
 
   Future<void> silenciarAlarme() async {
