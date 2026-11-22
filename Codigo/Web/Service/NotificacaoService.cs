@@ -31,15 +31,23 @@ namespace Service
                 return;
             }
 
-            var message = new Message
+            var mensagemBanner = new Message
+            {
+                Token = token,
+                Notification = new Notification
+                {
+                    Title = titulo,
+                    Body = corpo
+                }
+            };
+
+            var mensagemSincronizacao = new Message
             {
                 Token = token,
                 Data = new Dictionary<string, string>
                 {
                     ["tipo"] = "SINCRONIZAR_PLANEJAMENTOS",
-                    ["acao"] = "sincronizar",
-                    ["titulo"] = titulo,
-                    ["corpo"] = corpo
+                    ["acao"] = "sincronizar"
                 },
                 Android = new AndroidConfig
                 {
@@ -47,15 +55,12 @@ namespace Service
                 }
             };
 
-            try
-            {
-                string resposta = await FirebaseMessaging.DefaultInstance.SendAsync(message);
-                logger.LogInformation("Notificação Firebase enviada com sucesso. Resposta: {Resposta}", resposta);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Erro ao enviar notificação Firebase para o token {Token}", token);
-            }
+            string respostaBanner = await FirebaseMessaging.DefaultInstance.SendAsync(mensagemBanner);
+            string respostaSync = await FirebaseMessaging.DefaultInstance.SendAsync(mensagemSincronizacao);
+            logger.LogInformation(
+                "Notificação e sincronização Firebase enviadas com sucesso. Banner: {Banner}, Sync: {Sync}",
+                respostaBanner,
+                respostaSync);
         }
 
         public async Task NotificarDispositivosPaciente(uint idPaciente)

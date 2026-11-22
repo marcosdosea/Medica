@@ -16,22 +16,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await Firebase.initializeApp();
   } catch (_) {}
 
-  if (message.notification == null) {
-    final titulo =
-        message.data['titulo']?.toString() ?? NotificacaoMock.tituloSincronizacao;
-    final corpo =
-        message.data['corpo']?.toString() ?? NotificacaoMock.corpoSincronizacao;
-    await FcmService.mostrarNotificacaoBanner(
-      titulo: titulo,
-      corpo: corpo,
-      payload: 'SINCRONIZACAO',
+  if (message.data.isNotEmpty) {
+    await FcmService.processarMensagemSegundoPlano(
+      message.data,
+      emBackground: true,
     );
   }
-
-  await FcmService.processarMensagemSegundoPlano(
-    message.data,
-    emBackground: true,
-  );
 }
 
 class FcmService {
@@ -189,20 +179,18 @@ class FcmService {
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         final notification = message.notification;
-        final titulo = notification?.title ??
-            message.data['titulo']?.toString() ??
-            NotificacaoMock.tituloSincronizacao;
-        final corpo = notification?.body ??
-            message.data['corpo']?.toString() ??
-            NotificacaoMock.corpoSincronizacao;
-        await mostrarNotificacaoBanner(
-          id: notification?.hashCode,
-          titulo: titulo,
-          corpo: corpo,
-          payload: 'SINCRONIZACAO',
-        );
+        if (notification != null) {
+          await mostrarNotificacaoBanner(
+            id: notification.hashCode,
+            titulo: notification.title ?? NotificacaoMock.tituloSincronizacao,
+            corpo: notification.body ?? NotificacaoMock.corpoSincronizacao,
+            payload: 'SINCRONIZACAO',
+          );
+        }
 
-        await processarMensagemSegundoPlano(message.data);
+        if (message.data.isNotEmpty) {
+          await processarMensagemSegundoPlano(message.data);
+        }
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
