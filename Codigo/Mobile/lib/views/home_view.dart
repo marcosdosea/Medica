@@ -1,5 +1,5 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import '../config/app_mocks.dart';
 import '../viewmodels/notificacao_viewmodel.dart';
 import 'aguarda_medicamento_view.dart';
 
@@ -38,6 +38,10 @@ class _HomeViewState extends State<HomeView> {
             child: _viewModel.alarmeAtivo
                 ? _TelaAlarmeAtivo(
                     key: const ValueKey('alarme'),
+                    nomeMedicamento: _viewModel.nomeExibicaoMedicamento,
+                    horario: _viewModel.horarioFormatado,
+                    dosagem: _viewModel.dosagem,
+                    fotoBytes: _viewModel.fotoMedicamentoBytes,
                     somMutado: _viewModel.somMutado,
                     onSilenciar: _viewModel.silenciarAlarme,
                     onConfirmar: _viewModel.confirmarMedicamentoTomado,
@@ -55,12 +59,20 @@ class _HomeViewState extends State<HomeView> {
 }
 
 class _TelaAlarmeAtivo extends StatelessWidget {
+  final String nomeMedicamento;
+  final String horario;
+  final int dosagem;
+  final Uint8List? fotoBytes;
   final bool somMutado;
   final VoidCallback onSilenciar;
   final VoidCallback onConfirmar;
 
   const _TelaAlarmeAtivo({
     super.key,
+    required this.nomeMedicamento,
+    required this.horario,
+    required this.dosagem,
+    required this.fotoBytes,
     required this.somMutado,
     required this.onSilenciar,
     required this.onConfirmar,
@@ -101,12 +113,26 @@ class _TelaAlarmeAtivo extends StatelessWidget {
                         width: 1.0,
                       ),
                     ),
+                    child: ClipOval(
+                      child: fotoBytes != null
+                          ? Image.memory(
+                              fotoBytes!,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(
+                              Icons.medication_rounded,
+                              size: 46,
+                              color: Color(0xFF1E78EB),
+                            ),
+                    ),
                   ),
                   const SizedBox(width: 20),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      HomeMock.nomePaciente,
-                      style: TextStyle(
+                      nomeMedicamento,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 28,
                         fontWeight: FontWeight.w500,
@@ -153,18 +179,18 @@ class _TelaAlarmeAtivo extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                const Row(
+                                Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.access_time,
                                       color: Colors.white,
                                       size: 32,
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Text(
-                                      HomeMock.horario,
-                                      style: TextStyle(
+                                      horario,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 34,
                                         fontWeight: FontWeight.w400,
@@ -189,7 +215,7 @@ class _TelaAlarmeAtivo extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 12),
                                     Text(
-                                      '${HomeMock.dosagem}',
+                                      '$dosagem',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 34,
@@ -232,10 +258,16 @@ class _TelaAlarmeAtivo extends StatelessWidget {
                                     child: Center(
                                       child: Padding(
                                         padding: const EdgeInsets.all(12),
-                                        child: Image.asset(
-                                          HomeMock.imagemMedicamento,
-                                          fit: BoxFit.contain,
-                                        ),
+                                        child: fotoBytes != null
+                                            ? Image.memory(
+                                                fotoBytes!,
+                                                fit: BoxFit.contain,
+                                              )
+                                            : const Icon(
+                                                Icons.medication_liquid_rounded,
+                                                size: 140,
+                                                color: Color(0xFF3482F6),
+                                              ),
                                       ),
                                     ),
                                   ),
