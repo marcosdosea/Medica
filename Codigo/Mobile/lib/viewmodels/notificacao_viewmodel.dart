@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import '../config/app_mocks.dart';
 import '../dtos/planejamento_dto.dart';
 import '../models/execucao.dart';
 import '../services/execucao_service.dart';
@@ -65,9 +66,9 @@ class NotificacaoViewModel extends ChangeNotifier {
   }
 
   Future<void> inicializar() async {
-    FcmService.onAlarmeDisparado = () async {
-      await carregarDadosAlarmeAtivo();
-      _alarmeAtivo = _planejamentoAtual != null;
+    FcmService.onAlarmeDisparado = (idPlanejamento) async {
+      await carregarDadosAlarmeAtivo(idPlanejamento: idPlanejamento);
+      _alarmeAtivo = true;
       _somMutado = false;
       notifyListeners();
     };
@@ -79,10 +80,11 @@ class NotificacaoViewModel extends ChangeNotifier {
 
     await FcmService.inicializar();
     await FcmService.verificarAlarmePendenteAoAbrir();
-    await _planejamentoService.sincronizarPlanejamentos();
+    final planejamentos = await _planejamentoService.sincronizarPlanejamentos();
+    await FcmService.agendarHorariosDosPlanejamentos(planejamentos);
   }
 
-  Future<void> carregarDadosAlarmeAtivo() async {
+  Future<void> carregarDadosAlarmeAtivo({int? idPlanejamento}) async {
     var lista = await _sqfliteService.listarPlanejamentos();
     if (lista.isEmpty) {
       lista = await _planejamentoService.sincronizarPlanejamentos();
@@ -95,7 +97,15 @@ class NotificacaoViewModel extends ChangeNotifier {
       return;
     }
 
-    _planejamentoAtual = lista.last;
+    if (idPlanejamento != null) {
+      _planejamentoAtual = lista.firstWhere(
+        (item) => item.id == idPlanejamento,
+        orElse: () => lista.last,
+      );
+    } else {
+      _planejamentoAtual = lista.last;
+    }
+
     _detalhesAtuais = await _planejamentoService.buscarPorId(
       _planejamentoAtual!.id,
     );
@@ -117,14 +127,13 @@ class NotificacaoViewModel extends ChangeNotifier {
 
   Future<void> silenciarAlarme() async {
     _somMutado = !_somMutado;
+    notifyListeners();
+
     if (_somMutado) {
       await FcmService.pararSomAlarmeMedicamento();
-    } else if (_planejamentoAtual != null) {
-      await FcmService.dispararAlarmeMedicamento(
-        idPlanejamento: _planejamentoAtual!.id,
-      );
+    } else {
+      await FcmService.retomarSomAlarme();
     }
-    notifyListeners();
   }
 
   Future<void> confirmarMedicamentoTomado() async {
@@ -149,15 +158,25 @@ class NotificacaoViewModel extends ChangeNotifier {
         ),
       );
     }
+
+    final planejamentos = await _sqfliteService.listarPlanejamentos();
+    await FcmService.agendarHorariosDosPlanejamentos(planejamentos);
   }
 
   Future<void> simularChegadaPlanejamento() async {
     _sincronizando = true;
     notifyListeners();
 
-    await FcmService.processarMensagemSegundoPlano({
-      'tipo': FcmService.tipoSincronizarPlanejamentos,
-    });
+    await FcmService.mostrarNotificacaoBanner(
+      titulo: NotificacaoMock.tituloSincronizacao,
+      corpo: NotificacaoMock.corpoSincronizacao,
+      payload: 'SINCRONIZACAO',
+    );
+
+    await FcmService.processarMensagemSegundoPlano(
+      {'tipo': FcmService.tipoSincronizarPlanejamentos},
+      simularEm5Segundos: true,
+    );
 
     _sincronizando = false;
     notifyListeners();

@@ -31,23 +31,49 @@ namespace Service
                 return;
             }
 
-            var message = new Message
+            var mensagemBanner = new Message
             {
                 Token = token,
                 Notification = new Notification
                 {
                     Title = titulo,
                     Body = corpo
-                },
+                }
+            };
+
+            var mensagemSincronizacao = new Message
+            {
+                Token = token,
                 Data = new Dictionary<string, string>
                 {
                     ["tipo"] = "SINCRONIZAR_PLANEJAMENTOS",
                     ["acao"] = "sincronizar"
+                },
+                Android = new AndroidConfig
+                {
+                    Priority = Priority.High
                 }
             };
 
-            string resposta = await FirebaseMessaging.DefaultInstance.SendAsync(message);
-            logger.LogInformation("Notificação Firebase enviada com sucesso. Resposta: {Resposta}", resposta);
+            try
+            {
+                string respostaBanner = await FirebaseMessaging.DefaultInstance.SendAsync(mensagemBanner);
+                logger.LogInformation("Banner Firebase enviado com sucesso. Resposta: {Resposta}", respostaBanner);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Erro ao enviar banner Firebase para o token {Token}", token);
+            }
+
+            try
+            {
+                string respostaSync = await FirebaseMessaging.DefaultInstance.SendAsync(mensagemSincronizacao);
+                logger.LogInformation("Sincronização silenciosa Firebase enviada com sucesso. Resposta: {Resposta}", respostaSync);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Erro ao enviar sincronização silenciosa Firebase para o token {Token}", token);
+            }
         }
 
         public async Task NotificarDispositivosPaciente(uint idPaciente)

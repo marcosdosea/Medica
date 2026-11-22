@@ -22,17 +22,9 @@ class PlanejamentoService {
       final baseUrl = await _obterBaseUrl();
       final token = await SessionManager.getToken();
       final idPaciente = await SessionManager.getIdPessoa();
-      final ultimaSincronizacao = await SessionManager.getUltimaSincronizacao();
 
       if (token != null && token.isNotEmpty && idPaciente != null) {
-        final queryParams = <String, String>{};
-        if (ultimaSincronizacao != null) {
-          queryParams['ultimaSincronizacao'] =
-              ultimaSincronizacao.toUtc().toIso8601String();
-        }
-
-        final uri = Uri.parse('$baseUrl/Planejamento/paciente/$idPaciente')
-            .replace(queryParameters: queryParams.isEmpty ? null : queryParams);
+        final uri = Uri.parse('$baseUrl/Planejamento/paciente/$idPaciente');
 
         debugPrint('[PlanejamentoService] Sincronizando com API: $uri');
 
@@ -59,12 +51,7 @@ class PlanejamentoService {
 
           if (apiResponse.sucesso && apiResponse.data != null) {
             final dto = apiResponse.data!;
-            if (dto.excluir.isNotEmpty) {
-              await _sqfliteService.excluirPlanejamentos(dto.excluir);
-            }
-            if (dto.planejamentos.isNotEmpty) {
-              await _sqfliteService.salvarPlanejamentos(dto.planejamentos);
-            }
+            await _sqfliteService.substituirPlanejamentos(dto.planejamentos);
             await SessionManager.saveUltimaSincronizacao(dto.sincronizacao);
           }
         }

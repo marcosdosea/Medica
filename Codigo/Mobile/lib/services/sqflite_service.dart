@@ -37,6 +37,28 @@ class SqfliteService {
     debugPrint('[SqfliteService] SQLite inicializado em: $path');
   }
 
+  Future<void> substituirPlanejamentos(
+    List<PlanejamentoResponseDto> planejamentos,
+  ) async {
+    final db = await database;
+    final batch = db.batch();
+
+    batch.delete(SqfliteConfig.tabelaPlanejamentos);
+
+    for (final item in planejamentos) {
+      batch.insert(
+        SqfliteConfig.tabelaPlanejamentos,
+        item.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
+    debugPrint(
+      '[SqfliteService] ${planejamentos.length} planejamento(s) sincronizado(s) no SQLite.',
+    );
+  }
+
   Future<void> salvarPlanejamentos(
     List<PlanejamentoResponseDto> planejamentos,
   ) async {
