@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../config/api_config.dart';
+import '../config/medica_api_config.dart';
 import '../config/app_colors.dart';
 import '../config/session_manager.dart';
 import 'login_view.dart';
@@ -79,7 +79,7 @@ class _SplashViewState extends State<SplashView>
 
     await _controller.forward(from: 0.0);
 
-    final dependencias = ApiConfig.inicializarConfiguracoes();
+    final dependencias = MedicaApiConfig.inicializarConfiguracoes();
     final login = SessionManager.isLoggedIn();
 
     await dependencias;

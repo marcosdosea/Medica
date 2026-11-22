@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
-class ApiConfig {
+class MedicaApiConfig {
   static late String medicApiUrl;
   static String get baseUrl => medicApiUrl;
 
@@ -11,7 +11,7 @@ class ApiConfig {
 
   static Future<void> inicializarConfiguracoes() async {
     await dotenv.load(fileName: ".env");
-    
+
     final porta = dotenv.env['API_PORT'] ?? "5066";
     final configuredUrl = dotenv.env['MEDICAPI_URL'];
 

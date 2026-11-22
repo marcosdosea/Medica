@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../config/api_config.dart';
+import '../config/medica_api_config.dart';
 import '../config/app_colors.dart';
 import '../services/fcm_service.dart';
 import '../viewmodels/login_viewmodel.dart';
@@ -21,7 +21,7 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     super.initState();
     _viewModel = LoginViewModel();
-    ApiConfig.inicializarConfiguracoes();
+    MedicaApiConfig.inicializarConfiguracoes();
     FcmService.inicializar();
   }
 

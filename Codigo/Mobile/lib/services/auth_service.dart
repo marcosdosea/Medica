@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import '../config/api_config.dart';
+import '../config/medica_api_config.dart';
 import '../config/session_manager.dart';
 import '../models/auth_result.dart';
 import 'fcm_service.dart';
@@ -31,9 +31,9 @@ class AuthService {
     debugPrint('Token para login extraído');
 
     try {
-      final baseUrl = ApiConfig.medicApiUrl.endsWith('/api')
-          ? ApiConfig.medicApiUrl
-          : '${ApiConfig.medicApiUrl}/api';
+      final baseUrl = MedicaApiConfig.medicApiUrl.endsWith('/api')
+          ? MedicaApiConfig.medicApiUrl
+          : '${MedicaApiConfig.medicApiUrl}/api';
       final uri = Uri.parse('$baseUrl/Auth/associar-dispositivo');
 
       final fcmToken = await FcmService.getToken();
@@ -58,7 +58,7 @@ class AuthService {
             headers: {'Content-Type': 'application/json'},
             body: body,
           )
-          .timeout(ApiConfig.timeout);
+          .timeout(MedicaApiConfig.timeout);
 
       debugPrint('Status da resposta: ${response.statusCode}');
       debugPrint('Corpo da resposta: ${response.body}');

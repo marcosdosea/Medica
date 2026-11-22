@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../config/app_mocks.dart';
-import 'database_service.dart';
+import 'planejamento_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -246,7 +246,7 @@ class FcmService {
     debugPrint(
       '[FcmService] Sincronizando planejamentos no SQLite e agendando alarme local...',
     );
-    await DatabaseService().sincronizarPlanejamentos();
+    await PlanejamentoService().sincronizarPlanejamentos();
     onSincronizacaoRecebida?.call(data);
 
     _timerAlarmeLocal?.cancel();
