@@ -31,48 +31,36 @@ namespace Service
                 return;
             }
 
-            var mensagemBanner = new Message
+            var message = new Message
             {
                 Token = token,
                 Notification = new Notification
                 {
                     Title = titulo,
                     Body = corpo
-                }
-            };
-
-            var mensagemSincronizacao = new Message
-            {
-                Token = token,
+                },
                 Data = new Dictionary<string, string>
                 {
                     ["tipo"] = "SINCRONIZAR_PLANEJAMENTOS",
                     ["acao"] = "sincronizar"
-                },
-                Android = new AndroidConfig
-                {
-                    Priority = Priority.High
                 }
             };
 
-            string respostaBanner = await FirebaseMessaging.DefaultInstance.SendAsync(mensagemBanner);
-            string respostaSync = await FirebaseMessaging.DefaultInstance.SendAsync(mensagemSincronizacao);
-            logger.LogInformation(
-                "Notificação e sincronização Firebase enviadas com sucesso. Banner: {Banner}, Sync: {Sync}",
-                respostaBanner,
-                respostaSync);
+            string resposta = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+            logger.LogInformation("Notificação Firebase enviada com sucesso. Resposta: {Resposta}", resposta);
         }
 
         public async Task NotificarDispositivosPaciente(uint idPaciente)
         {
-            var tokens = await context.Dispositivopacientes
+            var token = await context.Dispositivopacientes
                 .AsNoTracking()
                 .Where(d => d.IdPaciente == idPaciente && !string.IsNullOrEmpty(d.FcmToken))
+                .OrderByDescending(d => d.DataAtualizacao)
+                .ThenByDescending(d => d.Id)
                 .Select(d => d.FcmToken)
-                .Distinct()
-                .ToListAsync();
+                .FirstOrDefaultAsync();
 
-            foreach (var token in tokens)
+            if (!string.IsNullOrEmpty(token))
             {
                 await Enviar(
                     token,
