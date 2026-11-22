@@ -34,15 +34,16 @@ namespace Service
             var message = new Message
             {
                 Token = token,
-                Notification = new Notification
-                {
-                    Title = titulo,
-                    Body = corpo
-                },
                 Data = new Dictionary<string, string>
                 {
                     ["tipo"] = "SINCRONIZAR_PLANEJAMENTOS",
-                    ["acao"] = "sincronizar"
+                    ["acao"] = "sincronizar",
+                    ["titulo"] = titulo,
+                    ["corpo"] = corpo
+                },
+                Android = new AndroidConfig
+                {
+                    Priority = Priority.High
                 }
             };
 

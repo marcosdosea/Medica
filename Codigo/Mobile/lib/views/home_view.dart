@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../viewmodels/notificacao_viewmodel.dart';
 import 'aguarda_medicamento_view.dart';
+import 'confirmacao_medicamento_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -11,19 +12,31 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  late final NotificacaoViewModel _viewModel;
+  late final NotificacaoViewModel _notificacaoViewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = NotificacaoViewModel();
-    _viewModel.inicializar();
+    _notificacaoViewModel = NotificacaoViewModel();
+    _notificacaoViewModel.inicializar();
   }
 
   @override
   void dispose() {
-    _viewModel.dispose();
+    _notificacaoViewModel.dispose();
     super.dispose();
+  }
+
+  Future<void> _aoConfirmarMedicamento() async {
+    _notificacaoViewModel.confirmarMedicamentoTomado();
+    await Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, _, _) => const ConfirmacaoMedicamentoView(),
+        transitionsBuilder: (context, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 250),
+      ),
+    );
   }
 
   @override
@@ -31,25 +44,26 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: const Color(0xFFE5E5E5),
       body: ListenableBuilder(
-        listenable: _viewModel,
+        listenable: _notificacaoViewModel,
         builder: (context, _) {
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            child: _viewModel.alarmeAtivo
+            child: _notificacaoViewModel.alarmeAtivo
                 ? _TelaAlarmeAtivo(
                     key: const ValueKey('alarme'),
-                    nomeMedicamento: _viewModel.nomeExibicaoMedicamento,
-                    horario: _viewModel.horarioFormatado,
-                    dosagem: _viewModel.dosagem,
-                    fotoBytes: _viewModel.fotoMedicamentoBytes,
-                    somMutado: _viewModel.somMutado,
-                    onSilenciar: _viewModel.silenciarAlarme,
-                    onConfirmar: _viewModel.confirmarMedicamentoTomado,
+                    nomeMedicamento: _notificacaoViewModel.nomeExibicaoMedicamento,
+                    horario: _notificacaoViewModel.horarioFormatado,
+                    dosagem: _notificacaoViewModel.dosagem,
+                    imagemPeriodoAsset: _notificacaoViewModel.imagemPeriodoAsset,
+                    fotoBytes: _notificacaoViewModel.fotoMedicamentoBytes,
+                    somMutado: _notificacaoViewModel.somMutado,
+                    onSilenciar: _notificacaoViewModel.silenciarAlarme,
+                    onConfirmar: _aoConfirmarMedicamento,
                   )
                 : AguardaMedicamentoView(
                     key: const ValueKey('aguardando'),
                     onSimularSincronizacao:
-                        _viewModel.simularChegadaPlanejamento,
+                        _notificacaoViewModel.simularChegadaPlanejamento,
                   ),
           );
         },
@@ -62,6 +76,7 @@ class _TelaAlarmeAtivo extends StatelessWidget {
   final String nomeMedicamento;
   final String horario;
   final int dosagem;
+  final String imagemPeriodoAsset;
   final Uint8List? fotoBytes;
   final bool somMutado;
   final VoidCallback onSilenciar;
@@ -72,6 +87,7 @@ class _TelaAlarmeAtivo extends StatelessWidget {
     required this.nomeMedicamento,
     required this.horario,
     required this.dosagem,
+    required this.imagemPeriodoAsset,
     required this.fotoBytes,
     required this.somMutado,
     required this.onSilenciar,
@@ -114,16 +130,10 @@ class _TelaAlarmeAtivo extends StatelessWidget {
                       ),
                     ),
                     child: ClipOval(
-                      child: fotoBytes != null
-                          ? Image.memory(
-                              fotoBytes!,
-                              fit: BoxFit.cover,
-                            )
-                          : const Icon(
-                              Icons.medication_rounded,
-                              size: 46,
-                              color: Color(0xFF1E78EB),
-                            ),
+                      child: Image.asset(
+                        imagemPeriodoAsset,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 20),

@@ -50,6 +50,20 @@ class NotificacaoViewModel extends ChangeNotifier {
 
   Uint8List? get fotoMedicamentoBytes => _fotoMedicamentoBytes;
 
+  String get imagemPeriodoAsset {
+    int hora = DateTime.now().hour;
+    final horaRaw = _planejamentoAtual?.hora ?? '';
+    if (horaRaw.isNotEmpty) {
+      final partes = horaRaw.split(':');
+      final horaParseada = int.tryParse(partes.first);
+      if (horaParseada != null) {
+        hora = horaParseada;
+      }
+    }
+    final isNoite = hora < 6 || hora >= 18;
+    return isNoite ? 'assets/imgs/h_acordar.png' : 'assets/imgs/h_dormir.png';
+  }
+
   Future<void> inicializar() async {
     FcmService.onAlarmeDisparado = () async {
       await carregarDadosAlarmeAtivo();
@@ -64,6 +78,7 @@ class NotificacaoViewModel extends ChangeNotifier {
     };
 
     await FcmService.inicializar();
+    await FcmService.verificarAlarmePendenteAoAbrir();
     await _planejamentoService.sincronizarPlanejamentos();
   }
 
@@ -103,9 +118,11 @@ class NotificacaoViewModel extends ChangeNotifier {
   Future<void> silenciarAlarme() async {
     _somMutado = !_somMutado;
     if (_somMutado) {
-      await FcmService.pararAlarmeMedicamento();
-    } else {
-      await FcmService.dispararAlarmeMedicamento();
+      await FcmService.pararSomAlarmeMedicamento();
+    } else if (_planejamentoAtual != null) {
+      await FcmService.dispararAlarmeMedicamento(
+        idPlanejamento: _planejamentoAtual!.id,
+      );
     }
     notifyListeners();
   }

@@ -1,34 +1,57 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_mocks.dart';
 import 'planejamento_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp();
   } catch (_) {}
 
-  await FcmService.processarMensagemSegundoPlano(message.data);
+  if (message.notification == null) {
+    final titulo =
+        message.data['titulo']?.toString() ?? NotificacaoMock.tituloSincronizacao;
+    final corpo =
+        message.data['corpo']?.toString() ?? NotificacaoMock.corpoSincronizacao;
+    await FcmService.mostrarNotificacaoBanner(
+      titulo: titulo,
+      corpo: corpo,
+      payload: 'SINCRONIZACAO',
+    );
+  }
+
+  await FcmService.processarMensagemSegundoPlano(
+    message.data,
+    emBackground: true,
+  );
 }
 
 class FcmService {
   static FirebaseMessaging get _firebaseMessaging => FirebaseMessaging.instance;
   static final _localNotifications = FlutterLocalNotificationsPlugin();
+  static final AudioPlayer _alarmePlayer = AudioPlayer();
   static Future<void>? _initFuture;
   static bool _localNotificationsInitialized = false;
   static Timer? _timerAlarmeLocal;
   static Timer? _timerTimeoutAlarme;
 
-  static const int idNotificacaoAlarme = 999;
+  static const String _keyAlarmePendente = 'alarme_pendente_ativo';
+  static const String _keyIdPlanejamentoAlarme = 'id_planejamento_alarme_ativo';
+  static const String _uriSomAlarmePadrao =
+      'content://settings/system/alarm_alert';
   static const String tipoSincronizarPlanejamentos = 'SINCRONIZAR_PLANEJAMENTOS';
   static const String tipoLembreteMedicamento = 'LEMBRETE_MEDICAMENTO';
 
   static const AndroidNotificationSound _somPadraoAlarmeDispositivo =
-      UriAndroidNotificationSound('content://settings/system/alarm_alert');
+      UriAndroidNotificationSound(_uriSomAlarmePadrao);
 
   static const AndroidNotificationChannel _syncChannel =
       AndroidNotificationChannel(
@@ -47,7 +70,7 @@ class FcmService {
     importance: Importance.max,
     playSound: true,
     sound: _somPadraoAlarmeDispositivo,
-    enableVibration: true,
+    enableVibration: false,
     audioAttributesUsage: AudioAttributesUsage.alarm,
   );
 
@@ -59,6 +82,47 @@ class FcmService {
   static Future<void> inicializar() {
     _initFuture ??= _executarInicializacao();
     return _initFuture!;
+  }
+
+  static Future<void> _iniciarToqueAlarmeContinuo() async {
+    try {
+      await _alarmePlayer.setAudioContext(
+        AudioContext(
+          android: const AudioContextAndroid(
+            isSpeakerphoneOn: true,
+            stayAwake: true,
+            contentType: AndroidContentType.sonification,
+            usageType: AndroidUsageType.alarm,
+            audioFocus: AndroidAudioFocus.gainTransient,
+          ),
+        ),
+      );
+      await _alarmePlayer.setReleaseMode(ReleaseMode.loop);
+      await _alarmePlayer.play(UrlSource(_uriSomAlarmePadrao));
+    } catch (e) {
+      debugPrint('Erro ao iniciar toque contínuo do alarme: $e');
+    }
+  }
+
+  static Future<void> verificarAlarmePendenteAoAbrir() async {
+    await _inicializarNotificacoesLocais();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    final pendente = prefs.getBool(_keyAlarmePendente) ?? false;
+
+    final launchDetails =
+        await _localNotifications.getNotificationAppLaunchDetails();
+    final payloadLaunch = launchDetails?.notificationResponse?.payload;
+    final abriuPeloAlarme =
+        (launchDetails?.didNotificationLaunchApp ?? false) &&
+            payloadLaunch != null &&
+            payloadLaunch != 'SINCRONIZACAO';
+
+    if (pendente || abriuPeloAlarme) {
+      await _iniciarToqueAlarmeContinuo();
+      onAlarmeDisparado?.call();
+    }
   }
 
   static Future<void> _inicializarNotificacoesLocais() async {
@@ -80,8 +144,9 @@ class FcmService {
 
     await _localNotifications.initialize(
       settings: initSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        if (response.payload == 'ALARME') {
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        if (response.payload != null && response.payload != 'SINCRONIZACAO') {
+          await _iniciarToqueAlarmeContinuo();
           onAlarmeDisparado?.call();
         }
         onNotificacaoClicada?.call(response.payload);
@@ -124,10 +189,16 @@ class FcmService {
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         final notification = message.notification;
+        final titulo = notification?.title ??
+            message.data['titulo']?.toString() ??
+            NotificacaoMock.tituloSincronizacao;
+        final corpo = notification?.body ??
+            message.data['corpo']?.toString() ??
+            NotificacaoMock.corpoSincronizacao;
         await mostrarNotificacaoBanner(
-          id: notification.hashCode,
-          titulo: notification?.title ?? NotificacaoMock.tituloSincronizacao,
-          corpo: notification?.body ?? NotificacaoMock.corpoSincronizacao,
+          id: notification?.hashCode,
+          titulo: titulo,
+          corpo: corpo,
           payload: 'SINCRONIZACAO',
         );
 
@@ -137,6 +208,11 @@ class FcmService {
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
         await processarMensagemSegundoPlano(message.data);
       });
+
+      final initialMessage = await _firebaseMessaging.getInitialMessage();
+      if (initialMessage != null) {
+        await processarMensagemSegundoPlano(initialMessage.data);
+      }
     } catch (e) {
       debugPrint('Erro ao inicializar FcmService: $e');
     }
@@ -180,17 +256,24 @@ class FcmService {
   }
 
   static Future<void> dispararAlarmeMedicamento({
+    required int idPlanejamento,
     String titulo = NotificacaoMock.tituloAlarme,
     String corpo = NotificacaoMock.corpoAlarme,
   }) async {
     await _inicializarNotificacoesLocais();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyAlarmePendente, true);
+    await prefs.setInt(_keyIdPlanejamentoAlarme, idPlanejamento);
+
+    await _iniciarToqueAlarmeContinuo();
     onAlarmeDisparado?.call();
 
     _timerTimeoutAlarme?.cancel();
     _timerTimeoutAlarme = Timer(
       const Duration(seconds: NotificacaoMock.duracaoMaximaAlarmeSegundos),
       () async {
-        await pararAlarmeMedicamento();
+        await pararSomAlarmeMedicamento();
         onAlarmeSilenciadoAutomaticamente?.call();
       },
     );
@@ -201,10 +284,10 @@ class FcmService {
     }
 
     await _localNotifications.show(
-      id: idNotificacaoAlarme,
+      id: idPlanejamento,
       title: titulo,
       body: corpo,
-      payload: 'ALARME',
+      payload: '$idPlanejamento',
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           _alarmChannel.id,
@@ -232,33 +315,56 @@ class FcmService {
     );
   }
 
-  static Future<void> pararAlarmeMedicamento() async {
+  static Future<void> pararSomAlarmeMedicamento() async {
     _timerAlarmeLocal?.cancel();
     _timerTimeoutAlarme?.cancel();
+    try {
+      await _alarmePlayer.stop();
+    } catch (_) {}
     if (_localNotificationsInitialized) {
-      await _localNotifications.cancel(id: idNotificacaoAlarme);
+      final prefs = await SharedPreferences.getInstance();
+      final idPlanejamento = prefs.getInt(_keyIdPlanejamentoAlarme);
+      if (idPlanejamento != null) {
+        await _localNotifications.cancel(id: idPlanejamento);
+      }
     }
   }
 
+  static Future<void> pararAlarmeMedicamento() async {
+    await pararSomAlarmeMedicamento();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyAlarmePendente, false);
+    await prefs.remove(_keyIdPlanejamentoAlarme);
+  }
+
   static Future<void> processarMensagemSegundoPlano(
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    bool emBackground = false,
+  }) async {
     debugPrint(
       '[FcmService] Sincronizando planejamentos no SQLite e agendando alarme local...',
     );
-    await PlanejamentoService().sincronizarPlanejamentos();
+    final planejamentos = await PlanejamentoService().sincronizarPlanejamentos();
     onSincronizacaoRecebida?.call(data);
 
+    if (planejamentos.isEmpty) return;
+    final idPlanejamento = planejamentos.last.id;
+
     _timerAlarmeLocal?.cancel();
-    debugPrint(
-      '[FcmService] Alarme local agendado para disparar em ${NotificacaoMock.segundosParaAlarmeTeste} segundos!',
-    );
-    _timerAlarmeLocal = Timer(
-      const Duration(seconds: NotificacaoMock.segundosParaAlarmeTeste),
-      () {
-        dispararAlarmeMedicamento();
-      },
-    );
+
+    if (emBackground) {
+      await Future.delayed(
+        const Duration(seconds: NotificacaoMock.segundosParaAlarmeTeste),
+      );
+      await dispararAlarmeMedicamento(idPlanejamento: idPlanejamento);
+    } else {
+      _timerAlarmeLocal = Timer(
+        const Duration(seconds: NotificacaoMock.segundosParaAlarmeTeste),
+        () {
+          dispararAlarmeMedicamento(idPlanejamento: idPlanejamento);
+        },
+      );
+    }
   }
 
   static Future<String?> getToken() async {

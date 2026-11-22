@@ -9,10 +9,17 @@ import 'sqflite_service.dart';
 
 class PlanejamentoService {
   final SqfliteService _sqfliteService = SqfliteService();
-  final String _baseUrl = MedicaApiConfig.baseUrl;
+
+  Future<String> _obterBaseUrl() async {
+    await MedicaApiConfig.inicializarConfiguracoes();
+    return MedicaApiConfig.baseUrl;
+  }
 
   Future<List<PlanejamentoResponseDto>> sincronizarPlanejamentos() async {
+    await _sqfliteService.inicializar();
+
     try {
+      final baseUrl = await _obterBaseUrl();
       final token = await SessionManager.getToken();
       final idPaciente = await SessionManager.getIdPessoa();
       final ultimaSincronizacao = await SessionManager.getUltimaSincronizacao();
@@ -24,7 +31,7 @@ class PlanejamentoService {
               ultimaSincronizacao.toUtc().toIso8601String();
         }
 
-        final uri = Uri.parse('$_baseUrl/Planejamento/paciente/$idPaciente')
+        final uri = Uri.parse('$baseUrl/Planejamento/paciente/$idPaciente')
             .replace(queryParameters: queryParams.isEmpty ? null : queryParams);
 
         debugPrint('[PlanejamentoService] Sincronizando com API: $uri');
@@ -71,10 +78,11 @@ class PlanejamentoService {
 
   Future<PlanejamentoDetailsDto?> buscarPorId(int id) async {
     try {
+      final baseUrl = await _obterBaseUrl();
       final token = await SessionManager.getToken();
       if (token == null || token.isEmpty) return null;
 
-      final uri = Uri.parse('$_baseUrl/Planejamento/$id');
+      final uri = Uri.parse('$baseUrl/Planejamento/$id');
 
       final response = await http
           .get(

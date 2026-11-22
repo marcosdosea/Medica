@@ -28,6 +28,7 @@ dependencies:
   flutter_secure_storage: ^10.3.4
   sqflite: ^2.4.6
   path: ^1.9.1
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -39,3 +40,4 @@ flutter:
   assets:
     - .env
     - assets/imgs/
+    - assets/sounds/
